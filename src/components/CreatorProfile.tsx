@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BuyButton } from "@/components/BuyButton";
 import {
   DESKTOP_CANVAS,
   MOBILE_CANVAS,
@@ -15,12 +16,14 @@ import {
 } from "@/lib/panelLayout";
 
 type Product = {
+  id: string;
   title: string;
   description: string;
   price: string;
 };
 
 type CreatorProfileProps = {
+  slug: string;
   name: string;
   initials: string;
   role: string;
@@ -213,6 +216,7 @@ function HeroCanvas({
 }
 
 export function CreatorProfile({
+  slug,
   name,
   initials,
   role,
@@ -307,7 +311,7 @@ export function CreatorProfile({
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           {products.map((product) => (
             <div
-              key={product.title}
+              key={product.id}
               className="rounded-2xl bg-white p-6 border border-gold-light/60 flex flex-col gap-3 text-foreground"
             >
               <p className="text-lg">{product.title}</p>
@@ -318,12 +322,7 @@ export function CreatorProfile({
                 <span className="font-medium" style={{ color: theme.accentColor }}>
                   {product.price}
                 </span>
-                <button
-                  className="rounded-full px-4 py-1.5 text-xs text-white hover:opacity-90 transition-opacity"
-                  style={{ backgroundColor: theme.accentColor }}
-                >
-                  Comprar
-                </button>
+                <BuyButton productId={product.id} slug={slug} accentColor={theme.accentColor} />
               </div>
             </div>
           ))}

@@ -59,6 +59,7 @@ export default async function CreatorPage({
   }
 
   const formattedProducts = sortedProducts.map((p) => ({
+    id: p.id,
     title: p.title,
     description: p.description ?? "",
     price: formatPrice(p),
@@ -80,6 +81,7 @@ export default async function CreatorPage({
 
   return (
     <CreatorProfile
+      slug={creator.slug}
       name={creator.display_name}
       initials={creator.display_name.charAt(0).toUpperCase()}
       role={creator.slug === "kat" ? "Fundadora de Poderosas" : "Poderosa"}
