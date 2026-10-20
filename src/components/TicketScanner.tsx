@@ -1,6 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
+import jsQR from "jsqr";
 
 type Result = { kind: "ok" | "used" | "error"; message: string };
 
@@ -10,7 +11,9 @@ export function TicketScanner() {
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const rafRef = useRef<number | null>(null);
 
   async function validate(ticketId: string) {
     setLoading(true);
@@ -39,13 +42,6 @@ export function TicketScanner() {
   }
 
   async function startCamera() {
-    // BarcodeDetector no existe en todos los navegadores (ej. Safari,
-    // Firefox). Si no está disponible, se usa el campo manual de abajo.
-    if (!("BarcodeDetector" in window)) {
-      setResult({ kind: "error", message: "Este navegador no soporta escaneo por cámara. Usa el campo manual." });
-      return;
-    }
-
     const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
     streamRef.current = stream;
     if (videoRef.current) {
@@ -54,27 +50,33 @@ export function TicketScanner() {
     }
     setScanning(true);
 
-    // @ts-expect-error BarcodeDetector no tiene tipos oficiales en TS todavía.
-    const detector = new window.BarcodeDetector({ formats: ["qr_code"] });
+    const canvas = canvasRef.current;
+    const ctx = canvas?.getContext("2d", { willReadFrequently: true });
 
-    const tick = async () => {
-      if (!videoRef.current || !streamRef.current) return;
-      try {
-        const codes = await detector.detect(videoRef.current);
-        if (codes.length > 0) {
+    const tick = () => {
+      const video = videoRef.current;
+      if (!video || !canvas || !ctx || !streamRef.current) return;
+
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const qr = jsQR(imageData.data, imageData.width, imageData.height);
+        if (qr?.data) {
           stopCamera();
-          await validate(codes[0].rawValue);
+          validate(qr.data);
           return;
         }
-      } catch {
-        // frame no legible todavía, seguimos intentando
       }
-      requestAnimationFrame(tick);
+      rafRef.current = requestAnimationFrame(tick);
     };
-    requestAnimationFrame(tick);
+    rafRef.current = requestAnimationFrame(tick);
   }
 
   function stopCamera() {
+    if (rafRef.current) cancelAnimationFrame(rafRef.current);
+    rafRef.current = null;
     streamRef.current?.getTracks().forEach((t) => t.stop());
     streamRef.current = null;
     setScanning(false);
@@ -92,6 +94,7 @@ export function TicketScanner() {
       ) : (
         <div className="flex flex-col gap-2">
           <video ref={videoRef} className="w-full rounded" muted playsInline />
+          <canvas ref={canvasRef} className="hidden" />
           <button onClick={stopCamera} className="text-sm underline">
             Cancelar
           </button>
