@@ -28,7 +28,8 @@ export function TicketScanner() {
       const data = await res.json();
 
       if (res.ok) {
-        setResult({ kind: "ok", message: `Entrada válida: ${data.buyerName ?? ""}` });
+        const firstName = data.buyerName ? String(data.buyerName).trim().split(/\s+/)[0] : "";
+        setResult({ kind: "ok", message: firstName ? `¡Bienvenida, ${firstName}!` : "Entrada válida" });
       } else if (res.status === 409) {
         setResult({ kind: "used", message: `Ya usada${data.buyerName ? " — " + data.buyerName : ""}` });
       } else {
@@ -161,10 +162,10 @@ export function TicketScanner() {
         <p
           className={
             result.kind === "ok"
-              ? "text-green-600 font-medium"
+              ? "text-2xl font-serif text-green-700"
               : result.kind === "used"
-                ? "text-amber-600 font-medium"
-                : "text-red-600 font-medium"
+                ? "text-lg font-medium text-amber-600"
+                : "text-sm font-medium text-red-600"
           }
         >
           {result.message}
