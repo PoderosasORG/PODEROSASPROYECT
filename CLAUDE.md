@@ -15,7 +15,7 @@ Primero se construye el flujo completo de punta a punta, aunque sea feo y sin es
 Brainstorming antes de diseñar → spec escrito → plan por tareas → ejecución con pruebas primero (ver fallar, luego implementar) → verificación con evidencia antes de decir "listo". Nunca "debería funcionar".
 
 ## Cambios por rama
-Rama nueva → pruebas → commits pequeños → el usuario hace el push → Claude abre el PR → el usuario autoriza el merge. Las migraciones de base de datos se entregan inline (en el chat) para que el usuario las pegue en el SQL Editor de Supabase — Claude no las ejecuta directamente.
+Rama nueva → pruebas → commits pequeños → Claude hace el push → Claude abre el PR → el usuario autoriza el merge (ajustado el 2026-10-20: antes el push lo hacía el usuario; se quitó ese paso manual, el merge sigue siendo decisión del usuario). Las migraciones de base de datos se entregan inline (en el chat) para que el usuario las pegue en el SQL Editor de Supabase — Claude no las ejecuta directamente.
 
 ## Seguridad
 - Nunca abrir ni leer archivos de credenciales ni llaves (.env, secretos). Si se necesita un valor de ahí, dar un comando para copiarlo al portapapeles y que el usuario lo pegue.
