@@ -41,7 +41,7 @@ Esto choca con "pagar sin login". Para 30-50 personas comprando una sola boleta,
 - `RESEND_API_KEY` ya está en `.env.local` del usuario.
 
 ### Pendiente
-- Probar `/escaner` con sesión real de una de las creadoras (falta hacerlo).
+- ~~Probar `/escaner` con sesión real de una de las creadoras~~ — probado por el usuario: valida boletas nuevas, rechaza repetidas. Falta probar el escaneo con cámara real (no se puede desde localhost; requiere dominio real para probarlo desde el celular).
 - Confirmar precio y cupo real del evento (hoy: placeholder $1.500 / 50 cupos) y publicar el producto (`is_published = true`) cuando esté listo para vender de verdad.
 - Antes de vender boletas reales: push de la rama, PR, aprobación del usuario y merge.
 - Dominio poderosas.org: comprado en Porkbun, DNS sin configurar todavía. Deploy en Vercel pendiente — necesario para que el webhook de Wompi funcione solo (sin simulación manual).
