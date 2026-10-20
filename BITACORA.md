@@ -29,14 +29,24 @@ Esto choca con "pagar sin login". Para 30-50 personas comprando una sola boleta,
 - Base de datos de pruebas separada de producción: **pospuesto a propósito**. El usuario decidió seguir sobre el único proyecto de Supabase ("PODEROSASORG", producción) mientras no haya visitas reales al sitio. Retomar esto antes de que el evento esté en vivo o haya tráfico real — no antes de lanzar, pero sí antes de que haya dinero/datos reales de terceros en juego.
 - Se creó la rama `feature/boleta-evento` para este trabajo.
 
-### Pendiente (una vez resuelto lo anterior)
-- Spec corto del flujo de boletas (una página).
-- Migración SQL para invitados (si se aprueba esa vía).
-- Endpoint de compra de boleta sin cuenta.
-- Generar QR + enviar correo tras webhook de Wompi aprobado.
-- Página/endpoint de escaneo para la entrada (rol admin/creadora).
-- Decidir proveedor de correo (Resend vs. Gmail) — pendiente de confirmar con el usuario.
-- Dominio poderosas.org: comprado en Porkbun, DNS sin configurar todavía. Deploy en Vercel pendiente.
+### Hecho (rama `feature/boleta-evento`, commits locales, sin push todavía)
+- Migración SQL aplicada en Supabase (producción, por decisión del usuario — ver abajo): `orders` acepta invitados, tabla `event_tickets`, `products.capacity`, policy `orders_select_guest`.
+- Producto placeholder del evento creado bajo la cuenta de **Shei** (ya tiene Wompi configurado): precio $1.500 COP (placeholder, ajustar), cupo 50, `is_published = false`.
+- `/evento`: formulario de nombre + correo, sin login.
+- `/api/checkout-evento`: crea la orden de invitado y redirige a Wompi.
+- Webhook de Wompi: al aprobarse una orden de tipo evento, crea la fila en `event_tickets` y envía el correo (Resend) con el QR adjunto.
+- `/escaner`: página protegida (requiere sesión de creadora) con cámara (BarcodeDetector) + campo manual de respaldo; `/api/escaner/check-in` valida y marca el check-in, evitando duplicados.
+- **Probado de punta a punta en local**: compra con tarjeta sandbox de Wompi (4242...4242, aprobada) → orden quedó `approved` con `buyer_name`/`buyer_email` → se creó la boleta en `event_tickets` → llegó el correo real a oscarmetacho@gmail.com con el QR y el código correcto. (El webhook se simuló a mano porque localhost no es alcanzable desde los servidores de Wompi — normal, se resuelve solo al desplegar a un dominio real.)
+- Paquetes nuevos: `resend`, `qrcode`.
+- `RESEND_API_KEY` ya está en `.env.local` del usuario.
+
+### Pendiente
+- Probar `/escaner` con sesión real de una de las creadoras (falta hacerlo).
+- Confirmar precio y cupo real del evento (hoy: placeholder $1.500 / 50 cupos) y publicar el producto (`is_published = true`) cuando esté listo para vender de verdad.
+- Antes de vender boletas reales: push de la rama, PR, aprobación del usuario y merge.
+- Dominio poderosas.org: comprado en Porkbun, DNS sin configurar todavía. Deploy en Vercel pendiente — necesario para que el webhook de Wompi funcione solo (sin simulación manual).
+- Registrar la URL del webhook en Wompi (Desarrolladores → Eventos) una vez haya dominio real.
+- Base de datos de pruebas separada de producción: sigue pospuesta (ver nota arriba) — se trabajó esta función directo en el único proyecto de Supabase porque no hay visitas reales todavía.
 
 ### Pospuesto (confirmado por el usuario, no tocar ahora)
 - Diseño visual / estética del sitio.
