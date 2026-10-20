@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import jsQR from "jsqr";
 
 type Result = { kind: "ok" | "used" | "error"; message: string };
@@ -10,6 +10,7 @@ export function TicketScanner() {
   const [result, setResult] = useState<Result | null>(null);
   const [loading, setLoading] = useState(false);
   const [scanning, setScanning] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -41,39 +42,6 @@ export function TicketScanner() {
     }
   }
 
-  async function startCamera() {
-    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
-    streamRef.current = stream;
-    if (videoRef.current) {
-      videoRef.current.srcObject = stream;
-      await videoRef.current.play();
-    }
-    setScanning(true);
-
-    const canvas = canvasRef.current;
-    const ctx = canvas?.getContext("2d", { willReadFrequently: true });
-
-    const tick = () => {
-      const video = videoRef.current;
-      if (!video || !canvas || !ctx || !streamRef.current) return;
-
-      if (video.readyState === video.HAVE_ENOUGH_DATA) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const qr = jsQR(imageData.data, imageData.width, imageData.height);
-        if (qr?.data) {
-          stopCamera();
-          validate(qr.data);
-          return;
-        }
-      }
-      rafRef.current = requestAnimationFrame(tick);
-    };
-    rafRef.current = requestAnimationFrame(tick);
-  }
-
   function stopCamera() {
     if (rafRef.current) cancelAnimationFrame(rafRef.current);
     rafRef.current = null;
@@ -82,24 +50,87 @@ export function TicketScanner() {
     setScanning(false);
   }
 
+  // El <video> solo existe en el DOM cuando scanning === true, así que
+  // conectamos la cámara DESPUÉS de que React lo monte (en este efecto),
+  // no antes.
+  useEffect(() => {
+    if (!scanning) return;
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        if (cancelled) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        streamRef.current = stream;
+        const video = videoRef.current;
+        if (video) {
+          video.srcObject = stream;
+          await video.play();
+        }
+
+        const canvas = canvasRef.current;
+        const ctx = canvas?.getContext("2d", { willReadFrequently: true });
+
+        const tick = () => {
+          if (!video || !canvas || !ctx || !streamRef.current) return;
+          if (video.readyState === video.HAVE_ENOUGH_DATA) {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+            const qr = jsQR(imageData.data, imageData.width, imageData.height);
+            if (qr?.data) {
+              stopCamera();
+              validate(qr.data);
+              return;
+            }
+          }
+          rafRef.current = requestAnimationFrame(tick);
+        };
+        rafRef.current = requestAnimationFrame(tick);
+      } catch {
+        setCameraError("No se pudo acceder a la cámara. Usa el campo manual.");
+        setScanning(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [scanning]);
+
   return (
     <div className="flex flex-col gap-4 max-w-sm">
       {!scanning ? (
         <button
-          onClick={startCamera}
+          onClick={() => {
+            setCameraError(null);
+            setScanning(true);
+          }}
           className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
         >
           Escanear con cámara
         </button>
       ) : (
         <div className="flex flex-col gap-2">
-          <video ref={videoRef} className="w-full rounded" muted playsInline />
+          <video
+            ref={videoRef}
+            className="w-full aspect-[3/4] rounded bg-black object-cover"
+            autoPlay
+            muted
+            playsInline
+          />
           <canvas ref={canvasRef} className="hidden" />
           <button onClick={stopCamera} className="text-sm underline">
             Cancelar
           </button>
         </div>
       )}
+      {cameraError && <p className="text-sm text-red-600">{cameraError}</p>}
 
       <form
         onSubmit={(e) => {
