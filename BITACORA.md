@@ -2,6 +2,15 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 5)
+El home mostraba el HTML crudo de la bio (`<p><strong>...`) en vez del
+texto — efecto colateral de haber migrado bio a texto enriquecido sin
+actualizar la tarjeta del home, que esperaba texto plano. Se agregó
+`stripHtml()` (quita etiquetas + recorta a un largo razonable) en
+`lib/panel/sanitize.ts`, usada en el home y en "Otras Poderosas" (que
+tenía su propia regex improvisada para lo mismo). Verificado contra
+producción real.
+
 ## 2026-10-21 (continuación 4) — pulido visual de cursos y navegación
 
 Investigado: patrones de tarjeta de curso 2026 (ratio de imagen estable
