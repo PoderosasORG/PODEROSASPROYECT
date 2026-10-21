@@ -38,7 +38,7 @@ export async function POST(req: NextRequest) {
 
   const { data: order } = await admin
     .from("orders")
-    .select("id, creator_id")
+    .select("id, creator_id, buyer_id, status, products(id, type, billing_interval)")
     .eq("id", reference)
     .maybeSingle();
 
@@ -67,13 +67,38 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 
+  const newStatus = String(transaction.status).toLowerCase();
+  const wasAlreadyApproved = order.status === "approved";
+
   await admin
     .from("orders")
     .update({
-      status: String(transaction.status).toLowerCase(),
+      status: newStatus,
       wompi_transaction_id: transaction.id,
     })
     .eq("id", order.id);
+
+  const product = Array.isArray(order.products) ? order.products[0] : order.products;
+
+  // Al aprobarse una suscripción, activa/renueva la membresía. Es un
+  // pago único por período (mes o año), no un cobro recurrente — Wompi
+  // no ofrece eso, así que renovar significa "vuelve a pagar".
+  if (newStatus === "approved" && !wasAlreadyApproved && product?.type === "membership" && order.buyer_id) {
+    const months = product.billing_interval === "year" ? 12 : 1;
+    const periodEnd = new Date();
+    periodEnd.setMonth(periodEnd.getMonth() + months);
+
+    await admin.from("memberships").upsert(
+      {
+        buyer_id: order.buyer_id,
+        creator_id: order.creator_id,
+        product_id: product.id,
+        status: "active",
+        current_period_end: periodEnd.toISOString(),
+      },
+      { onConflict: "buyer_id,product_id" },
+    );
+  }
 
   return NextResponse.json({ ok: true });
 }
