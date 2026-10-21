@@ -2,6 +2,25 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 8)
+- CRM agregado: `/panel/clientes` (ventas individuales de cada creadora,
+  protegidas por RLS; + números colectivos de la plataforma sin
+  desglosar cuánto vendió cada una). Probado con datos sintéticos.
+- Verificado el asistente de subida para tipo "curso" de punta a punta
+  (producto se crea bien como `type=course`). No se pudo probar la
+  subida de un archivo de capítulo real con la herramienta de
+  automatización (no simula el diálogo "elegir archivo" del sistema
+  operativo) — el código y el patrón de Storage.upload ya están
+  probados en otras partes del sitio.
+- Revisado `mystery-tienda` (otro proyecto del usuario) en busca de
+  patrones reutilizables. Se adoptó uno de inmediato:
+  `paymentIntegrity.js` → segundo control en el webhook de Wompi que
+  compara lo efectivamente cobrado contra lo que la orden esperaba,
+  como defensa adicional a la firma de integridad. El resto
+  (`financeReport.js`, `discount.js`/cupones reales, `rateLimit.js`,
+  logística de envíos) quedó identificado pero no implementado — se
+  reportó como propuesta, no se construyó todo en la misma sesión.
+
 ## 2026-10-21 (continuación 7) — Auditoría de seguridad real
 
 A pedido explícito del usuario ("¿alguien podría hackear o acceder sin
