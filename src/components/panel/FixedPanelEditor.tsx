@@ -31,6 +31,7 @@ export function FixedPanelEditor({
   const [data, setData] = useState<PanelData>(initial);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
+  const [previewDevice, setPreviewDevice] = useState<"mobile" | "desktop">("mobile");
 
   async function handleSave() {
     setSaving(true);
@@ -95,22 +96,48 @@ export function FixedPanelEditor({
           </div>
         </div>
 
-        <div className="hidden lg:block overflow-y-auto bg-black/5">
-          <p className="sticky top-0 z-10 bg-black/80 text-white text-xs text-center py-1.5">Vista previa en vivo</p>
-          <ProfilePreview
-            displayName={displayName}
-            role={role}
-            avatar={data.avatar}
-            cover={data.cover}
-            bio={data.bio}
-            theme={data.theme}
-            blocks={data.blocks}
-            afterContent={
-              <div className="px-6 py-10 text-center text-sm text-foreground/40 border-t">
-                Aquí aparecerán tus cursos y contenido publicado
-              </div>
-            }
-          />
+        <div className="hidden lg:flex flex-col overflow-y-auto bg-black/5">
+          <div className="sticky top-0 z-10 bg-black/80 flex items-center justify-center gap-2 py-1.5">
+            <span className="text-white text-xs mr-2">Vista previa en vivo</span>
+            <button
+              type="button"
+              onClick={() => setPreviewDevice("mobile")}
+              className={`text-xs px-2 py-0.5 rounded-full ${previewDevice === "mobile" ? "bg-gold text-white" : "text-white/60 border border-white/30"}`}
+            >
+              📱 Móvil
+            </button>
+            <button
+              type="button"
+              onClick={() => setPreviewDevice("desktop")}
+              className={`text-xs px-2 py-0.5 rounded-full ${previewDevice === "desktop" ? "bg-gold text-white" : "text-white/60 border border-white/30"}`}
+            >
+              🖥️ Escritorio
+            </button>
+          </div>
+          <div className="flex-1 flex justify-center py-6">
+            <div
+              className={
+                previewDevice === "mobile"
+                  ? "w-[390px] h-[780px] overflow-y-auto rounded-[2rem] border-8 border-black shadow-xl shrink-0"
+                  : "w-full h-full overflow-y-auto"
+              }
+            >
+              <ProfilePreview
+                displayName={displayName}
+                role={role}
+                avatar={data.avatar}
+                cover={data.cover}
+                bio={data.bio}
+                theme={data.theme}
+                blocks={data.blocks}
+                afterContent={
+                  <div className="px-6 py-10 text-center text-sm text-foreground/40 border-t">
+                    Aquí aparecerán tus cursos y contenido publicado
+                  </div>
+                }
+              />
+            </div>
+          </div>
         </div>
       </div>
     </div>
