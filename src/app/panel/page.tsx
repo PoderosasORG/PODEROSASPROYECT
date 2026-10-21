@@ -75,6 +75,12 @@ export default async function PanelPage() {
             >
               Personalizar mi panel
             </Link>
+            <Link
+              href="/panel/clientes"
+              className="rounded-full border border-gold px-6 py-2.5 text-gold text-sm hover:bg-gold hover:text-white transition-colors"
+            >
+              Mis clientes
+            </Link>
           </div>
         </div>
       ) : (
