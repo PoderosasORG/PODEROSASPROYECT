@@ -12,8 +12,9 @@ function formatPrice(p: { price_cents: number; currency: string }) {
 }
 
 // Sección fija y automática: se arma sola a partir de los productos
-// publicados de la creadora (cursos y contenido digital). No se edita
-// a mano — para eso ya existe "Subir contenido" en el panel.
+// publicados de la creadora (cursos, contenido digital y físico — no
+// incluye "membership" ni "event", que tienen sus propios flujos). No
+// se edita a mano — para eso ya existe "Subir contenido" en el panel.
 export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { creatorId: string; slug: string; accentColor: string }) {
   const supabase = await createClient();
   const { data: products } = await supabase
@@ -21,7 +22,7 @@ export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { 
     .select("id, title, description, price_cents, currency, cover_image_url, type, access_tier")
     .eq("creator_id", creatorId)
     .eq("is_published", true)
-    .in("type", ["course", "digital"])
+    .in("type", ["course", "digital", "physical"])
     .order("order_index", { ascending: true })
     .order("created_at", { ascending: true });
 
@@ -29,7 +30,7 @@ export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { 
 
   return (
     <section id="cursos" className="px-6 py-12 max-w-5xl mx-auto w-full scroll-mt-16">
-      <h2 className="font-serif text-2xl mb-6">Cursos y contenido</h2>
+      <h2 className="font-serif text-2xl mb-6">Cursos y productos</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {products.map((p) => {
           const badge =

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { translateAuthError } from "@/lib/authErrors";
 
 export default function RegistroPage() {
-  const router = useRouter();
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +31,7 @@ export default function RegistroPage() {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      setError(translateAuthError(error.message));
       return;
     }
 
@@ -106,9 +106,9 @@ export default function RegistroPage() {
 
         <p className="text-sm text-center text-foreground/60">
           ¿Ya tienes cuenta?{" "}
-          <a href="/login" className="text-gold hover:underline">
+          <Link href="/login" className="text-gold hover:underline">
             Inicia sesión
-          </a>
+          </Link>
         </p>
       </form>
     </div>

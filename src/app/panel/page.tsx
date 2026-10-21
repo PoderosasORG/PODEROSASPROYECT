@@ -78,9 +78,17 @@ export default async function PanelPage() {
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-2xl bg-white rounded-2xl border border-gold-light/60 p-6 text-sm text-foreground/60">
-          Esta cuenta es de cliente. Cuando compres productos y membresías,
-          aparecerán aquí.
+        <div className="w-full max-w-2xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-4">
+          <p className="text-sm text-foreground/60">
+            Esta cuenta es de cliente. Cuando compres productos y membresías,
+            aparecerán en &quot;Mis compras&quot;.
+          </p>
+          <Link
+            href="/mis-compras"
+            className="self-start rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Ver mis compras
+          </Link>
         </div>
       )}
     </div>

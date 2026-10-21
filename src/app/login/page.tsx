@@ -2,7 +2,9 @@
 
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
+import { translateAuthError } from "@/lib/authErrors";
 
 function LoginForm() {
   const router = useRouter();
@@ -24,7 +26,7 @@ function LoginForm() {
     setLoading(false);
 
     if (error) {
-      setError(error.message);
+      setError(translateAuthError(error.message));
       return;
     }
 
@@ -74,9 +76,9 @@ function LoginForm() {
 
         <p className="text-sm text-center text-foreground/60">
           ¿Aún no tienes cuenta?{" "}
-          <a href="/registro" className="text-gold hover:underline">
+          <Link href="/registro" className="text-gold hover:underline">
             Regístrate
-          </a>
+          </Link>
         </p>
       </form>
     </div>
