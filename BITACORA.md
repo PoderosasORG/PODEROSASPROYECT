@@ -2,6 +2,34 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 3)
+
+### Por qué /shei no mostraba cursos
+Investigado a pedido del usuario: los 5 productos de Shei en producción
+estaban como borrador (`is_published = false`), excepto la boleta del
+evento y un producto físico — por eso la sección de cursos aparecía
+vacía. Se confirmó que todo lo subido hasta ahora bajo su cuenta son
+pruebas, ninguno es contenido real. De paso se encontró y borró un
+residuo mío (`[PRUEBA] Ebook de prueba`) que había quedado en su cuenta
+real desde una prueba de una sesión anterior — el cleanup de ese
+momento falló silenciosamente y no se notó hasta ahora.
+
+### Simplificado: subir = visible de inmediato (una de las tres no es técnica)
+El flujo de "sube → queda en borrador → hay que acordarse de publicar"
+era fricción innecesaria para quien no está familiarizada con tecnología.
+Cambios:
+- `UploadWizard` crea el producto ya visible (`is_published: true`).
+- "Mi contenido": lenguaje más claro — Mostrar/Ocultar en vez de
+  Publicar/Despublicar, "Visible en tu página"/"Oculto" en vez de
+  Publicado/Borrador.
+- Nuevo botón "Corregir": edita nombre, descripción y precio sin
+  borrar y volver a subir.
+
+### Vista de teléfono restaurada
+Se había perdido al abandonar Puck. La vista previa en vivo del panel
+ahora tiene su propio selector móvil/escritorio (marco de 390px para
+simular el teléfono).
+
 ## 2026-10-21 (continuación 2)
 
 ### Bug real en producción: 500 en /[slug] (encontrado por Shei probando)
