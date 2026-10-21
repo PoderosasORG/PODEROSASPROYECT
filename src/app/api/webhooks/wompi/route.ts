@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { sendTicketEmail } from "@/lib/sendTicketEmail";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -38,7 +39,7 @@ export async function POST(req: NextRequest) {
 
   const { data: order } = await admin
     .from("orders")
-    .select("id, creator_id")
+    .select("id, creator_id, product_id, buyer_name, buyer_email, status, products(type, title)")
     .eq("id", reference)
     .maybeSingle();
 
@@ -67,13 +68,43 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 
+  const newStatus = String(transaction.status).toLowerCase();
+  const wasAlreadyApproved = order.status === "approved";
+
   await admin
     .from("orders")
     .update({
-      status: String(transaction.status).toLowerCase(),
+      status: newStatus,
       wompi_transaction_id: transaction.id,
     })
     .eq("id", order.id);
+
+  const product = Array.isArray(order.products) ? order.products[0] : order.products;
+
+  // Solo generamos la boleta la primera vez que la orden queda aprobada
+  // (Wompi puede reenviar el mismo evento más de una vez).
+  if (newStatus === "approved" && !wasAlreadyApproved && product?.type === "event" && order.buyer_email) {
+    const { data: ticket } = await admin
+      .from("event_tickets")
+      .insert({ order_id: order.id, product_id: order.product_id })
+      .select("id")
+      .single();
+
+    if (ticket) {
+      try {
+        await sendTicketEmail({
+          to: order.buyer_email,
+          buyerName: order.buyer_name ?? "",
+          eventTitle: product.title,
+          ticketId: ticket.id,
+        });
+      } catch (err) {
+        // No tumbamos el webhook por un fallo de correo: la boleta ya
+        // quedó creada en la base de datos y se puede reenviar a mano.
+        console.error("No se pudo enviar el correo de la boleta:", err);
+      }
+    }
+  }
 
   return NextResponse.json({ ok: true });
 }
