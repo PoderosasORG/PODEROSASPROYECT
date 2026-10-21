@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 
@@ -65,6 +66,30 @@ export default async function Home() {
         >
           Conoce a las Poderosas
         </a>
+      </section>
+
+      {/* Evento en vivo */}
+      <section className="px-6 py-16 bg-gold/10 border-y border-gold-light/60">
+        <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-4">
+          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+            Primer evento en vivo
+          </span>
+          <h2 className="font-serif text-3xl sm:text-4xl leading-tight">
+            Nos vemos en persona, por primera vez
+          </h2>
+          <p className="max-w-xl text-foreground/70">
+            Un espacio para encontrarte con Kat, Shei y Luz cara a cara —
+            el mismo método, ahora en vivo. 21 de noviembre, de 8:30 a.m. a
+            1:00 p.m., en Edificio Emprendu (Calle 85 #12-66, Bogotá). Cupos
+            limitados.
+          </p>
+          <Link
+            href="/evento"
+            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Comprar mi cupo
+          </Link>
+        </div>
       </section>
 
       {/* La analogía del GPS */}
