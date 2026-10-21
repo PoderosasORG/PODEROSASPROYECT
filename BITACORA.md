@@ -2,6 +2,31 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 7) — Auditoría de seguridad real
+
+A pedido explícito del usuario ("¿alguien podría hackear o acceder sin
+pagar?"). Revisión línea por línea de todas las políticas RLS.
+
+**Hallazgo crítico, confirmado y cerrado:** la política de insert de
+`orders` solo validaba "esta orden es mía", no qué valores trae —
+cualquier usuario con cuenta podía, usando la API pública de Supabase
+directo (sin pasar por el sitio), insertar una orden con
+`status: 'approved'` apuntando a cualquier curso, sin pagar, y
+`has_access_to_product()` le daba acceso real. Corregido: desde el
+cliente solo se puede crear una orden en `pending`; pasar a `approved`
+es exclusivo del servidor (webhook de Wompi, que valida la firma antes).
+
+**Hallazgo menor, cerrado de paso:** cualquier usuario podía
+auto-asignarse `role = 'creator'` en su perfil (impacto real bajo: no
+desbloquea nada sin una fila en `creators`, que solo se crea a mano).
+Trigger nuevo bloquea el auto-cambio sin afectar las promociones
+hechas por el admin (service role).
+
+**Verificado con ataques reales simulados** (cuenta de prueba, sin
+tocar datos de las creadoras): orden falsa "approved" → bloqueada.
+Auto-escalación de rol → bloqueada. Flujo normal de compra (pending) →
+sigue funcionando igual que siempre.
+
 ## 2026-10-21 (continuación 6) — QA completo del sitio
 
 A pedido del usuario: recorrido sistemático de todo el sitio (público,
