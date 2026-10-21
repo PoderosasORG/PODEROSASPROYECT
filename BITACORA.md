@@ -2,6 +2,38 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 2)
+
+### Bug real en producción: 500 en /[slug] (encontrado por Shei probando)
+Al guardar su bio con texto enriquecido, `poderosas.org/shei` empezó a
+dar error 500 real (no 404). Causa: `isomorphic-dompurify` v3+ con
+`jsdom@28+` rompe `require()` en entornos CommonJS como Next.js en
+Vercel (ERR_REQUIRE_ESM) — problema conocido y documentado por el
+propio proyecto. No se reproducía en local (mismo SO), solo en el
+entorno serverless real de Vercel. Arreglado fijando `jsdom` a `25.0.1`
+vía `overrides` en `package.json` (workaround oficial). Verificado
+contra producción real tras el fix: `/shei` vuelve a cargar.
+
+**Lección:** cuando algo falla solo en producción y no en local, no
+asumir que "ya probé, está bien" — hay que verificar contra el
+entorno real (Vercel), no solo local.
+
+### Últimos ajustes al panel (Shei): alineación, video, posición de bloques
+- Texto (bio y bloques): botones alinear izquierda/centro/derecha
+  (`@tiptap/extension-text-align`), por párrafo.
+- Video: ahora se sube desde la galería (bucket `covers`), además de
+  seguir aceptando un link.
+- Imagen/video: selector de "posición" (izquierda/centro/derecha) —
+  centrado es ancho completo, a un lado es más angosto para que se
+  note la posición.
+
+Probado contra producción real (no solo local, por la lección de
+arriba) con una creadora de prueba sintética: bio centrada, texto a
+la derecha, imagen a la izquierda, video a la derecha — todo cargó
+bien en `poderosas.org`, sin el error 500. Shei confirmó "todo ok"
+antes de pedir estos tres ajustes finales — con esto, el panel de
+personalización queda cerrado por ahora.
+
 ## 2026-10-21 (continuación)
 
 Los 3 PRs de la sesión anterior se mergearon a `main` con autorización del
