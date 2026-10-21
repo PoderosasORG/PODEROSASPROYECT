@@ -1,7 +1,9 @@
 import { notFound } from "next/navigation";
+import { Render } from "@puckeditor/core";
 import { createClient } from "@/lib/supabase/server";
 import { CreatorProfile } from "@/components/CreatorProfile";
 import { normalizeDevicePosition, DEFAULT_THEME, DEFAULT_BIO_STYLE } from "@/lib/panelLayout";
+import { puckConfig } from "@/lib/puck/config";
 
 // Siempre trae datos frescos: sin esto, el navegador puede mostrar
 // una versión en caché del perfil justo después de guardar cambios.
@@ -78,6 +80,10 @@ export default async function CreatorPage({
       };
     })
     .filter((b) => b !== null);
+
+  if (creator.puck_data && Array.isArray(creator.puck_data.content) && creator.puck_data.content.length > 0) {
+    return <Render config={puckConfig} data={creator.puck_data} />;
+  }
 
   return (
     <CreatorProfile
