@@ -2,6 +2,23 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 4) — pulido visual de cursos y navegación
+
+Investigado: patrones de tarjeta de curso 2026 (ratio de imagen estable
+16:10, radios ~12px, jerarquía título/precio en grid real). La tarjeta
+de "Cursos y contenido" no estaba rota — solo le faltaba un tamaño
+acorde (antes ocupaba todo el ancho del contenedor; ahora es una grilla
+de 1/2/3 columnas según pantalla, con insignia de precio en el color
+de acento y hover con sombra/zoom).
+
+Nuevo: `OtherCreatorsSection` — cada perfil público enlaza a las otras
+dos Poderosas + "volver al inicio" (antes no había forma de navegar
+entre perfiles sin pasar por el home). Mini-navegación pegajosa dentro
+del perfil (Sobre mí / Cursos / Otras Poderosas) para ubicarse entre
+secciones largas.
+
+Verificado contra producción real.
+
 ## 2026-10-21 (continuación 3)
 
 ### Por qué /shei no mostraba cursos
