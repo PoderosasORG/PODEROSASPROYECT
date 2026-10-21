@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
   const { data: order } = await admin
     .from("orders")
     .select(
-      "id, creator_id, product_id, buyer_id, buyer_name, buyer_email, status, products(id, type, title, billing_interval)",
+      "id, creator_id, product_id, buyer_id, buyer_name, buyer_email, status, amount_cents, products(id, type, title, billing_interval)",
     )
     .eq("id", reference)
     .maybeSingle();
@@ -70,8 +70,22 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid signature" }, { status: 401 });
   }
 
-  const newStatus = String(transaction.status).toLowerCase();
+  let newStatus = String(transaction.status).toLowerCase();
   const wasAlreadyApproved = order.status === "approved";
+
+  // Defensa adicional: aunque amount-in-cents ya está protegido por la
+  // firma de integridad (si alguien lo manipula, la firma no coincide
+  // y Wompi rechaza el pago antes de llegar aquí), igual confirmamos
+  // que lo efectivamente cobrado no sea menor a lo que la orden dice
+  // que costaba — nunca confiar en un solo control. Pagar de más no
+  // se bloquea (puede pasar por redondeos o cuotas).
+  const paidCents = Number(transaction.amount_in_cents);
+  if (newStatus === "approved" && Number.isFinite(paidCents) && paidCents < order.amount_cents) {
+    console.error(
+      `Integridad de pago: orden ${order.id} esperaba ${order.amount_cents} centavos, Wompi reporta ${paidCents}. No se aprueba.`,
+    );
+    newStatus = "error";
+  }
 
   await admin
     .from("orders")
