@@ -99,8 +99,17 @@ El editor casero (lienzo libre, posiciones x/y independientes móvil/escritorio)
 - `/panel/personalizar` monta `<Puck>`; `/[slug]` usa `<Render>` si la creadora ya guardó con el editor nuevo, si no cae al sistema viejo (no rompe nada mientras migran).
 - Nueva columna `creators.puck_data` (jsonb).
 
+### Hecho — Correcciones al editor Puck tras feedback real de Shei (2026-10-21)
+Shei probó el editor en producción y reportó: (1) no se podía arrastrar ningún bloque al lienzo, (2) las imágenes pedían URL en vez de subir un archivo, (3) los colores pedían código hex en vez de una paleta visual, (4) el cambio de vista móvil sí funcionaba bien.
+- **Drag-and-drop:** diagnosticado con una creadora de prueba sintética (sesión vía magic link + `/auth/confirm`, sin tocar la cuenta real de Shei). Causa encontrada: el `<Puck>` estaba anidado dentro de varios `div` con flexbox alrededor — [issue conocido de Puck](https://github.com/puckeditor/puck/issues/1717). Se aplanó el layout (Puck como único hijo de un contenedor de altura fija, header como overlay encima).
+- **Subida de imagen:** nuevo campo `imageUploadField` (sube al bucket `covers` de Supabase Storage).
+- **Selector de color:** nuevo campo `colorField` (`<input type="color">`).
+- Nota técnica real: los componentes de estos campos custom tuvieron que vivir en archivos `"use client"` aparte — el paquete de Puck resuelve un build distinto ("react-server") cuando se importa desde un Server Component (como `/[slug]` para `<Render>`), sin `FieldLabel` ni otras piezas del editor interactivo. Se encontró en dos vueltas (primero con `imageUploadField`, después con `colorField`, mismo problema).
+- **Honestidad sobre la verificación:** el `left_click_drag` de mi herramienta de automatización (y hasta eventos de puntero disparados directo por JavaScript) no logró activar el motor de arrastre de Puck — es una limitación conocida de herramientas de automatización con librerías como `dnd-kit` (los eventos sintéticos no siempre se tratan igual que un mouse real). **No pude confirmar con 100% de certeza que el arreglo del layout resolvió el problema real que vio Shei** — apliqué la corrección documentada oficialmente para ese issue, pero falta que alguien con mouse real (Shei u otra) lo confirme en producción.
+- `npm run build` falló una vez con un crash de proceso de Windows sin relación aparente con el código (reintentar lo resolvió) — anotado por si se repite.
+
 ### Pendiente
-- **Probar el editor Puck con sesión real de una creadora** (guardar y ver el resultado en su perfil público) — no se pudo probar en esta sesión por falta de credenciales de Kat/Shei/Luz.
+- **Confirmar con mouse real (Shei u otra)** que el drag-and-drop ya funciona en `https://poderosas.org/panel/personalizar` tras el fix de layout.
 - Selector visual de productos dentro del bloque "Producto" de Puck (hoy se pega el ID a mano) + que muestre precio/portada reales.
 - UI para que una creadora cree el producto de "suscripción Poderosas" en sí (hoy se crea a mano en Supabase, igual que el evento) — falta definir precio real.
 - Autorizar la app de Vercel sobre el repo de GitHub para deploys automáticos con cada push (hoy se despliega a mano con `vercel deploy --prod`) — la app de Vercel no tiene permiso admin/write sobre `PoderosasORG` todavía.
