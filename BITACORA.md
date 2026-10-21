@@ -334,3 +334,42 @@ Shei probó el editor en producción y reportó: (1) no se podía arrastrar ning
 
 ### Pospuesto (confirmado por el usuario, no tocar ahora)
 - Diseño visual / estética fina del sitio (más allá de lo ya hecho).
+
+### Hecho — Auditoría de seguridad real + CRM + integridad de pago (2026-10-21)
+El usuario preguntó directamente: "¿Hay seguridad? ¿Alguien 'experto' podría hackear o acceder a recursos sin pagar nada o pagar menos?" — se hizo una auditoría real del código (no una revisión superficial), con ataques simulados antes/después de cada corrección, nunca solo "debería estar bien".
+
+**Vulnerabilidad crítica encontrada y cerrada:** la política RLS de `orders` permitía que cualquier usuario con cuenta insertara directamente, vía la API pública de Supabase (sin pasar por el checkout ni por Wompi), una fila con `status = 'approved'` — acceso gratis a cualquier producto. Confirmado con un ataque simulado real (insert directo con una cuenta de prueba sintética) antes de tocar nada; después de la corrección, el mismo ataque fue rechazado por la base de datos.
+- `supabase/security_fix_orders.sql` (pegado por el usuario en el SQL Editor de Supabase):
+  - `orders_insert_own_buyer`: solo permite insertar si `auth.uid() = buyer_id` y `status = 'pending'` (nunca `approved` desde el cliente).
+  - Trigger `prevent_self_role_change` sobre `profiles`: si alguien intenta cambiar su propio `role` vía la API pública, el trigger lo revierte al valor anterior — cierra una escalación de privilegios menor (auto-asignarse `role = 'creator'`).
+- **Lección:** las políticas RLS por defecto que solo revisan "¿es el dueño de la fila?" no bastan cuando el *contenido* de la fila (el `status`) es lo que otorga acceso — hay que restringir también qué valores puede escribir el cliente, no solo cuáles filas puede tocar.
+
+**Defensa adicional en el webhook de Wompi** ([src/app/api/webhooks/wompi/route.ts](src/app/api/webhooks/wompi/route.ts)): se adoptó el patrón de `C:\Users\delga\mystery-tienda\app\lib\paymentIntegrity.js` (otro proyecto del usuario, revisado por petición explícita) — nunca confiar en un solo control. Ahora el webhook compara `transaction.amount_in_cents` (lo que Wompi dice que se cobró de verdad) contra `order.amount_cents` (lo que la orden dice que debía costar); si pagaron menos, la orden se marca `error` en vez de `approved`, aunque Wompi reporte éxito. La firma de integridad de Wompi ya protegía esto en el camino normal (si alguien manipula el monto antes de pagar, la firma no coincide y Wompi rechaza el pago); este chequeo es la segunda capa, por si algo se escapa. Pagar de más nunca se bloquea (puede pasar por redondeos/cuotas).
+
+**Verificación del flujo de subida de cursos:** probado de punta a punta con una creadora de prueba sintética para `type='curso'` — creación de producto correcta, aparece en el panel y en el perfil público. Limitación honesta: la herramienta de automatización de navegador no puede abrir el diálogo nativo "elegir archivo" del sistema operativo, así que la subida real de un archivo de capítulo no quedó probada en esta sesión (el mecanismo de subida a Storage ya está probado y en uso en otras partes del sitio — avatar, portadas, imágenes de Puck).
+
+**CRM nuevo** — `/panel/clientes` ([src/app/panel/clientes/page.tsx](src/app/panel/clientes/page.tsx)), enlazado desde `/panel`:
+- **Individual**: tabla de ventas y clientes de la propia creadora (protegido por RLS — `creator_id = auth.uid()`), con nombre/correo tomado de `buyer_name`/`buyer_email` (compra de invitado) o de `profiles.full_name` vía el cliente admin (compra con cuenta), más tarjetas de ingresos totales / clientes únicos / número de ventas.
+- **Colectivo** ("Poderosas en conjunto"): usa el cliente admin para contar clientes únicos de toda la plataforma y boletas de evento vendidas — **decisión de diseño explícita, no pedida pero necesaria**: nunca muestra cuánto vendió cada creadora a las otras, solo el agregado total del proyecto. Está anotado así en la propia UI.
+
+**Revisión de `mystery-tienda`** (`C:\Users\delga\mystery-tienda`) por petición explícita, para ver qué "clonar":
+- **Adoptado ya** (ver arriba): el patrón de verificar lo realmente cobrado contra lo esperado (`paymentIntegrity.js`).
+- **Identificado, no construido todavía** (pendiente de priorizar con el usuario):
+  - Cupones/códigos de descuento reales — `UploadWizard` ya pregunta por un cupón en el checkout pero nunca se verificó que la lógica de redención exista; en mystery-tienda viven en `discount.js`/`giftCodes.js`.
+  - Límite de tasa (`rateLimit.js`) sobre endpoints públicos sin login — especialmente el checkout de evento y el check-in por QR, hoy sin ninguna protección contra abuso automatizado.
+  - Reportes financieros más completos (`financeReport.js`) — podría extender el CRM nuevo.
+  - Logística de envíos (`skydropx.js`/`postalCodes.js`) — solo relevante si de verdad se van a vender productos físicos con envío (hoy existen productos `physical` pero sin flujo de envío).
+
+**UI/animaciones:** confirmado que el zoom al pasar el mouse sobre las tarjetas de curso (`group-hover:scale-105`) y los precios visibles en los productos ya existían de trabajo previo de pulido visual — no se tocó nada nuevo en esta sesión porque ya cumplía lo pedido.
+
+### Pendiente (actualizado 2026-10-21)
+- Wompi independiente para Kat y Luz (todos los pagos siguen ruteando por la cuenta de Shei).
+- Base de datos de pruebas separada de producción — cada vez más urgente porque ya hay dinero real en juego, no solo pruebas.
+- Cupones de descuento reales en el checkout (ver arriba).
+- Límite de tasa en endpoints públicos sin login (checkout de evento, check-in QR).
+- Reportes financieros más completos (extender el CRM).
+- Logística de envío si se venden productos físicos de verdad.
+- Autorizar la app de Vercel sobre el repo de GitHub para deploy automático.
+- Verificar dominio de Resend (`boletas@poderosas.org`) — hoy el correo sale desde `onboarding@resend.dev`.
+- Activar Zoho Mail cuando se quiera, agregando MX/TXT dentro del panel de DNS de Vercel (no Porkbun, porque los nameservers ya están delegados a Vercel).
+- `npm audit` (9 vulnerabilidades, 1 crítica) — sigue sin revisar, no bloqueante.
