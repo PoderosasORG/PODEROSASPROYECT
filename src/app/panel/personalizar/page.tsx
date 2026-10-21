@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { PuckPanelEditor } from "@/components/PuckPanelEditor";
+import { FixedPanelEditor, type PanelData } from "@/components/panel/FixedPanelEditor";
+import { DEFAULT_IMAGE_FOCUS, DEFAULT_TEXT_STYLE, DEFAULT_THEME } from "@/lib/panel/types";
 
 export default async function PersonalizarPage() {
   const supabase = await createClient();
@@ -14,7 +15,9 @@ export default async function PersonalizarPage() {
 
   const { data: creator } = await supabase
     .from("creators")
-    .select("id, slug, puck_data")
+    .select(
+      "id, slug, avatar_url, avatar_focus_x, avatar_focus_y, cover_image_url, cover_focus_x, cover_focus_y, bio, bio_style, theme, content_blocks",
+    )
     .eq("id", user.id)
     .maybeSingle();
 
@@ -22,9 +25,18 @@ export default async function PersonalizarPage() {
     redirect("/panel");
   }
 
-  // Puck necesita un único contenedor con altura fija, sin anidarlo
-  // dentro de varios divs con flexbox/posicionamiento alrededor — eso
-  // rompe su arrastrar-y-soltar (bug conocido de Puck con "canvas
-  // envuelto en contenedores posicionados": github.com/puckeditor/puck/issues/1717).
-  return <PuckPanelEditor slug={creator.slug} initialData={creator.puck_data} />;
+  const initial: PanelData = {
+    avatar: creator.avatar_url
+      ? { url: creator.avatar_url, focusX: creator.avatar_focus_x ?? 50, focusY: creator.avatar_focus_y ?? 50 }
+      : DEFAULT_IMAGE_FOCUS,
+    cover: creator.cover_image_url
+      ? { url: creator.cover_image_url, focusX: creator.cover_focus_x ?? 50, focusY: creator.cover_focus_y ?? 50 }
+      : DEFAULT_IMAGE_FOCUS,
+    bio: creator.bio ?? "",
+    bioStyle: creator.bio_style ?? DEFAULT_TEXT_STYLE,
+    theme: creator.theme ?? DEFAULT_THEME,
+    blocks: creator.content_blocks ?? [],
+  };
+
+  return <FixedPanelEditor slug={creator.slug} initial={initial} />;
 }
