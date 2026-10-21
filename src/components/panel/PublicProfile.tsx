@@ -1,4 +1,4 @@
-import { CreatorCoursesSection } from "@/components/CreatorCoursesSection";
+import { CreatorCoursesSection, OtherCreatorsSection } from "@/components/CreatorCoursesSection";
 import { ProfilePreview } from "@/components/panel/ProfilePreview";
 import { type ImageFocus, type Theme, type ContentBlock } from "@/lib/panel/types";
 
@@ -32,7 +32,12 @@ export function PublicProfile({
       bio={bio}
       theme={theme}
       blocks={blocks}
-      afterContent={<CreatorCoursesSection creatorId={creatorId} slug={slug} accentColor={theme.accentColor} />}
+      afterContent={
+        <>
+          <CreatorCoursesSection creatorId={creatorId} slug={slug} accentColor={theme.accentColor} />
+          <OtherCreatorsSection excludeSlug={slug} />
+        </>
+      }
     />
   );
 }
