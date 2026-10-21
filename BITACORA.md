@@ -16,6 +16,32 @@ antes de confirmar. Redeploy a `poderosas.org` verificado: `/evento` y
 Ramas `feature/boleta-evento`, `feature/entrega-contenido` y
 `feature/editor-puck` quedan mergeadas; `main` es ahora la base única.
 
+### Se abandonó Puck — editor de panel reemplazado por formulario fijo
+Shei probó el arrastrar-y-soltar dos veces más en producción, con mouse
+real, y siguió fallando aunque se corrigieron las dos causas documentadas
+(anidamiento flex alrededor del canvas, luego el `<body>` raíz siendo
+flex). En vez de seguir persiguiendo un bug de una librería externa poco
+confiable en este entorno, se rediseñó `/panel/personalizar` sin ningún
+drag-and-drop: botones (+agregar, ↑↓ reordenar, ✕ quitar) para una lista
+de bloques opcionales de texto/imagen/video, foto de perfil/portada con
+botón real de subida + punto focal (clic para elegir qué parte se ve,
+corrigiendo de paso un bug real: un `<label>` envolvía todo el campo e
+interceptaba cualquier clic para reabrir el selector de archivo), bio con
+negrita/cursiva/tamaño, y una **sección de cursos fija y automática**
+en el perfil público (se arma sola desde los productos publicados, no se
+edita a mano — resuelve de raíz el caso de uso más importante que
+dependía del drag). Se eliminó `@puckeditor/core` y todo el código
+muerto asociado, además del editor casero original (`PanelEditor.tsx`,
+`CreatorProfile.tsx`, `panelLayout.ts`) que ya no se usaba.
+
+Probado de punta a punta con una creadora de prueba sintética: agregar
+un bloque, guardarlo y verlo en la página pública real, todo con
+botones, sin arrastrar nada.
+
+**Pendiente:** confirmar con Shei (o cualquiera de las tres) en
+`poderosas.org/panel/personalizar` que el nuevo panel funciona bien a
+su gusto.
+
 ## 2026-10-19
 
 ### Decidido
