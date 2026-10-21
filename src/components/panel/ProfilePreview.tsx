@@ -1,5 +1,5 @@
 import { type ReactNode } from "react";
-import { type ImageFocus, type Theme, type ContentBlock, FONT_STACKS } from "@/lib/panel/types";
+import { type ImageFocus, type Theme, type ContentBlock, FONT_STACKS, alignClasses } from "@/lib/panel/types";
 import { sanitizeRichText } from "@/lib/panel/sanitize";
 
 function BlockRender({ block }: { block: ContentBlock }) {
@@ -14,14 +14,14 @@ function BlockRender({ block }: { block: ContentBlock }) {
       <img
         src={block.image.url}
         alt={block.alt}
-        className="w-full rounded-2xl object-cover aspect-video"
+        className={`w-full rounded-2xl object-cover aspect-video ${alignClasses(block.align ?? "center")}`}
         style={{ objectPosition: `${block.image.focusX}% ${block.image.focusY}%` }}
       />
     );
   }
   if (block.type === "video") {
     if (!block.url) return null;
-    return <video src={block.url} controls className="w-full rounded-2xl" />;
+    return <video src={block.url} controls className={`w-full rounded-2xl ${alignClasses(block.align ?? "center")}`} />;
   }
   return null;
 }

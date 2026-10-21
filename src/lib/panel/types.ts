@@ -35,10 +35,27 @@ export const FONT_OPTIONS: { label: string; value: Theme["fontFamily"] }[] = [
   { label: "Editorial fina", value: "editorial" },
 ];
 
-// "html" es el contenido con formato (negrita/cursiva/tamaño aplicados
-// solo a lo que se seleccionó, vía Tiptap) — se sanitiza antes de
-// mostrarse (ver src/lib/panel/sanitize.ts).
+export type Align = "left" | "center" | "right";
+
+// "html" es el contenido con formato (negrita/cursiva/tamaño/alineación
+// aplicados solo a lo que se seleccionó, vía Tiptap) — se sanitiza antes
+// de mostrarse (ver src/lib/panel/sanitize.ts). Imagen/video tienen su
+// propio "align": qué tan ancho se ven y a qué lado quedan en la página.
 export type ContentBlock =
   | { id: string; type: "text"; html: string }
-  | { id: string; type: "image"; image: ImageFocus; alt: string }
-  | { id: string; type: "video"; url: string };
+  | { id: string; type: "image"; image: ImageFocus; alt: string; align: Align }
+  | { id: string; type: "video"; url: string; align: Align };
+
+export const ALIGN_OPTIONS: { value: Align; label: string }[] = [
+  { value: "left", label: "⯇ Izquierda" },
+  { value: "center", label: "☰ Centro" },
+  { value: "right", label: "⯈ Derecha" },
+];
+
+// Imagen/video a ancho completo si está centrado, más angosto (y
+// pegado al lado elegido) si no — para que "alinear" se note de verdad.
+export function alignClasses(align: Align): string {
+  if (align === "left") return "max-w-sm mr-auto";
+  if (align === "right") return "max-w-sm ml-auto";
+  return "max-w-full mx-auto";
+}

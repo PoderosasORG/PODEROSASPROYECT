@@ -2,13 +2,23 @@
 
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
+import TextAlign from "@tiptap/extension-text-align";
 import { FontSizeMark } from "@/lib/tiptap/FontSizeMark";
 
 const SIZES = [14, 16, 18, 20, 24, 28];
+const ALIGNMENTS = [
+  { value: "left", label: "⯇", title: "Izquierda" },
+  { value: "center", label: "☰", title: "Centrado" },
+  { value: "right", label: "⯈", title: "Derecha" },
+] as const;
 
 export function RichTextEditor({ value, onChange }: { value: string; onChange: (html: string) => void }) {
   const editor = useEditor({
-    extensions: [StarterKit.configure({ heading: false, bulletList: false, orderedList: false }), FontSizeMark],
+    extensions: [
+      StarterKit.configure({ heading: false, bulletList: false, orderedList: false }),
+      FontSizeMark,
+      TextAlign.configure({ types: ["paragraph"] }),
+    ],
     content: value,
     immediatelyRender: false,
     onUpdate: ({ editor }) => onChange(editor.getHTML()),
@@ -62,9 +72,25 @@ export function RichTextEditor({ value, onChange }: { value: string; onChange: (
             {s}
           </button>
         ))}
+        <span className="w-px h-5 bg-gold-light/60 mx-1" />
+        {ALIGNMENTS.map((a) => (
+          <button
+            key={a.value}
+            type="button"
+            onMouseDown={stopMouseDown}
+            onClick={() => editor.chain().focus().setTextAlign(a.value).run()}
+            aria-pressed={editor.isActive({ textAlign: a.value })}
+            className={`h-7 w-7 rounded border text-sm ${editor.isActive({ textAlign: a.value }) ? "bg-gold text-white border-gold" : "border-gold-light/60"}`}
+            title={a.title}
+          >
+            {a.label}
+          </button>
+        ))}
       </div>
       <EditorContent editor={editor} />
-      <p className="text-[11px] text-foreground/50">Selecciona el texto y luego aplica negrita, cursiva o tamaño.</p>
+      <p className="text-[11px] text-foreground/50">
+        Selecciona el texto y aplica negrita, cursiva o tamaño. Para alinear, solo pon el cursor en el párrafo.
+      </p>
     </div>
   );
 }

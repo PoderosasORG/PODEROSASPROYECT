@@ -1,14 +1,33 @@
 "use client";
 
 import { ImageFocusUpload } from "@/components/panel/ImageFocusUpload";
+import { VideoUpload } from "@/components/panel/VideoUpload";
 import { RichTextEditor } from "@/components/panel/RichTextEditor";
-import { type ContentBlock, DEFAULT_IMAGE_FOCUS } from "@/lib/panel/types";
+import { type ContentBlock, DEFAULT_IMAGE_FOCUS, ALIGN_OPTIONS } from "@/lib/panel/types";
+
+function AlignPicker({ value, onChange }: { value: "left" | "center" | "right"; onChange: (v: "left" | "center" | "right") => void }) {
+  return (
+    <div className="flex items-center gap-1">
+      <span className="text-xs text-foreground/50 mr-1">Posición:</span>
+      {ALIGN_OPTIONS.map((opt) => (
+        <button
+          key={opt.value}
+          type="button"
+          onClick={() => onChange(opt.value)}
+          className={`rounded border px-2 py-1 text-xs ${value === opt.value ? "bg-gold text-white border-gold" : "border-gold-light/60"}`}
+        >
+          {opt.label}
+        </button>
+      ))}
+    </div>
+  );
+}
 
 function newBlock(type: ContentBlock["type"]): ContentBlock {
   const id = crypto.randomUUID();
   if (type === "text") return { id, type: "text", html: "" };
-  if (type === "image") return { id, type: "image", image: DEFAULT_IMAGE_FOCUS, alt: "" };
-  return { id, type: "video", url: "" };
+  if (type === "image") return { id, type: "image", image: DEFAULT_IMAGE_FOCUS, alt: "", align: "center" };
+  return { id, type: "video", url: "", align: "center" };
 }
 
 export function ContentBlocksEditor({
@@ -81,21 +100,21 @@ export function ContentBlocksEditor({
           )}
 
           {block.type === "image" && (
-            <ImageFocusUpload
-              label=""
-              value={block.image}
-              onChange={(image) => update(block.id, { image })}
-            />
+            <>
+              <ImageFocusUpload
+                label=""
+                value={block.image}
+                onChange={(image) => update(block.id, { image })}
+              />
+              <AlignPicker value={block.align} onChange={(align) => update(block.id, { align })} />
+            </>
           )}
 
           {block.type === "video" && (
-            <input
-              type="text"
-              value={block.url}
-              onChange={(e) => update(block.id, { url: e.target.value })}
-              placeholder="URL del video (YouTube, Vimeo, mp4)"
-              className="w-full rounded border px-3 py-2 text-sm"
-            />
+            <>
+              <VideoUpload value={block.url} onChange={(url) => update(block.id, { url })} />
+              <AlignPicker value={block.align} onChange={(align) => update(block.id, { align })} />
+            </>
           )}
         </div>
       ))}
