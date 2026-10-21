@@ -201,7 +201,9 @@ export function UploadWizard({
         access_tier: accessTier ?? "paid",
         coupon_code: couponEnabled ? couponCode.trim() : null,
         cover_image_url: coverImageUrl,
-        is_published: false,
+        // Visible de inmediato al terminar de subir — nada de un paso
+        // extra de "publicar" que haya que recordar hacer después.
+        is_published: true,
       });
       if (insertError) throw insertError;
 
@@ -457,8 +459,7 @@ export function UploadWizard({
               ¡Listo {creatorName}! Tu {contentLabel} se subió satisfactoriamente.
             </h2>
             <p className="text-sm text-center text-foreground/60">
-              Quedó guardado como borrador. Publícalo cuando quieras que se
-              vea en tu página.
+              Ya está visible en tu página. Si quieres corregir algo o quitarlo, puedes hacerlo desde &quot;Mi contenido&quot;.
             </p>
             <div className="flex justify-center">
               <button
