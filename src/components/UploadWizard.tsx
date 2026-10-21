@@ -6,12 +6,13 @@ import { createClient } from "@/lib/supabase/client";
 import { FileUploadField } from "@/components/FileUploadField";
 
 type ContentType = "ebook" | "plantilla" | "fisico" | "curso" | "otro";
+type AccessTier = "public" | "registered" | "subscription" | "paid";
 
 type Step =
   | "contentType"
   | "files"
   | "name"
-  | "freeForMembers"
+  | "accessTier"
   | "price"
   | "coupon"
   | "couponCode"
@@ -61,7 +62,7 @@ export function UploadWizard({
   const [contentTypeOther, setContentTypeOther] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [name, setName] = useState("");
-  const [freeForMembers, setFreeForMembers] = useState<boolean | null>(null);
+  const [accessTier, setAccessTier] = useState<AccessTier | null>(null);
   const [priceDigits, setPriceDigits] = useState("");
   const [couponEnabled, setCouponEnabled] = useState<boolean | null>(null);
   const [couponCode, setCouponCode] = useState("");
@@ -89,14 +90,14 @@ export function UploadWizard({
           setError("Ponle un nombre antes de continuar.");
           return;
         }
-        setStep("freeForMembers");
+        setStep("accessTier");
         return;
-      case "freeForMembers":
-        if (freeForMembers === null) {
+      case "accessTier":
+        if (accessTier === null) {
           setError("Elige una opción.");
           return;
         }
-        setStep("price");
+        setStep(accessTier === "paid" ? "price" : "coupon");
         return;
       case "price":
         if (!priceDigits) {
@@ -146,14 +147,14 @@ export function UploadWizard({
       case "name":
         setStep(needsFilesStep(contentType) ? "files" : "contentType");
         return;
-      case "freeForMembers":
+      case "accessTier":
         setStep("name");
         return;
       case "price":
-        setStep("freeForMembers");
+        setStep("accessTier");
         return;
       case "coupon":
-        setStep("price");
+        setStep(accessTier === "paid" ? "price" : "accessTier");
         return;
       case "couponCode":
         setStep("coupon");
@@ -197,7 +198,7 @@ export function UploadWizard({
         description,
         price_cents: priceCents,
         currency: "COP",
-        is_free_for_members: freeForMembers ?? false,
+        access_tier: accessTier ?? "paid",
         coupon_code: couponEnabled ? couponCode.trim() : null,
         cover_image_url: coverImageUrl,
         is_published: false,
@@ -321,24 +322,26 @@ export function UploadWizard({
           </>
         )}
 
-        {step === "freeForMembers" && (
+        {step === "accessTier" && (
           <>
-            <h2 className="font-serif text-xl text-center">
-              ¿Incluirlo gratis para quienes tienen la membresía?
-            </h2>
-            <div className="flex gap-4 justify-center">
-              <button
-                onClick={() => setFreeForMembers(true)}
-                className={`rounded-full px-6 py-2 border ${freeForMembers === true ? "bg-gold text-white border-gold" : "border-gold-light/60"}`}
-              >
-                Sí
-              </button>
-              <button
-                onClick={() => setFreeForMembers(false)}
-                className={`rounded-full px-6 py-2 border ${freeForMembers === false ? "bg-gold text-white border-gold" : "border-gold-light/60"}`}
-              >
-                No
-              </button>
+            <h2 className="font-serif text-xl text-center">¿Quién puede ver esto?</h2>
+            <div className="flex flex-col gap-2">
+              {(
+                [
+                  { value: "public", label: "Cualquiera, sin necesidad de cuenta" },
+                  { value: "registered", label: "Gratis, pero hay que tener cuenta" },
+                  { value: "subscription", label: "Incluido en la suscripción de Poderosas" },
+                  { value: "paid", label: "Se compra individual (fijas un precio)" },
+                ] as const
+              ).map((opt) => (
+                <button
+                  key={opt.value}
+                  onClick={() => setAccessTier(opt.value)}
+                  className={`rounded-full px-6 py-2 border text-left ${accessTier === opt.value ? "bg-gold text-white border-gold" : "border-gold-light/60"}`}
+                >
+                  {opt.label}
+                </button>
+              ))}
             </div>
           </>
         )}

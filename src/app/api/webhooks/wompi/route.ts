@@ -39,7 +39,9 @@ export async function POST(req: NextRequest) {
 
   const { data: order } = await admin
     .from("orders")
-    .select("id, creator_id, product_id, buyer_name, buyer_email, status, products(type, title)")
+    .select(
+      "id, creator_id, product_id, buyer_id, buyer_name, buyer_email, status, products(id, type, title, billing_interval)",
+    )
     .eq("id", reference)
     .maybeSingle();
 
@@ -80,10 +82,11 @@ export async function POST(req: NextRequest) {
     .eq("id", order.id);
 
   const product = Array.isArray(order.products) ? order.products[0] : order.products;
+  const justApproved = newStatus === "approved" && !wasAlreadyApproved;
 
   // Solo generamos la boleta la primera vez que la orden queda aprobada
   // (Wompi puede reenviar el mismo evento más de una vez).
-  if (newStatus === "approved" && !wasAlreadyApproved && product?.type === "event" && order.buyer_email) {
+  if (justApproved && product?.type === "event" && order.buyer_email) {
     const { data: ticket } = await admin
       .from("event_tickets")
       .insert({ order_id: order.id, product_id: order.product_id })
@@ -104,6 +107,26 @@ export async function POST(req: NextRequest) {
         console.error("No se pudo enviar el correo de la boleta:", err);
       }
     }
+  }
+
+  // Al aprobarse una suscripción, activa/renueva la membresía. Es un
+  // pago único por período (mes o año), no un cobro recurrente — Wompi
+  // no ofrece eso, así que renovar significa "vuelve a pagar".
+  if (justApproved && product?.type === "membership" && order.buyer_id) {
+    const months = product.billing_interval === "year" ? 12 : 1;
+    const periodEnd = new Date();
+    periodEnd.setMonth(periodEnd.getMonth() + months);
+
+    await admin.from("memberships").upsert(
+      {
+        buyer_id: order.buyer_id,
+        creator_id: order.creator_id,
+        product_id: product.id,
+        status: "active",
+        current_period_end: periodEnd.toISOString(),
+      },
+      { onConflict: "buyer_id,product_id" },
+    );
   }
 
   return NextResponse.json({ ok: true });

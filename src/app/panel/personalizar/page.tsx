@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { PanelEditor } from "@/components/PanelEditor";
+import { PuckPanelEditor } from "@/components/PuckPanelEditor";
 
 export default async function PersonalizarPage() {
   const supabase = await createClient();
@@ -15,7 +15,7 @@ export default async function PersonalizarPage() {
 
   const { data: creator } = await supabase
     .from("creators")
-    .select("*")
+    .select("id, slug, puck_data")
     .eq("id", user.id)
     .maybeSingle();
 
@@ -23,28 +23,17 @@ export default async function PersonalizarPage() {
     redirect("/panel");
   }
 
-  const { data: products } = await supabase
-    .from("products")
-    .select("id, title, price_cents, currency, cover_image_url")
-    .eq("creator_id", creator.id)
-    .order("created_at", { ascending: false });
-
-  const { data: blocks } = await supabase
-    .from("panel_blocks")
-    .select("*")
-    .eq("creator_id", creator.id)
-    .order("z_index", { ascending: true });
-
   return (
-    <div className="flex flex-1 flex-col items-center bg-beige-light px-6 py-16 gap-8">
-      <div className="w-full max-w-2xl flex items-center justify-between">
-        <h1 className="font-serif text-3xl">Personaliza tu panel</h1>
+    <div className="flex flex-col h-dvh">
+      <div className="flex items-center justify-between px-6 py-3 border-b bg-beige-light">
+        <h1 className="font-serif text-xl">Personaliza tu página</h1>
         <Link href="/panel" className="text-sm text-gold hover:underline">
           ← Volver
         </Link>
       </div>
-
-      <PanelEditor creator={creator} products={products ?? []} initialBlocks={blocks ?? []} />
+      <div className="flex-1 min-h-0">
+        <PuckPanelEditor slug={creator.slug} initialData={creator.puck_data} />
+      </div>
     </div>
   );
 }
