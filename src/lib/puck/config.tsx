@@ -1,4 +1,5 @@
 import type { Config } from "@puckeditor/core";
+import { colorField, imageUploadField } from "@/lib/puck/fields";
 
 // Mapea 1:1 los tipos de bloque que ya existían en el editor casero
 // (imagen, video, texto, producto), más un bloque nuevo de "cursos"
@@ -40,12 +41,12 @@ export const puckConfig: Config<
 > = {
   root: {
     fields: {
-      avatarUrl: { type: "text", label: "URL de tu foto de perfil" },
-      coverUrl: { type: "text", label: "URL de tu foto de portada" },
+      avatarUrl: imageUploadField("Foto de perfil"),
+      coverUrl: imageUploadField("Foto de portada"),
       bio: { type: "textarea", label: "Bio" },
-      bgColor: { type: "text", label: "Color de fondo" },
-      textColor: { type: "text", label: "Color de texto" },
-      accentColor: { type: "text", label: "Color de acento" },
+      bgColor: colorField("Color de fondo"),
+      textColor: colorField("Color de texto"),
+      accentColor: colorField("Color de acento"),
       fontFamily: {
         type: "select",
         label: "Tipografía",
@@ -97,7 +98,7 @@ export const puckConfig: Config<
     ImageBlock: {
       label: "Imagen",
       fields: {
-        url: { type: "text", label: "URL de la imagen" },
+        url: imageUploadField("Imagen"),
         alt: { type: "text", label: "Descripción (accesibilidad)" },
       },
       defaultProps: { url: "", alt: "" },

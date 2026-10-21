@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { PuckPanelEditor } from "@/components/PuckPanelEditor";
 
@@ -23,17 +22,9 @@ export default async function PersonalizarPage() {
     redirect("/panel");
   }
 
-  return (
-    <div className="flex flex-col h-dvh">
-      <div className="flex items-center justify-between px-6 py-3 border-b bg-beige-light">
-        <h1 className="font-serif text-xl">Personaliza tu página</h1>
-        <Link href="/panel" className="text-sm text-gold hover:underline">
-          ← Volver
-        </Link>
-      </div>
-      <div className="flex-1 min-h-0">
-        <PuckPanelEditor slug={creator.slug} initialData={creator.puck_data} />
-      </div>
-    </div>
-  );
+  // Puck necesita un único contenedor con altura fija, sin anidarlo
+  // dentro de varios divs con flexbox/posicionamiento alrededor — eso
+  // rompe su arrastrar-y-soltar (bug conocido de Puck con "canvas
+  // envuelto en contenedores posicionados": github.com/puckeditor/puck/issues/1717).
+  return <PuckPanelEditor slug={creator.slug} initialData={creator.puck_data} />;
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Puck, type Data } from "@puckeditor/core";
 import "@puckeditor/core/puck.css";
 import { puckConfig } from "@/lib/puck/config";
@@ -34,11 +35,13 @@ export function PuckPanelEditor({
   }
 
   return (
-    <div className="h-full flex flex-col">
-      {saveError && (
-        <p className="bg-red-50 text-red-600 text-sm px-4 py-2">{saveError}</p>
-      )}
-      <div className="flex-1 min-h-0">
+    <>
+      {/* Puck es el único hijo de un contenedor de altura fija: no lo
+          anidamos dentro de más divs con flex/posicionamiento alrededor
+          (issue conocido: github.com/puckeditor/puck/issues/1717). El
+          header/footer van encima como overlays, fuera de su jerarquía
+          de layout. */}
+      <div className="h-dvh">
         <Puck
           config={puckConfig}
           data={initialData ?? EMPTY_DATA}
@@ -49,9 +52,28 @@ export function PuckPanelEditor({
           ]}
         />
       </div>
-      <p className="text-xs text-foreground/50 px-4 py-2">
-        Perfil público: /{slug}
-      </p>
-    </div>
+
+      <div className="fixed top-3 left-4 z-50 pointer-events-none flex gap-2">
+        <Link
+          href="/panel"
+          className="pointer-events-auto text-xs bg-white/90 rounded-full px-3 py-1 shadow text-gold hover:underline"
+        >
+          ← Volver
+        </Link>
+        <Link
+          href={`/${slug}`}
+          target="_blank"
+          className="pointer-events-auto text-xs bg-white/90 rounded-full px-3 py-1 shadow text-gold hover:underline"
+        >
+          Ver mi perfil público ↗
+        </Link>
+      </div>
+
+      {saveError && (
+        <p className="fixed bottom-2 left-4 z-50 bg-red-50 text-red-600 text-xs px-3 py-1.5 rounded shadow">
+          {saveError}
+        </p>
+      )}
+    </>
   );
 }
