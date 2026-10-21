@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicProfile } from "@/components/panel/PublicProfile";
-import { DEFAULT_IMAGE_FOCUS, DEFAULT_TEXT_STYLE, DEFAULT_THEME } from "@/lib/panel/types";
+import { DEFAULT_IMAGE_FOCUS, DEFAULT_THEME } from "@/lib/panel/types";
 
 // Siempre trae datos frescos: sin esto, el navegador puede mostrar
 // una versión en caché del perfil justo después de guardar cambios.
@@ -19,7 +19,7 @@ export default async function CreatorPage({
   const { data: creator } = await supabase
     .from("creators")
     .select(
-      "id, slug, display_name, avatar_url, avatar_focus_x, avatar_focus_y, cover_image_url, cover_focus_x, cover_focus_y, bio, bio_style, theme, content_blocks",
+      "id, slug, display_name, avatar_url, avatar_focus_x, avatar_focus_y, cover_image_url, cover_focus_x, cover_focus_y, bio, theme, content_blocks",
     )
     .eq("slug", slug)
     .eq("is_active", true)
@@ -46,7 +46,6 @@ export default async function CreatorPage({
           : DEFAULT_IMAGE_FOCUS
       }
       bio={creator.bio ?? ""}
-      bioStyle={creator.bio_style ?? DEFAULT_TEXT_STYLE}
       theme={creator.theme ?? DEFAULT_THEME}
       blocks={creator.content_blocks ?? []}
     />

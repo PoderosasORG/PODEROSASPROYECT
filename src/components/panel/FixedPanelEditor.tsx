@@ -3,26 +3,31 @@
 import { useState } from "react";
 import Link from "next/link";
 import { ImageFocusUpload } from "@/components/panel/ImageFocusUpload";
-import { BioEditor } from "@/components/panel/BioEditor";
+import { RichTextEditor } from "@/components/panel/RichTextEditor";
 import { ThemeEditor } from "@/components/panel/ThemeEditor";
 import { ContentBlocksEditor } from "@/components/panel/ContentBlocksEditor";
-import {
-  type ImageFocus,
-  type TextStyle,
-  type Theme,
-  type ContentBlock,
-} from "@/lib/panel/types";
+import { ProfilePreview } from "@/components/panel/ProfilePreview";
+import { type ImageFocus, type Theme, type ContentBlock } from "@/lib/panel/types";
 
 export type PanelData = {
   avatar: ImageFocus;
   cover: ImageFocus;
   bio: string;
-  bioStyle: TextStyle;
   theme: Theme;
   blocks: ContentBlock[];
 };
 
-export function FixedPanelEditor({ slug, initial }: { slug: string; initial: PanelData }) {
+export function FixedPanelEditor({
+  slug,
+  displayName,
+  role,
+  initial,
+}: {
+  slug: string;
+  displayName: string;
+  role: string;
+  initial: PanelData;
+}) {
   const [data, setData] = useState<PanelData>(initial);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -73,21 +78,39 @@ export function FixedPanelEditor({ slug, initial }: { slug: string; initial: Pan
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-6 py-6 max-w-xl mx-auto w-full flex flex-col gap-8">
-        <ImageFocusUpload label="Foto de perfil" value={data.avatar} onChange={(avatar) => setData({ ...data, avatar })} />
-        <ImageFocusUpload label="Foto de portada" value={data.cover} onChange={(cover) => setData({ ...data, cover })} />
-        <BioEditor
-          bio={data.bio}
-          style={data.bioStyle}
-          onBioChange={(bio) => setData({ ...data, bio })}
-          onStyleChange={(bioStyle) => setData({ ...data, bioStyle })}
-        />
-        <ThemeEditor theme={data.theme} onChange={(theme) => setData({ ...data, theme })} />
-        <ContentBlocksEditor blocks={data.blocks} onChange={(blocks) => setData({ ...data, blocks })} />
+      <div className="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)]">
+        <div className="overflow-y-auto px-6 py-6 flex flex-col gap-8 border-r">
+          <ImageFocusUpload label="Foto de perfil" value={data.avatar} onChange={(avatar) => setData({ ...data, avatar })} />
+          <ImageFocusUpload label="Foto de portada" value={data.cover} onChange={(cover) => setData({ ...data, cover })} />
+          <div className="flex flex-col gap-2">
+            <p className="text-sm font-medium">Bio</p>
+            <RichTextEditor value={data.bio} onChange={(bio) => setData({ ...data, bio })} />
+          </div>
+          <ThemeEditor theme={data.theme} onChange={(theme) => setData({ ...data, theme })} />
+          <ContentBlocksEditor blocks={data.blocks} onChange={(blocks) => setData({ ...data, blocks })} />
 
-        <div className="rounded-lg border border-dashed p-4 text-sm text-foreground/50">
-          Tus cursos y contenido publicado aparecen solos en tu página pública — no hace falta agregarlos aquí.
-          Súbelos desde &quot;Subir contenido&quot; en tu panel.
+          <div className="rounded-lg border border-dashed p-4 text-sm text-foreground/50">
+            Tus cursos y contenido publicado aparecen solos en tu página pública — no hace falta agregarlos aquí.
+            Súbelos desde &quot;Subir contenido&quot; en tu panel.
+          </div>
+        </div>
+
+        <div className="hidden lg:block overflow-y-auto bg-black/5">
+          <p className="sticky top-0 z-10 bg-black/80 text-white text-xs text-center py-1.5">Vista previa en vivo</p>
+          <ProfilePreview
+            displayName={displayName}
+            role={role}
+            avatar={data.avatar}
+            cover={data.cover}
+            bio={data.bio}
+            theme={data.theme}
+            blocks={data.blocks}
+            afterContent={
+              <div className="px-6 py-10 text-center text-sm text-foreground/40 border-t">
+                Aquí aparecerán tus cursos y contenido publicado
+              </div>
+            }
+          />
         </div>
       </div>
     </div>

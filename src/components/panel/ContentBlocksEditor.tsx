@@ -1,11 +1,12 @@
 "use client";
 
 import { ImageFocusUpload } from "@/components/panel/ImageFocusUpload";
-import { type ContentBlock, DEFAULT_TEXT_STYLE, DEFAULT_IMAGE_FOCUS } from "@/lib/panel/types";
+import { RichTextEditor } from "@/components/panel/RichTextEditor";
+import { type ContentBlock, DEFAULT_IMAGE_FOCUS } from "@/lib/panel/types";
 
 function newBlock(type: ContentBlock["type"]): ContentBlock {
   const id = crypto.randomUUID();
-  if (type === "text") return { id, type: "text", content: "", style: DEFAULT_TEXT_STYLE };
+  if (type === "text") return { id, type: "text", html: "" };
   if (type === "image") return { id, type: "image", image: DEFAULT_IMAGE_FOCUS, alt: "" };
   return { id, type: "video", url: "" };
 }
@@ -76,13 +77,7 @@ export function ContentBlocksEditor({
           </div>
 
           {block.type === "text" && (
-            <textarea
-              value={block.content}
-              onChange={(e) => update(block.id, { content: e.target.value })}
-              rows={3}
-              placeholder="Escribe algo..."
-              className="w-full rounded border px-3 py-2 text-sm"
-            />
+            <RichTextEditor value={block.html} onChange={(html) => update(block.id, { html })} />
           )}
 
           {block.type === "image" && (

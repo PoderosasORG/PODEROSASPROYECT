@@ -29,7 +29,6 @@ export async function PUT(req: NextRequest) {
       cover_focus_x: data.cover.focusX,
       cover_focus_y: data.cover.focusY,
       bio: data.bio,
-      bio_style: data.bioStyle,
       theme: data.theme,
       content_blocks: data.blocks,
     })
