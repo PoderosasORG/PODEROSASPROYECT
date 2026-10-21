@@ -49,14 +49,49 @@ Esto choca con "pagar sin login". Para 30-50 personas comprando una sola boleta,
 - Deploy en producción (Vercel, sin dominio propio todavía): https://poderosas.vercel.app — con el placeholder del evento, no publicado para venta real.
 - Variables de entorno copiadas a Vercel (production/preview/development) directo desde `.env.local`, sin que Claude viera los valores.
 
+### Hecho (actualización 2026-10-20/21 — evento 100% listo para vender)
+- Home: sección "Primer evento en vivo" con fecha/hora/lugar reales y botón a `/evento`.
+- Precio y cupo reales del evento: **$100.000 COP, cupo 50**, `is_published = true`. Fecha: 21 de noviembre, 8:30am–1:00pm, Edificio Emprendu (Calle 85 #12-66, Bogotá).
+- Correo de la boleta rediseñado: agradecimiento, info completa del evento, QR embebido inline (no solo adjunto).
+- Escáner: muestra "¡Bienvenida, {nombre}!" al validar, para que quien reciba en la entrada salude por nombre.
+- **Dominio real conectado:** `poderosas.org` → nameservers de Vercel (`ns1`/`ns2.vercel-dns.com`), DNS propagado y verificado, SSL activo.
+- **Llaves de Wompi actualizadas a producción** (antes teníamos las de sandbox por error) para la cuenta de Shei — verificado sin completar un pago real (checkout cargó en modo producción, sin la bandera "MODO DE PRUEBAS").
+- Webhook de Wompi registrado en el panel de Shei apuntando a `https://poderosas.org/api/webhooks/wompi`.
+- 3 PRs abiertos por Claude y **mergeados a `main` con autorización del usuario** (2026-10-21):
+  - [#1](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/1) boleta del evento,
+  - [#2](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/2) entrega de contenido comprado,
+  - [#3](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/3) editor Puck + niveles de acceso + suscripción.
+- El merge de #3 tuvo conflicto real en el webhook (boleta de evento vs. activación de membresía, ambas tocan el mismo handler) — resuelto a mano combinando ambas lógicas como dos `if` independientes, sin perder ninguna.
+
+### Hecho — Plataforma de cursos (rama `feature/entrega-contenido` → mergeada)
+Hueco real resuelto: antes, quien compraba un curso o un ebook no tenía forma de verlo después.
+- Función `has_access_to_product()` + políticas RLS en `course_lessons`/`product_files`.
+- `/api/mis-compras/signed-url`: genera links temporales (10 min) de Storage.
+- `/mis-compras`: lista lo comprado, con ver/descargar.
+- Probado con datos sintéticos (producto + archivo + comprador de prueba, todo eliminado después): RLS confirma acceso a quien compró, lo niega a quien no.
+
+### Hecho — Niveles de acceso y suscripción de plataforma (rama `feature/editor-puck` → mergeada)
+- `products.access_tier`: **public** (cualquiera) / **registered** (gratis con cuenta) / **subscription** (incluido para quien tenga suscripción activa, de CUALQUIER creadora) / **paid** (compra individual, por defecto).
+- La suscripción es un **pago único por período** (mes o año) — **decisión del usuario**: Wompi no ofrece cobro recurrente automático y no se va a cambiar de pasarela por eso. (Se investigó: Bold sí anuncia "automatizar cobros recurrentes" en su API, en BETA — [docs.bold.co](https://developers.bold.co/pagos-en-linea/api-de-pagos-en-linea) — queda anotado como opción a futuro, no urgente.)
+- Webhook: al aprobarse el pago de un producto `type=membership`, activa/renueva la fila en `memberships` (upsert por `buyer_id`+`product_id`, requiere constraint único nuevo).
+- `UploadWizard`: el viejo "¿gratis para miembros?" (sí/no) se reemplazó por el selector de las 4 opciones de acceso.
+- Probado con datos sintéticos: comprador con suscripción activa ve contenido `subscription` de una creadora que no le vendió nada directamente; comprador sin suscripción, no.
+
+### Hecho — Editor de personalización migrado a Puck (rama `feature/editor-puck` → mergeada)
+El editor casero (lienzo libre, posiciones x/y independientes móvil/escritorio) resultó impreciso — el usuario lo notó de una sesión anterior.
+- Se investigó: [Puck](https://github.com/measuredco/puck) (paquete `@puckeditor/core`), editor visual open source (MIT) hecho para React/Next.js.
+- **Cambio de modelo, decidido con el usuario:** Puck apila bloques en zonas (sin x/y libre) — el responsive queda automático, a cambio de perder el posicionamiento 100% libre que tenía el editor viejo.
+- `src/lib/puck/config.tsx`: bloques (imagen, video, texto, producto) + root con avatar/portada/bio/tema.
+- `/panel/personalizar` monta `<Puck>`; `/[slug]` usa `<Render>` si la creadora ya guardó con el editor nuevo, si no cae al sistema viejo (no rompe nada mientras migran).
+- Nueva columna `creators.puck_data` (jsonb).
+
 ### Pendiente
-- Confirmar precio y cupo real del evento (hoy: placeholder $1.500 / 50 cupos) y publicar el producto (`is_published = true`) cuando esté listo para vender de verdad.
-- Mergear el PR cuando el usuario lo autorice.
-- Conectar `poderosas.org` (DNS en Porkbun) al proyecto de Vercel.
-- Autorizar la app de Vercel sobre el repo de GitHub para que despliegue solo con cada push — hoy la conexión automática falló porque la app no tiene permiso de admin/write sobre `PoderosasORG`, así que se despliega a mano con `vercel deploy --prod`.
-- Registrar la URL del webhook en Wompi (Desarrolladores → Eventos) una vez el dominio real esté activo — mientras tanto puede usarse `https://poderosas.vercel.app/api/webhooks/wompi`.
-- Base de datos de pruebas separada de producción: sigue pospuesta (ver nota arriba) — se trabajó esta función directo en el único proyecto de Supabase porque no hay visitas reales todavía.
+- **Probar el editor Puck con sesión real de una creadora** (guardar y ver el resultado en su perfil público) — no se pudo probar en esta sesión por falta de credenciales de Kat/Shei/Luz.
+- Selector visual de productos dentro del bloque "Producto" de Puck (hoy se pega el ID a mano) + que muestre precio/portada reales.
+- UI para que una creadora cree el producto de "suscripción Poderosas" en sí (hoy se crea a mano en Supabase, igual que el evento) — falta definir precio real.
+- Autorizar la app de Vercel sobre el repo de GitHub para deploys automáticos con cada push (hoy se despliega a mano con `vercel deploy --prod`) — la app de Vercel no tiene permiso admin/write sobre `PoderosasORG` todavía.
+- Base de datos de pruebas separada de producción: sigue pospuesta — se sigue trabajando directo en el único proyecto de Supabase porque no hay visitas reales todavía. Retomar antes del evento o de tener tráfico real.
+- Revisar `npm audit` (9 vulnerabilidades, 1 crítica) cuando haya tiempo — no bloqueante por ahora.
 
 ### Pospuesto (confirmado por el usuario, no tocar ahora)
-- Diseño visual / estética del sitio.
-- Resto del panel de creadoras: entrega de contenido post-compra, membresías, UI de llaves Wompi.
+- Diseño visual / estética fina del sitio (más allá de lo ya hecho).
