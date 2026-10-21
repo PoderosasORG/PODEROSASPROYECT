@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { BuyButton } from "@/components/BuyButton";
+import { stripHtml } from "@/lib/panel/sanitize";
 
 function formatPrice(p: { price_cents: number; currency: string }) {
   return new Intl.NumberFormat("es-CO", {
@@ -110,7 +111,7 @@ export async function OtherCreatorsSection({ excludeSlug }: { excludeSlug: strin
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium">{c.display_name}</p>
-              {c.bio && <p className="text-sm text-foreground/60 line-clamp-1">{c.bio.replace(/<[^>]*>/g, "")}</p>}
+              {c.bio && <p className="text-sm text-foreground/60 line-clamp-1">{stripHtml(c.bio, 80)}</p>}
             </div>
             <span className="text-gold opacity-0 group-hover:opacity-100 transition-opacity">→</span>
           </Link>

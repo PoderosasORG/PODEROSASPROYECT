@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
+import { stripHtml } from "@/lib/panel/sanitize";
 
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
@@ -38,7 +39,7 @@ export default async function Home() {
       slug,
       name: creator?.display_name || defaults.name,
       role: defaults.role,
-      bio: creator?.bio || defaults.bio,
+      bio: (creator?.bio ? stripHtml(creator.bio) : "") || defaults.bio,
       initials: (creator?.display_name || defaults.name).charAt(0).toUpperCase(),
       avatarUrl: creator?.avatar_url ?? null,
     };
