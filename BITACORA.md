@@ -2,6 +2,20 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación)
+
+Los 3 PRs de la sesión anterior se mergearon a `main` con autorización del
+usuario ("mergea de una"). Conflicto real en `src/app/api/webhooks/wompi/route.ts`
+(boleta de evento vs. activación de membresía) resuelto combinando ambas
+lógicas. Se encontró y corrigió un error de build en producción que `tsc
+--noEmit` no detectaba (import de CSS de Puck con el path interno en vez
+del export oficial del paquete) — build local reproducido y arreglado
+antes de confirmar. Redeploy a `poderosas.org` verificado: `/evento` y
+`/panel/personalizar` responden bien.
+
+Ramas `feature/boleta-evento`, `feature/entrega-contenido` y
+`feature/editor-puck` quedan mergeadas; `main` es ahora la base única.
+
 ## 2026-10-19
 
 ### Decidido
