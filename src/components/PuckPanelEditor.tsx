@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Puck, type Data } from "@puckeditor/core";
-import "@puckeditor/core/index.css";
+import "@puckeditor/core/puck.css";
 import { puckConfig } from "@/lib/puck/config";
 
 const EMPTY_DATA: Data = { content: [], root: {} };
