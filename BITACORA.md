@@ -42,6 +42,31 @@ botones, sin arrastrar nada.
 `poderosas.org/panel/personalizar` que el nuevo panel funciona bien a
 su gusto.
 
+### Vista previa en vivo + texto enriquecido de verdad
+Dos pedidos más de Shei tras probar el panel fijo:
+- "Ya no se ve una muestra en tiempo real": se agregó vista previa en
+  vivo (dos columnas: formulario + perfil renderizándose en tiempo
+  real), reutilizando un componente (`ProfilePreview`) compartido con
+  la página pública real.
+- "La negrita/tamaño se aplica a todo, quiero que aplique solo a lo
+  seleccionado": se reemplazó el estilo global de un solo campo por
+  texto enriquecido real con Tiptap (`@tiptap/react` + `starter-kit`),
+  con una extensión propia de tamaño de fuente (el paquete oficial
+  `@tiptap/extension-font-size` solo existe en pre-release, no se usó
+  por eso). Bug real encontrado y corregido: los botones de la barra
+  le quitaban el foco al editor antes del clic, perdiendo la
+  selección — se arregla con `onMouseDown` + `preventDefault` en cada
+  botón (workaround documentado de Tiptap).
+
+**Verificación:** el navegador de pruebas tuvo artefactos visuales
+raros (desfase de coordenadas tras scroll, un glitch mostrando una
+imagen de portada ajena que NO estaba en la base de datos — se
+verificó aparte y no hubo ninguna fuga real de datos entre cuentas).
+Para no quedar a ciegas por eso, la verificación final se hizo leyendo
+el HTML guardado directo en Supabase en vez de confiar en capturas de
+pantalla: `<p>Hola soy <strong>Shei</strong></p>` — confirma que el
+formato aplicó solo a la palabra seleccionada, no a todo el texto.
+
 ## 2026-10-19
 
 ### Decidido
