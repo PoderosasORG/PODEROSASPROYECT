@@ -2,6 +2,41 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-10-21 (continuación 6) — QA completo del sitio
+
+A pedido del usuario: recorrido sistemático de todo el sitio (público,
+login/registro, panel completo con cuentas de prueba sintéticas),
+probando cada botón/acción.
+
+**Hallazgo urgente:** contenido real de prueba quedó visible
+públicamente en `/kat` y `/shei` (incluido uno vulgar/inapropiado,
+"GUIA DE CRECIMIENTO ANAL") — efecto directo del cambio de hoy
+("visible de inmediato al subir"). Ocultado de inmediato (no borrado)
+en cuanto se encontró.
+
+**Arreglos de esta ronda:**
+- Productos `physical` no aparecían en ningún lado del perfil público
+  ni eran comprables (la sección solo filtraba course/digital) — ahora
+  incluye physical, renombrada "Cursos y productos".
+- Mensajes de error de Supabase Auth en inglés ("Invalid login
+  credentials") en un sitio en español — `src/lib/authErrors.ts`
+  traduce los casos comunes.
+- Panel de cuenta cliente sin link a "Mis compras" (solo decía que
+  "aparecerían aquí").
+- 2 errores de lint preexistentes (`<a>` en vez de `<Link>`) corregidos
+  de paso en login/registro.
+- `package-lock.json` tenía el override de `jsdom` a medio resolver
+  (npm decía "overridden" pero nunca lo instalaba) — causaba error en
+  el servidor de desarrollo local. Regenerado desde cero.
+
+**A pedido del usuario:** se borraron los 7 productos de prueba de Kat
+y Shei (incluidas sus órdenes de prueba asociadas, que bloqueaban el
+borrado por la restricción `on delete restrict`). Se excluyó
+explícitamente el evento del 21 de noviembre por no ser una prueba.
+Solo se tocaron datos — nada de código/UI cambió en este borrado.
+
+Verificado todo contra producción real tras cada cambio.
+
 ## 2026-10-21 (continuación 5)
 El home mostraba el HTML crudo de la bio (`<p><strong>...`) en vez del
 texto — efecto colateral de haber migrado bio a texto enriquecido sin
