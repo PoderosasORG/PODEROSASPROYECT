@@ -36,12 +36,12 @@ export function PuckPanelEditor({
 
   return (
     <>
-      {/* Puck es el único hijo de un contenedor de altura fija: no lo
-          anidamos dentro de más divs con flex/posicionamiento alrededor
-          (issue conocido: github.com/puckeditor/puck/issues/1717). El
-          header/footer van encima como overlays, fuera de su jerarquía
-          de layout. */}
-      <div className="h-dvh">
+      {/* Puck necesita salir COMPLETAMENTE del layout flex del <body>
+          raíz del sitio (SiteHeader + children en flex-col) — seguir
+          siendo "hijo" de un padre flex, aunque sea indirecto, rompe su
+          arrastrar-y-soltar (github.com/puckeditor/puck/issues/1717).
+          position: fixed lo saca del flujo normal por completo. */}
+      <div className="fixed inset-0">
         <Puck
           config={puckConfig}
           data={initialData ?? EMPTY_DATA}

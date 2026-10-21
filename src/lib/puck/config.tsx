@@ -1,5 +1,7 @@
 import type { Config } from "@puckeditor/core";
-import { colorField, imageUploadField } from "@/lib/puck/fields";
+import { colorField, imageUploadField, productPickerField } from "@/lib/puck/fields";
+import { DEFAULT_IMAGE_VALUE, type ImageValue } from "@/lib/puck/ImageUploadFieldRender";
+import { ProductCardDisplay } from "@/lib/puck/ProductCardDisplay";
 
 // Mapea 1:1 los tipos de bloque que ya existían en el editor casero
 // (imagen, video, texto, producto), más un bloque nuevo de "cursos"
@@ -10,11 +12,15 @@ const FONT_STACKS: Record<string, string> = {
   serif: "Georgia, 'Times New Roman', serif",
   sans: "'Helvetica Neue', Arial, sans-serif",
   rounded: "Verdana, 'Trebuchet MS', sans-serif",
+  script: "var(--font-dancing-script), cursive",
+  elegant: "var(--font-cormorant), serif",
+  soft: "var(--font-quicksand), sans-serif",
+  editorial: "var(--font-italiana), serif",
 };
 
 type RootProps = {
-  avatarUrl: string;
-  coverUrl: string;
+  avatarUrl: ImageValue;
+  coverUrl: ImageValue;
   bio: string;
   bgColor: string;
   textColor: string;
@@ -22,7 +28,7 @@ type RootProps = {
   fontFamily: string;
 };
 
-type ImageProps = { url: string; alt: string };
+type ImageProps = { url: ImageValue; alt: string };
 type VideoProps = { url: string };
 type TextProps = { content: string; fontSize: number; bold: boolean };
 // La creadora pega el ID del producto (visible en /panel/contenido).
@@ -54,12 +60,16 @@ export const puckConfig: Config<
           { label: "Serif elegante", value: "serif" },
           { label: "Sans moderna", value: "sans" },
           { label: "Redondeada", value: "rounded" },
+          { label: "Manuscrita (femenina)", value: "script" },
+          { label: "Elegante suave", value: "elegant" },
+          { label: "Soft / redondeada 2", value: "soft" },
+          { label: "Editorial fina", value: "editorial" },
         ],
       },
     },
     defaultProps: {
-      avatarUrl: "",
-      coverUrl: "",
+      avatarUrl: DEFAULT_IMAGE_VALUE,
+      coverUrl: DEFAULT_IMAGE_VALUE,
       bio: "",
       bgColor: "#FDF6EE",
       textColor: "#2A2420",
@@ -78,14 +88,26 @@ export const puckConfig: Config<
         className="flex flex-col"
       >
         <div
-          className="h-40 sm:h-64 w-full bg-black/5 bg-cover bg-center"
-          style={coverUrl ? { backgroundImage: `url(${coverUrl})` } : undefined}
+          className="h-40 sm:h-64 w-full bg-black/5 bg-cover"
+          style={
+            coverUrl?.url
+              ? { backgroundImage: `url(${coverUrl.url})`, backgroundPosition: `${coverUrl.focusX}% ${coverUrl.focusY}%` }
+              : undefined
+          }
         />
         <div className="flex flex-col items-center gap-3 -mt-12 px-6">
-          <div className="h-24 w-24 rounded-full border-4 border-white bg-black/10 overflow-hidden">
-            {avatarUrl && (
+          <div
+            className="h-24 w-24 rounded-full overflow-hidden bg-black/10"
+            style={{ border: `4px solid ${accentColor}` }}
+          >
+            {avatarUrl?.url && (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+              <img
+                src={avatarUrl.url}
+                alt=""
+                className="h-full w-full object-cover"
+                style={{ objectPosition: `${avatarUrl.focusX}% ${avatarUrl.focusY}%` }}
+              />
             )}
           </div>
           {bio && <p className="text-sm text-center max-w-md">{bio}</p>}
@@ -101,14 +123,19 @@ export const puckConfig: Config<
         url: imageUploadField("Imagen"),
         alt: { type: "text", label: "Descripción (accesibilidad)" },
       },
-      defaultProps: { url: "", alt: "" },
+      defaultProps: { url: DEFAULT_IMAGE_VALUE, alt: "" },
       render: ({ url, alt }) =>
-        url ? (
+        url?.url ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={url} alt={alt} className="w-full rounded-2xl object-cover" />
+          <img
+            src={url.url}
+            alt={alt}
+            className="w-full aspect-video rounded-2xl object-cover"
+            style={{ objectPosition: `${url.focusX}% ${url.focusY}%` }}
+          />
         ) : (
           <div className="w-full aspect-video rounded-2xl bg-black/5 flex items-center justify-center text-sm text-foreground/40">
-            Agrega la URL de una imagen
+            Sube una imagen
           </div>
         ),
     },
@@ -142,23 +169,10 @@ export const puckConfig: Config<
     ProductBlock: {
       label: "Producto",
       fields: {
-        productId: { type: "text", label: "ID del producto (cópialo desde 'Mi contenido')" },
+        productId: productPickerField("Producto"),
       },
       defaultProps: { productId: "" },
-      render: ({ productId }) =>
-        productId ? (
-          <div
-            className="rounded-2xl border p-4 text-sm"
-            style={{ borderColor: "var(--accent)" }}
-            data-product-id={productId}
-          >
-            Producto: {productId} (la tarjeta real se resuelve al mostrar la página)
-          </div>
-        ) : (
-          <div className="w-full rounded-2xl bg-black/5 p-4 text-sm text-foreground/40">
-            Pega el ID de un producto publicado
-          </div>
-        ),
+      render: ({ productId }) => <ProductCardDisplay productId={productId} />,
     },
   },
 };
