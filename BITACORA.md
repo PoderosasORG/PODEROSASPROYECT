@@ -534,3 +534,23 @@ Primer perfil terminado del plan "uno a la vez" (Luz → Kat → Shei) para deja
 - Shei: mismo tratamiento, texto largo ya guardado en sesión anterior.
 - Footer con redes sociales — sigue sin existir en el sitio.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 6) — Perfiles de Kat y Shei completos + bug de foco arreglado
+
+Se completó el plan de dejar cada perfil individual listo (Luz → Kat → Shei), con un par de correcciones en el camino.
+
+**Bug real encontrado y arreglado** ([src/app/[slug]/page.tsx](src/app/[slug]/page.tsx)): cuando una creadora no tiene `avatar_url`/`cover_image_url` propio y el sitio usa la foto de respaldo (`CREATOR_FALLBACK_PHOTOS`), el código ignoraba por completo `avatar_focus_x/y` y `cover_focus_x/y` guardados en la base de datos, forzando siempre 50/50 — por eso el ajuste de foco pedido para el avatar de Luz no se reflejaba aunque el `UPDATE` en Supabase sí se aplicara. Se corrigió para que el foco siempre se lea de la base de datos, tenga o no foto propia.
+
+**Kat:** fotos de avatar/portada intercambiadas dos veces a pedido del usuario (primero subidas, luego el usuario pidió invertir cuál iba en cada lugar). Texto largo de "Sobre mí" correcto aplicado tras una confusión real: el usuario había mandado primero el texto de Shei pensando que era el de Kat, se aplicó así, y luego se corrigió — el texto que estaba mal puesto en Kat se movió a Shei (que sí era su dueña real).
+
+**Lección de proceso — SQL de varias sentencias pegado junto en Supabase:** en esta sesión, un bloque con 3 `UPDATE` separados por `;` (dos con JSON grande en `content_blocks`, uno simple) se pegó junto y solo el último corrió — los dos primeros, con JSON largo, no se aplicaron sin ningún mensaje de error visible para el usuario (solo vio "Success. No rows returned" igual que cuando sí funciona). Causa no confirmada con certeza (posible límite de la caja de texto del editor de Supabase al pegar bloques largos, o el usuario solo pegó la última parte sin darse cuenta). **Ya no asumir que un bloque con varios `UPDATE` corrió completo solo porque no hubo mensaje de error — siempre verificar en el sitio después, y si algo no aplicó, reenviar cada sentencia por separado en mensajes propios** (así se resolvió).
+
+**Resultado final — los tres perfiles completos:**
+- Luz: portada "traje rojo" centrada en la cara (foco bajado dos veces hasta que el usuario confirmó que se veía bien), avatar sin cambios, "Sobre mí" con el texto de +40 años en análisis energético.
+- Kat: avatar = foto agachada rosa/blanco, portada = foto sentada en jean, "Sobre mí" con el texto de 7 años + PNL + astrología.
+- Shei: foto propia subida por ella misma desde su panel (sin cambios nuestros), "Sobre mí" con el texto de 10 años + marketing de influencia.
+
+### Pendiente
+- Footer con redes sociales — sigue sin existir en el sitio.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas" de los tres perfiles (no es una creadora real).
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
