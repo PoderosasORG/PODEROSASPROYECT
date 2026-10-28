@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PublicProfile } from "@/components/panel/PublicProfile";
-import { DEFAULT_IMAGE_FOCUS, DEFAULT_THEME } from "@/lib/panel/types";
+import { DEFAULT_THEME } from "@/lib/panel/types";
 
 // Siempre trae datos frescos: sin esto, el navegador puede mostrar
 // una versión en caché del perfil justo después de guardar cambios.
@@ -35,16 +35,16 @@ export default async function CreatorPage({
       slug={creator.slug}
       displayName={creator.display_name}
       role="Poderosa"
-      avatar={
-        creator.avatar_url
-          ? { url: creator.avatar_url, focusX: creator.avatar_focus_x ?? 50, focusY: creator.avatar_focus_y ?? 50 }
-          : DEFAULT_IMAGE_FOCUS
-      }
-      cover={
-        creator.cover_image_url
-          ? { url: creator.cover_image_url, focusX: creator.cover_focus_x ?? 50, focusY: creator.cover_focus_y ?? 50 }
-          : DEFAULT_IMAGE_FOCUS
-      }
+      avatar={{
+        url: creator.avatar_url ?? "",
+        focusX: creator.avatar_focus_x ?? 50,
+        focusY: creator.avatar_focus_y ?? 50,
+      }}
+      cover={{
+        url: creator.cover_image_url ?? "",
+        focusX: creator.cover_focus_x ?? 50,
+        focusY: creator.cover_focus_y ?? 50,
+      }}
       bio={creator.bio ?? ""}
       theme={creator.theme ?? DEFAULT_THEME}
       blocks={creator.content_blocks ?? []}
