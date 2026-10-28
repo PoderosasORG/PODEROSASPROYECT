@@ -590,3 +590,25 @@ A diferencia del footer general (cuentas de marca @katyshei), el usuario pidió 
 - Faltan redes de Luz (Instagram, Facebook, YouTube) y de Shei (Instagram, Facebook, YouTube) — pendiente que el usuario las pase si quiere completarlas.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 9) — QA funcional del sitio, bug arreglado, redes completas
+
+**QA funcional de todo el sitio** (landing, los 3 perfiles, /evento, /login, /registro) hecho con un sub-agente navegando el sitio real. Resultado: todo funciona correctamente excepto un bug real encontrado y arreglado —
+
+- **Bug:** el tab "Sobre mí" en los tres perfiles tenía `href="#"` (no hacía nada) en `ProfilePreview.tsx`, mientras "Cursos" y "Otras Poderosas" sí tenían anclas reales. PR [#15](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/15). Corregido a `#sobre-mi` con el `id` correspondiente en el bloque de contenido.
+- Confirmado funcionando: las 3 tarjetas de creadoras, podcast, footer, formulario de `/evento` (sí llega a Wompi, no se completó un pago real), `/login`/`/registro` sin errores de consola, tabs y redes de cada perfil.
+
+**Redes sociales por perfil — completadas** (PR [#16](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/16)):
+- Luz: Instagram + TikTok (`@consejos_deluz`) — sin Facebook, confirmado explícitamente por el usuario ("no tiene tantos seguidores").
+- Shei: Instagram (`@sheinarivera_`), TikTok (`@sheirivera1`), Facebook, YouTube (`@sheinarivera1`).
+- Kat: se mantiene Instagram + TikTok (`@kat_rivera_`); se le quitó el Facebook que tenía — era de Shei, no de Kat (confirmado con el usuario, no es cuenta compartida).
+- El usuario confirmó explícitamente el diseño: redes de marca (@katyshei) solo en el footer general; redes personales de cada una solo en su propio perfil, sin mezclar.
+
+**Pedido grande en curso — "revisión completa + marketing/conversión":** el usuario pidió un QA de punta a punta + investigar qué hace que las páginas de cursos/membresías vendan más (diseño, colores, video, movimiento, trucos psicológicos) y aplicarlo. **Se le aclaró y aceptó explícitamente:** no se va a implementar prueba social falsa (números inventados de "ya compraron X personas") — es publicidad engañosa real bajo la Ley 1480 de protección al consumidor en Colombia y viola términos de las pasarelas de pago. Si se quiere mostrar ventas/cupos, tiene que ser el conteo real desde la base de datos. Investigación inicial (ver fuentes abajo) confirma: claridad en 5 segundos, prueba social verificable, urgencia real (ya existe con la fecha del evento), video/preview, CTA repetido, mobile-first.
+- Fuentes: [Course Landing Pages That Convert](https://mewayz.com/xh/blog/course-landing-pages-that-convert-7-design-principles-that-actually-work), [5 Ethical Ways to Create Urgency](https://www.growthsuite.net/blog/5-ethical-ways-to-create-urgency-without-lying-to-your-customers), [The Science of Scarcity](https://tenten.co/shopify/urgency-scarcity-shopify/)
+- Quedó pendiente que el usuario elija por dónde seguir (contador real de cupos vendidos / video en el evento / página de venta del curso nuevo cuando esté listo) — todavía sin decidir al cierre de esta sesión.
+
+### Pendiente
+- Decidir y ejecutar la siguiente mejora de conversión (ver arriba).
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
