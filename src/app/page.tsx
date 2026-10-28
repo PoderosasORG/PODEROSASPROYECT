@@ -3,7 +3,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
 
-const CREATOR_ORDER = ["luz", "shei", "kat"];
+const CREATOR_ORDER = ["luz", "kat", "shei"];
 
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
