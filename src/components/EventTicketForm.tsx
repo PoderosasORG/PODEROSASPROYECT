@@ -60,7 +60,7 @@ export function EventTicketForm({ productId }: { productId: string }) {
         disabled={loading}
         className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors disabled:opacity-50"
       >
-        {loading ? "Un momento..." : "Comprar cupo"}
+        {loading ? "Un momento..." : "Comprar mi entrada"}
       </button>
     </form>
   );
