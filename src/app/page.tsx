@@ -81,26 +81,50 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Evento en vivo */}
-      <section className="px-6 py-16 bg-gold/10 border-y border-gold-light/60">
-        <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-4">
-          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-            Primer evento en vivo
+      {/* Masterclass presencial — fondo oscuro, listo para una foto más adelante
+          (hoy es un degradado; para ponerle una imagen basta con agregar un
+          <img> absoluto dentro de este div, igual que en el hero de arriba) */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#161421] via-[#1d1b2e] to-[#262244] px-6 py-20">
+        <div className="relative max-w-2xl mx-auto flex flex-col items-center text-center gap-4">
+          <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
+            Masterclass presencial · Poderosa
           </span>
-          <h2 className="font-serif text-3xl sm:text-4xl leading-tight">
-            Nos vemos en persona, por primera vez
+          <h2 className="font-serif text-3xl sm:text-5xl leading-tight text-white">
+            Es momento de elegirte.
           </h2>
-          <p className="max-w-xl text-foreground/70">
-            Un espacio para encontrarte con Kat, Shei y Luz cara a cara —
-            el mismo método, ahora en vivo. 21 de noviembre, de 8:30 a.m. a
-            1:00 p.m., en Edificio Emprendu (Calle 85 #12-66, Bogotá). Cupos
-            limitados.
+          <p className="max-w-xl text-white/80">
+            Descubre quién eres, conecta con lo que realmente quieres y
+            encuentra herramientas para empezar a alcanzar eso que llevas
+            tanto tiempo posponiendo.
           </p>
+          <p className="text-sm uppercase tracking-wide text-gold-light">
+            ¿Quién soy? · ¿Qué quiero? · ¿Cómo lo hago posible?
+          </p>
+          <p className="text-sm text-white/70">
+            Actividades guiadas · Brunch · Regalos especiales
+          </p>
+          <p className="text-sm text-white/70">
+            21 de noviembre · 9:00 a.m. – 1:00 p.m.
+          </p>
+          <p className="text-sm text-white/70">
+            Edificio Emprendu · Calle 85 #12-66, Bogotá
+          </p>
+
+          <div className="mt-4 w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
+            <p className="text-xs uppercase tracking-wide text-gold font-medium">
+              Precio especial · quedan pocos cupos
+            </p>
+            <p className="font-serif text-4xl text-foreground">$60.000 COP</p>
+            <p className="text-sm text-foreground/60">
+              Precio regular: $120.000 COP · 50% de descuento
+            </p>
+          </div>
+
           <Link
             href="/evento"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Comprar mi cupo
+            Comprar mi entrada
           </Link>
         </div>
       </section>
