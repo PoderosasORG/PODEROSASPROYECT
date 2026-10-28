@@ -27,6 +27,18 @@ export default async function EventoPage() {
     maximumFractionDigits: 0,
   });
 
+  const { count: sold } = await admin
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("product_id", product.id)
+    .eq("status", "approved");
+
+  const cuposLabel = product.capacity
+    ? `Quedan ${Math.max(product.capacity - (sold ?? 0), 0)} cupos de ${product.capacity}`
+    : sold && sold > 0
+      ? `${sold} ${sold === 1 ? "persona ya se unió" : "personas ya se unieron"}`
+      : "Cupos limitados";
+
   return (
     <div className="flex flex-1 flex-col items-center gap-6 px-6 py-16 bg-beige-light">
       <div className="max-w-sm text-center flex flex-col items-center gap-3">
@@ -39,7 +51,7 @@ export default async function EventoPage() {
         )}
         <div className="mt-2 rounded-2xl bg-white p-6 border border-gold-light/60 flex flex-col items-center gap-1 w-full">
           <p className="text-xs uppercase tracking-wide text-gold font-medium">
-            Precio especial · quedan pocos cupos
+            Precio especial · {cuposLabel}
           </p>
           <p className="font-serif text-4xl">{price}</p>
           <p className="text-sm text-foreground/60">
