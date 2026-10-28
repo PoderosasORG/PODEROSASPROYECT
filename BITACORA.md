@@ -612,3 +612,21 @@ A diferencia del footer general (cuentas de marca @katyshei), el usuario pidió 
 - Decidir y ejecutar la siguiente mejora de conversión (ver arriba).
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 10) — Contador real de cupos del evento
+
+Primera mejora de conversión real implementada de las tres que pidió el usuario (contador real / video / página del curso). PR [#17](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/17), fusionado y desplegado.
+
+- Nuevo `src/lib/eventStats.ts`: cuenta en vivo (`orders.status = 'approved'` para el producto `type='event'`) usando el cliente admin — nunca un número inventado.
+- Landing y `/evento` muestran "Quedan X cupos de Y" cuando el producto tiene `capacity` definida; si no, cae a "X personas ya se unieron"; si no hay ventas, "Cupos limitados".
+- El usuario pidió bajar la capacidad real del evento de 50 a 23 (no fue un cambio de display falso — es la capacidad real del aforo) vía SQL (`UPDATE products SET capacity = 23 WHERE type = 'event'`). Confirmado en producción: "Quedan 22 cupos de 23" (ya había 1 boleta vendida).
+
+**Las otras dos partes del pedido quedan pausadas a propósito, decisión del usuario:**
+- Video en la sección del evento: no tiene grabado todavía, se monta cuando lo tenga.
+- Página de venta del curso nuevo: todavía en edición, se arma cuando tenga nombre/precio/descripción definidos.
+
+### Pendiente
+- Video del evento cuando el usuario lo tenga.
+- Página de venta del curso nuevo cuando esté definido (nombre, precio, descripción).
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
