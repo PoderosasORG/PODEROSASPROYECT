@@ -2,12 +2,13 @@ import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
-import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
+
+const CREATOR_ORDER = ["luz", "shei", "kat"];
 
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
     name: "Kat",
-    role: "Fundadora de Poderosas",
+    role: "Poderosa",
     bio: "Creadora de la metodología Poderosas: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
   },
   shei: {
@@ -31,9 +32,9 @@ export default async function Home() {
     .from("creators")
     .select("slug, display_name, bio, avatar_url")
     .eq("is_active", true)
-    .in("slug", ["kat", "shei", "luz"]);
+    .in("slug", CREATOR_ORDER);
 
-  const profiles = ["kat", "shei", "luz"].map((slug) => {
+  const profiles = CREATOR_ORDER.map((slug) => {
     const defaults = CREATOR_DEFAULTS[slug];
     const creator = creators?.find((c) => c.slug === slug);
     return {
@@ -49,38 +50,35 @@ export default async function Home() {
   return (
     <div className="flex flex-col flex-1 bg-beige-light">
       {/* Hero */}
-      <section className="relative flex flex-col items-center text-center gap-6 px-6 py-28 sm:py-36 overflow-hidden">
-        <div className="absolute inset-0 flex">
-          {["kat", "shei", "luz"].map((slug) => (
-            <div key={slug} className="relative flex-1 h-full">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={CREATOR_FALLBACK_PHOTOS[slug]}
-                alt=""
-                className="h-full w-full object-cover object-top grayscale-[15%]"
-              />
-            </div>
-          ))}
-          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-beige-light" />
+      <section className="flex flex-col items-center text-center">
+        <div className="w-full aspect-[8/3] overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/creators/landing-hero.webp"
+            alt="Luz, Shei y Kat, las Poderosas"
+            className="h-full w-full object-cover"
+          />
         </div>
-        <span className="relative uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
-          Comunidad · Metodología · Transformación
-        </span>
-        <h1 className="relative font-serif text-4xl sm:text-6xl max-w-2xl leading-tight text-white">
-          No necesitas tener la vida resuelta para volver a empezar
-        </h1>
-        <p className="relative max-w-xl text-white/85 text-lg">
-          Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
-          veces saben que necesitan cambiar algo y no saben por dónde empezar.
-          Creamos un método práctico para ordenar lo que sienten, definir lo
-          que quieren y convertirlo en pasos concretos.
-        </p>
-        <a
-          href="#creadoras"
-          className="relative rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
-        >
-          Conoce a las Poderosas
-        </a>
+        <div className="flex flex-col items-center gap-6 px-6 pt-10 pb-20 sm:pb-28 max-w-2xl">
+          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+            Comunidad · Metodología · Transformación
+          </span>
+          <h1 className="font-serif text-4xl sm:text-6xl leading-tight">
+            Mentoras de mujeres poderosas
+          </h1>
+          <p className="max-w-xl text-foreground/70 text-lg">
+            Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
+            veces saben que necesitan cambiar algo y no saben por dónde empezar.
+            Creamos un método práctico para ordenar lo que sienten, definir lo
+            que quieren y convertirlo en pasos concretos.
+          </p>
+          <a
+            href="#creadoras"
+            className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Conoce a las Poderosas
+          </a>
+        </div>
       </section>
 
       {/* Evento en vivo */}
