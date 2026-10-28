@@ -441,3 +441,16 @@ El usuario pidió acercar el look del sitio al de dos referencias (isabella-cort
 - Elegir/ajustar mejor el recorte de cada foto de portada si alguna queda cortada en una zona poco favorecedora (hoy usan foco 50/50 por defecto).
 - Actualizar el `avatar_url` y la bio de Shei en producción (flyer + texto de prueba, ver arriba) — corresponde a ella hacerlo desde su panel.
 - Seguir con lo que ya estaba pendiente antes de esta sesión: Wompi independiente para Kat y Luz, base de datos de pruebas separada, cupones de descuento, límite de tasa, autorizar deploy automático de Vercel.
+
+## 2026-10-28 — Ajustes al landing: foto real del hero, titular, orden de creadoras
+
+Pedido directo del usuario tras ver el primer rediseño: cambiar la foto del hero (envió una foto panorámica real de las tres juntas, 2000x750, para reemplazar la tira de 3 fotos individuales), nuevo titular ("Mentoras de mujeres poderosas"), reordenar "Nuestras Poderosas" (Luz → Shei → Kat, antes Kat → Shei → Luz) y quitar "Fundadora de Poderosas" del perfil de Kat. PR [#5](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/5), fusionado y desplegado.
+
+- **Hero:** se descartó el enfoque `object-cover` a pantalla completa (recortaba la foto panorámica a un solo rostro con zoom). Solución: contenedor con `aspect-[8/3]` (la proporción exacta de la foto enviada) en vez de forzar la altura de la sección — así nunca se recorta, a cualquier ancho de pantalla.
+- **Mobile — decisión explícita del usuario:** se probó una versión vertical (`aspect-[3/4]`) del hero para mobile, pero esa proporción recorta la foto panorámica a solo una persona (Shei, el centro) perdiendo a Luz y Kat. El usuario, tras ver la comparación, eligió mantener la banda panorámica completa también en mobile (se ve angosta pero las tres aparecen) — el resto de la página ya era 100% vertical/una columna desde el rediseño anterior, eso era lo que realmente pedía.
+- Bio de Kat en Supabase corregida por el usuario mismo vía SQL (`UPDATE creators SET bio = 'Metodología, claridad y acción.' WHERE slug = 'kat';`) que le pasé en el chat — ya no queda ningún rastro de "Fundadora de Poderosas" en el sitio.
+- **Lección de proceso:** después del deploy, la primera carga en el navegador mostró contenido viejo (caché) — se confirmó el cambio real navegando con un parámetro distinto (`?v=2`) para forzar bypass de caché antes de reportar éxito.
+
+### Pendiente
+- Afinar foto de portada de cada perfil individual si el recorte no favorece (foco 50/50 por defecto, ver sesión anterior).
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
