@@ -574,3 +574,19 @@ Pendiente identificado al comparar con las referencias (isabella-cortes.mykajabi
 - Agregar los links personales de cada creadora a su propio perfil, si se quiere (ver arriba).
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 8) — Redes sociales personales en cada perfil individual
+
+A diferencia del footer general (cuentas de marca @katyshei), el usuario pidió que cada perfil individual (`/luz`, `/kat`, `/shei`) muestre las redes **personales** de esa creadora específica, debajo de su bio corta. PR [#14](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/14), fusionado y desplegado.
+
+- Nuevo `src/lib/creatorSocials.ts`: mapa `slug → {instagram?, tiktok?, facebook?, youtube?}` — si una red no está definida, simplemente no se muestra el ícono (confirmado explícitamente por el usuario: "si alguna no tiene alguno de esos, no pasa nada").
+- Nuevo `src/components/ProfileSocialLinks.tsx`, montado en `ProfilePreview.tsx` (que ahora acepta `slug` opcional) — se usa tanto en la página pública como en la vista previa en vivo del editor Puck en el panel.
+- Redes guardadas hasta ahora:
+  - Luz: TikTok `@consejos_deluz` (único dato que se tenía de ella)
+  - Kat: Instagram `@kat_rivera_`, TikTok `@kat_rivera_`, Facebook
+  - Shei: TikTok `@sheirivera1`
+
+### Pendiente
+- Faltan redes de Luz (Instagram, Facebook, YouTube) y de Shei (Instagram, Facebook, YouTube) — pendiente que el usuario las pase si quiere completarlas.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
