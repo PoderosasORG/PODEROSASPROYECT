@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
 
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
@@ -48,14 +49,27 @@ export default async function Home() {
   return (
     <div className="flex flex-col flex-1 bg-beige-light">
       {/* Hero */}
-      <section className="flex flex-col items-center text-center gap-6 px-6 py-24 bg-gradient-to-b from-pink-light via-beige-light to-beige-light">
-        <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+      <section className="relative flex flex-col items-center text-center gap-6 px-6 py-28 sm:py-36 overflow-hidden">
+        <div className="absolute inset-0 flex">
+          {["kat", "shei", "luz"].map((slug) => (
+            <div key={slug} className="relative flex-1 h-full">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={CREATOR_FALLBACK_PHOTOS[slug]}
+                alt=""
+                className="h-full w-full object-cover object-top grayscale-[15%]"
+              />
+            </div>
+          ))}
+          <div className="absolute inset-0 bg-gradient-to-b from-black/55 via-black/40 to-beige-light" />
+        </div>
+        <span className="relative uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
           Comunidad · Metodología · Transformación
         </span>
-        <h1 className="font-serif text-4xl sm:text-5xl max-w-2xl leading-tight">
+        <h1 className="relative font-serif text-4xl sm:text-6xl max-w-2xl leading-tight text-white">
           No necesitas tener la vida resuelta para volver a empezar
         </h1>
-        <p className="max-w-xl text-foreground/70 text-lg">
+        <p className="relative max-w-xl text-white/85 text-lg">
           Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
           veces saben que necesitan cambiar algo y no saben por dónde empezar.
           Creamos un método práctico para ordenar lo que sienten, definir lo
@@ -63,7 +77,7 @@ export default async function Home() {
         </p>
         <a
           href="#creadoras"
-          className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          className="relative rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
         >
           Conoce a las Poderosas
         </a>
@@ -94,8 +108,8 @@ export default async function Home() {
       </section>
 
       {/* La analogía del GPS */}
-      <section className="px-6 py-20 max-w-4xl mx-auto text-center flex flex-col gap-6">
-        <h2 className="font-serif text-3xl">El GPS de tu vida</h2>
+      <section className="px-6 py-24 max-w-4xl mx-auto text-center flex flex-col gap-6">
+        <h2 className="font-serif text-4xl">El GPS de tu vida</h2>
         <p className="text-foreground/70">
           La mujer no necesita que le digan &ldquo;conduce más rápido&rdquo;.
           Necesita una ruta. Poderosas funciona como un GPS: identifica dónde
@@ -126,10 +140,10 @@ export default async function Home() {
       </section>
 
       {/* Creadoras */}
-      <section id="creadoras" className="px-6 py-20 bg-white/40">
+      <section id="creadoras" className="px-6 py-24 bg-white/40">
         <div className="max-w-5xl mx-auto flex flex-col gap-10">
           <div className="text-center flex flex-col gap-3">
-            <h2 className="font-serif text-3xl">Nuestras Poderosas</h2>
+            <h2 className="font-serif text-4xl">Nuestras Poderosas</h2>
             <p className="text-foreground/70 max-w-xl mx-auto">
               Tres mujeres, tres caminos, un mismo propósito: acompañarte con
               estructura, herramientas y comunidad. Cada una tiene su propio
@@ -145,8 +159,8 @@ export default async function Home() {
       </section>
 
       {/* Pitch final */}
-      <section className="px-6 py-20 max-w-3xl mx-auto text-center flex flex-col gap-4">
-        <h2 className="font-serif text-3xl">Lo que realmente ofrecemos</h2>
+      <section className="px-6 py-24 max-w-3xl mx-auto text-center flex flex-col gap-4">
+        <h2 className="font-serif text-4xl">Lo que realmente ofrecemos</h2>
         <p className="text-foreground/70">
           No prometemos una vida perfecta ni cambios mágicos: entregamos
           estructura, conocimiento, herramientas y un impulso para empezar. A
