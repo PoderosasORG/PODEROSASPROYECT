@@ -93,7 +93,7 @@ export function ProfilePreview({
 
       {afterContent && (
         <nav className="sticky top-0 z-10 flex justify-center gap-6 mt-8 py-2.5 text-sm backdrop-blur bg-white/70 border-y border-black/5">
-          <a href="#" className="hover:underline" style={{ color: theme.accentColor }}>
+          <a href="#sobre-mi" className="hover:underline" style={{ color: theme.accentColor }}>
             Sobre mí
           </a>
           <a href="#cursos" className="hover:underline" style={{ color: theme.accentColor }}>
@@ -106,7 +106,7 @@ export function ProfilePreview({
       )}
 
       {blocks.length > 0 && (
-        <div className="flex flex-col gap-6 px-6 py-10 max-w-2xl mx-auto w-full">
+        <div id="sobre-mi" className="flex flex-col gap-6 px-6 py-10 max-w-2xl mx-auto w-full scroll-mt-16">
           {blocks.map((block) => (
             <BlockRender key={block.id} block={block} />
           ))}
