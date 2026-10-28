@@ -472,3 +472,16 @@ Pedido: reemplazar "Primer evento en vivo" por un bloque "Masterclass presencial
 - Foto llamativa de fondo para el bloque de la masterclass — por decidir qué imagen.
 - Decidir en algún momento una fecha de corte real para el precio especial, cuando el usuario quiera medir y decidir subirlo.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 2) — Podcast, foto propia de Shei, reorden final
+
+- **Podcast "Deje la Pendejada"** (PR [#8](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/8)): sección final de la landing con la foto real de Kat y Shei (Shei señalando hacia arriba — el texto se puso deliberadamente encima de la foto para seguir ese gesto), links reales a YouTube (`youtube.com/@katyshei/podcasts`) y Spotify. La foto completa es un link directo a YouTube, mismo patrón que isabella-cortes.mykajabi.com.
+  - **Lección de proceso — adjuntos de imagen que no llegan:** en esta sesión, una foto pegada directo en el chat (sin usar el botón de adjuntar archivo) no generó un archivo accesible en la carpeta temporal de la sesión (`images/` bajo el id de sesión) — pasó dos veces con la misma foto del podcast, mientras otras fotos de la misma conversación sí llegaron bien. Se resolvió pidiéndole al usuario que subiera el archivo a una carpeta local normal (`images/` del proyecto, o cualquier carpeta de su PC) y buscándolo ahí con `find`. Si una imagen pegada en el chat no aparece en la carpeta temporal esperada, no asumir que es un error del usuario — pedir que la suba a una carpeta y buscarla por fecha de modificación reciente.
+- **Foto de Shei actualizada dos veces:** primero se cambió solo la foto de *respaldo* (`CREATOR_FALLBACK_PHOTOS`, PR [#7](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/7)) — pero no se notaba en el sitio porque Shei ya tenía un `avatar_url` propio guardado (el flyer de cumpleaños de antes), que siempre manda sobre el respaldo. Al final Shei subió su propia foto real y bio actualizada directamente desde su panel — ya no hace falta la de respaldo para ella.
+- **Orden final de "Nuestras Poderosas"** (PR [#9](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/9)): Luz → Kat → Shei (se probaron dos órdenes distintos en la misma sesión a pedido del usuario — Luz-Shei-Kat y luego Luz-Kat-Shei — cada vez un cambio de una sola línea en `CREATOR_ORDER`).
+
+### Pendiente
+- Bios reales y completas de cada perfil (Luz y Kat siguen con bio genérica corta; Shei ya actualizó la suya).
+- Footer con redes sociales — sigue sin existir en el sitio.
+- Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
