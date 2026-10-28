@@ -485,3 +485,21 @@ Pedido: reemplazar "Primer evento en vivo" por un bloque "Masterclass presencial
 - Footer con redes sociales — sigue sin existir en el sitio.
 - Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 3) — Bios reales de las tres creadoras
+
+El usuario dio los datos reales de Luz y Kat (uno a la vez, por pregunta directa); Shei ya tenía la suya actualizada desde su panel. Se armaron bios cortas (mismo formato "rol · especialidad") y se le pasó el SQL al usuario para pegarlo en Supabase — confirmado en producción.
+
+- Luz: "Publicista · +40 años en análisis energético y autoconocimiento"
+- Kat: "Comunicadora Social | Estratega Digital y Creadora de Contenido"
+- Shei: "Psicóloga | Estratega Digital y Creadora de Contenido" (ya existente)
+
+**Pendiente, si el usuario quiere ampliarlo:** el usuario dio texto más largo y detallado para Luz (trayectoria de 40 años, estudio de manos/rostro) y Kat (7 años de experiencia, formación en PNL y astrología) que no se usó completo — se guardó solo la versión corta tipo "rol". El texto completo quedaría mejor como contenido dentro del perfil individual de cada una (bloques de Puck, sección "Sobre mí"), no en el campo de bio corta que se ve en las tarjetas. Texto completo para cuando se retome:
+  - Luz: "Publicista con más de 40 años de trayectoria en el estudio de la energía, las manos y las dimensiones del rostro. Comparte sus conocimientos sobre análisis energético y autoconocimiento a través de las redes sociales, donde ha construido una amplia comunidad digital."
+  - Kat: "Con más de 7 años de experiencia en creación de contenido y marketing digital, cuenta con formación en Programación Neurolingüística (PNL) y astrología. Integra la comunicación estratégica, el conocimiento del comportamiento humano y una visión integral del desarrollo personal para crear contenido con propósito e impacto."
+
+### Pendiente
+- Agregar el texto completo de arriba al contenido de cada perfil (Puck), si el usuario lo quiere.
+- Footer con redes sociales — sigue sin existir en el sitio.
+- Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
