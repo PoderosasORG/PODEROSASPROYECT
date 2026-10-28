@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { getEventStats } from "@/lib/eventStats";
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -28,6 +29,7 @@ export const revalidate = 0;
 
 export default async function Home() {
   const supabase = await createClient();
+  const eventStats = await getEventStats();
   const { data: creators } = await supabase
     .from("creators")
     .select("slug, display_name, bio, avatar_url")
@@ -112,7 +114,12 @@ export default async function Home() {
 
           <div className="mt-4 w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
             <p className="text-xs uppercase tracking-wide text-gold font-medium">
-              Precio especial · quedan pocos cupos
+              Precio especial
+              {eventStats && eventStats.capacity
+                ? ` · quedan ${Math.max(eventStats.capacity - eventStats.sold, 0)} cupos de ${eventStats.capacity}`
+                : eventStats && eventStats.sold > 0
+                  ? ` · ${eventStats.sold} ${eventStats.sold === 1 ? "persona ya se unió" : "personas ya se unieron"}`
+                  : " · cupos limitados"}
             </p>
             <p className="font-serif text-4xl text-foreground">$60.000 COP</p>
             <p className="text-sm text-foreground/60">
