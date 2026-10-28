@@ -123,6 +123,7 @@ export function FixedPanelEditor({
               }
             >
               <ProfilePreview
+                slug={slug}
                 displayName={displayName}
                 role={role}
                 avatar={data.avatar}

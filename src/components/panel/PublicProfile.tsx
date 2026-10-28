@@ -32,6 +32,7 @@ export function PublicProfile({
 
   return (
     <ProfilePreview
+      slug={slug}
       displayName={displayName}
       role={role}
       avatar={avatarWithFallback}
