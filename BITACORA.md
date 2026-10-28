@@ -454,3 +454,21 @@ Pedido directo del usuario tras ver el primer rediseño: cambiar la foto del her
 ### Pendiente
 - Afinar foto de portada de cada perfil individual si el recorte no favorece (foco 50/50 por defecto, ver sesión anterior).
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación) — Sección de evento rediseñada: masterclass con oferta 50%
+
+Pedido: reemplazar "Primer evento en vivo" por un bloque "Masterclass presencial" (copy y mockup exactos que pasó el usuario), con precio especial destacado. PR [#6](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/6), fusionado y desplegado.
+
+- **Análisis de referencias (pedido aparte, sin implementar todavía):** se revisaron de nuevo isabella-cortes.mykajabi.com y valentinaortizf.co. Hallazgo más importante: **Poderosas no tiene footer ni links a redes sociales en ninguna página** — ausencia real, no solo comparación cosmética. Otras ideas discutidas: sección de podcast al final (el usuario quiere agregar el podcast que tiene con su hermana, un clic a Spotify/YouTube — pendiente de que pase nombre y links), testimonios, números de prueba social en "Sobre mí" de cada creadora. Ninguna de estas se implementó todavía, quedan para cuando el usuario decida.
+- **Precio real del evento:** aclarado con el usuario (había una inconsistencia entre lo que dijo de palabra "100 mil → 60 mil" y su propio mockup "$120.000 → $60.000"). Se confirmó: regular $120.000, especial $60.000 (50% real). Usuario actualizó `products.price_cents` a 6.000.000 vía SQL en Supabase — confirmado en producción.
+- **Descuento sin fecha límite, a propósito:** el usuario decidió NO fijar una fecha de corte todavía porque quiere medir cuántas boletas se venden primero al precio actual antes de decidir cuándo subirlo. Por eso el precio se dejó fijo (no hay lógica de descuento por tiempo/cantidad en código) y el mensaje de urgencia es genérico: "quedan pocos cupos", sin contador.
+- El precio regular ($120.000 tachado) que se muestra es **solo copy de marketing** (ancla de precio) — nunca se cobró ese valor, es puramente visual.
+- El fondo oscuro del nuevo bloque queda listo para poner una foto encima más adelante (comentario en el código con la instrucción); el usuario todavía no decidió qué foto usar ahí.
+- Botón final renombrado de "Comprar cupo" a "Comprar mi entrada" en landing y `/evento`.
+
+### Pendiente
+- Sección de podcast al final de la landing — falta que el usuario pase nombre del podcast + links de Spotify/YouTube.
+- Footer con redes sociales — identificado como ausencia real, no implementado todavía.
+- Foto llamativa de fondo para el bloque de la masterclass — por decidir qué imagen.
+- Decidir en algún momento una fecha de corte real para el precio especial, cuando el usuario quiera medir y decidir subirlo.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
