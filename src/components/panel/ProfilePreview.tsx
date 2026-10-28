@@ -1,6 +1,7 @@
 import { type ReactNode } from "react";
 import { type ImageFocus, type Theme, type ContentBlock, FONT_STACKS, alignClasses } from "@/lib/panel/types";
 import { sanitizeRichText } from "@/lib/panel/sanitize";
+import { ProfileSocialLinks } from "@/components/ProfileSocialLinks";
 
 function BlockRender({ block }: { block: ContentBlock }) {
   if (block.type === "text") {
@@ -30,6 +31,7 @@ function BlockRender({ block }: { block: ContentBlock }) {
 // vista previa en vivo del panel (con datos todavía sin guardar) y,
 // envuelto en PublicProfile, en la página pública real.
 export function ProfilePreview({
+  slug,
   displayName,
   role,
   avatar,
@@ -39,6 +41,7 @@ export function ProfilePreview({
   blocks,
   afterContent,
 }: {
+  slug?: string;
   displayName: string;
   role: string;
   avatar: ImageFocus;
@@ -85,6 +88,7 @@ export function ProfilePreview({
         {bio && bio !== "<p></p>" && (
           <div className="max-w-md" dangerouslySetInnerHTML={{ __html: sanitizeRichText(bio) }} />
         )}
+        {slug && <ProfileSocialLinks slug={slug} />}
       </div>
 
       {afterContent && (
