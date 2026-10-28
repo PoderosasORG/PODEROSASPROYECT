@@ -190,6 +190,50 @@ export default async function Home() {
           acompañamos a identificar, comprender y aplicar.
         </p>
       </section>
+
+      {/* Podcast — la foto (Kat y Shei, Shei señalando hacia arriba)
+          va justo debajo de este texto, así el gesto apunta hacia él. */}
+      <section className="px-6 py-24 bg-[#161421] text-center flex flex-col items-center gap-5">
+        <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
+          Nuestro podcast
+        </span>
+        <h2 className="font-serif text-4xl text-white">Deje la Pendejada</h2>
+        <p className="max-w-md text-white/70">
+          Kat y Shei, hermanas, hablando sin filtro de lo que de verdad
+          importa. Escúchalo en YouTube o Spotify.
+        </p>
+        <div className="flex gap-3">
+          <a
+            href="https://www.youtube.com/@katyshei/podcasts"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-white/30 px-6 py-2.5 text-sm text-white hover:bg-white/10 transition-colors"
+          >
+            Ver en YouTube
+          </a>
+          <a
+            href="https://open.spotify.com/show/4VyjQArqu6NvuF5LOB6R2V"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full border border-white/30 px-6 py-2.5 text-sm text-white hover:bg-white/10 transition-colors"
+          >
+            Ver en Spotify
+          </a>
+        </div>
+        <a
+          href="https://www.youtube.com/@katyshei/podcasts"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-4 block w-full max-w-xs overflow-hidden rounded-2xl"
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/creators/podcast-deje-la-pendejada.jpg"
+            alt="Kat y Shei, Deje la Pendejada — ver podcast"
+            className="w-full h-auto hover:scale-[1.02] transition-transform"
+          />
+        </a>
+      </section>
     </div>
   );
 }
