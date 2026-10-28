@@ -519,3 +519,18 @@ Mismo patrón que Luz y Kat: el usuario dio el texto completo de Shei, se guard�
 - Footer con redes sociales — sigue sin existir en el sitio.
 - Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 5) — Perfil de Luz completo: portada, foto de perfil y "Sobre mí"
+
+Primer perfil terminado del plan "uno a la vez" (Luz → Kat → Shei) para dejar cada perfil individual listo con foto de portada bien centrada, foto de perfil, bio extendida en "Sobre mí", y listo para que suban cursos/ebooks/plantillas (esa función de subida ya existía de antes, vía `UploadWizard` en el panel — no hubo que construir nada nuevo ahí).
+
+- Foto de portada nueva de Luz (traje rojo, primer plano) subida como asset estático (`public/images/creators/luz-cover.webp`) y referenciada en `creators.cover_image_url` vía SQL, con `cover_focus_y = 15` para que la cara quede centrada sin cortarse (el cover es una caja ancha y baja, y la foto es un retrato vertical — el foco por defecto 50/50 la habría cortado por la mitad de la cara).
+- Foto de perfil (avatar) de Luz: sin cambios, a pedido explícito del usuario.
+- Texto completo de "Sobre mí" de Luz (el mismo guardado en la entrada anterior, con una versión ligeramente ampliada que mandó el usuario) puesto en `creators.content_blocks` vía SQL — **esto reemplaza cualquier contenido Puck anterior del perfil**, se confirmó que estaba vacío antes de aplicarlo.
+- **Lección de proceso reafirmada:** esta vez la foto SÍ llegó con ruta de archivo temporal al adjuntarla (a diferencia del intento fallido con la foto del podcast) — parece que el problema anterior fue puntual, no un patrón; seguir usando la carpeta temporal primero y solo pedir subida manual si falla de nuevo.
+
+### Pendiente — mismo tratamiento para Kat y luego Shei
+- Kat: foto de portada nueva (pendiente que el usuario la envíe) + texto largo ya guardado en sesión anterior ("Con más de 7 años de experiencia... PNL y astrología...").
+- Shei: mismo tratamiento, texto largo ya guardado en sesión anterior.
+- Footer con redes sociales — sigue sin existir en el sitio.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
