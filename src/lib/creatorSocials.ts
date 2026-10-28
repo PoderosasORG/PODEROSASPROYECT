@@ -10,14 +10,17 @@ export type CreatorSocials = {
 
 export const CREATOR_SOCIALS: Record<string, CreatorSocials> = {
   luz: {
+    instagram: "https://www.instagram.com/consejos_deluz",
     tiktok: "https://www.tiktok.com/@consejos_deluz",
   },
   kat: {
     instagram: "https://www.instagram.com/kat_rivera_",
     tiktok: "https://www.tiktok.com/@kat_rivera_",
-    facebook: "https://www.facebook.com/share/1THuDpBDgZ/?mibextid=wwXIfr",
   },
   shei: {
+    instagram: "https://www.instagram.com/sheinarivera_",
     tiktok: "https://www.tiktok.com/@sheirivera1",
+    facebook: "https://www.facebook.com/share/1THuDpBDgZ/?mibextid=wwXIfr",
+    youtube: "https://youtube.com/@sheinarivera1",
   },
 };
