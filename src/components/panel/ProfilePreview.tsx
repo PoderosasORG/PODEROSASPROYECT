@@ -60,11 +60,14 @@ export function ProfilePreview({
       className="flex flex-col flex-1"
     >
       <div
-        className="h-40 sm:h-64 w-full bg-black/5 bg-cover"
+        className="h-64 sm:h-[26rem] w-full bg-black/5 bg-cover"
         style={cover.url ? { backgroundImage: `url(${cover.url})`, backgroundPosition: `${cover.focusX}% ${cover.focusY}%` } : undefined}
       />
-      <div className="flex flex-col items-center gap-2 -mt-12 px-6 text-center">
-        <div className="h-24 w-24 rounded-full overflow-hidden bg-black/10" style={{ border: `4px solid ${theme.accentColor}` }}>
+      <div className="flex flex-col items-center gap-3 -mt-16 px-6 text-center">
+        <div
+          className="h-32 w-32 sm:h-40 sm:w-40 rounded-full overflow-hidden bg-black/10 shadow-lg"
+          style={{ border: `4px solid ${theme.accentColor}` }}
+        >
           {avatar.url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -75,8 +78,8 @@ export function ProfilePreview({
             />
           )}
         </div>
-        <h1 className="font-serif text-2xl">{displayName}</h1>
-        <p className="text-xs uppercase tracking-wide" style={{ color: theme.accentColor }}>
+        <h1 className="font-serif text-3xl sm:text-4xl">{displayName}</h1>
+        <p className="text-xs uppercase tracking-[0.25em]" style={{ color: theme.accentColor }}>
           {role}
         </p>
         {bio && bio !== "<p></p>" && (

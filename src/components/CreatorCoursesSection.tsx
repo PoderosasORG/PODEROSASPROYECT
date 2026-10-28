@@ -2,6 +2,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { BuyButton } from "@/components/BuyButton";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
 
 function formatPrice(p: { price_cents: number; currency: string }) {
   return new Intl.NumberFormat("es-CO", {
@@ -105,9 +106,13 @@ export async function OtherCreatorsSection({ excludeSlug }: { excludeSlug: strin
             className="group flex items-center gap-4 rounded-xl border border-black/10 bg-white p-4 transition-shadow hover:shadow-lg"
           >
             <div className="h-14 w-14 rounded-full bg-black/10 overflow-hidden shrink-0">
-              {c.avatar_url && (
+              {(c.avatar_url || CREATOR_FALLBACK_PHOTOS[c.slug]) && (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={c.avatar_url} alt="" className="h-full w-full object-cover" />
+                <img
+                  src={c.avatar_url || CREATOR_FALLBACK_PHOTOS[c.slug]}
+                  alt=""
+                  className="h-full w-full object-cover"
+                />
               )}
             </div>
             <div className="flex-1 min-w-0">
