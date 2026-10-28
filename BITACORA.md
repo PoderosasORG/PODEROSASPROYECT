@@ -503,3 +503,19 @@ El usuario dio los datos reales de Luz y Kat (uno a la vez, por pregunta directa
 - Footer con redes sociales — sigue sin existir en el sitio.
 - Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 4) — Bio extendida de Shei
+
+Mismo patrón que Luz y Kat: el usuario dio el texto completo de Shei, se guardó una versión corta consistente para la bio de tarjeta/perfil y se dejó el texto completo acá para cuando se arme el contenido extendido de su perfil (Puck).
+
+- Bio corta aplicada: "Psicóloga | Creadora de Contenido Digital · +7 años en comunicación estratégica"
+- Texto completo para el perfil extendido de Shei:
+  "Psicóloga de profesión y creadora de contenido digital con más de 7 años de experiencia en redes sociales, marketing digital y comunicación estratégica. Su trayectoria combina creatividad, storytelling y conocimiento de las audiencias para desarrollar contenido que conecta, genera identificación y aporta valor.
+
+  Cuenta con formación y un profundo interés en áreas como las relaciones de pareja, el autoconocimiento y la salud mental. Integra su perspectiva psicológica con su experiencia en comunicación digital para crear mensajes que conectan con las personas, promueven la reflexión y generan impacto, combinando estrategia, creatividad y comprensión del comportamiento humano."
+
+### Pendiente
+- Agregar el texto completo de Luz, Kat y Shei (ver entradas anteriores) al contenido de cada perfil (Puck), cuando el usuario lo pida.
+- Footer con redes sociales — sigue sin existir en el sitio.
+- Revisar contenido de cada perfil (bloques de Puck) para que se sientan completos.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
