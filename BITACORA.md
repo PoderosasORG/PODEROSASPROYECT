@@ -554,3 +554,23 @@ Se completó el plan de dejar cada perfil individual listo (Luz → Kat → Shei
 - Footer con redes sociales — sigue sin existir en el sitio.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas" de los tres perfiles (no es una creadora real).
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 7) — Footer con redes sociales
+
+Pendiente identificado al comparar con las referencias (isabella-cortes.mykajabi.com, valentinaortizf.co) — el sitio no tenía footer en ninguna página. PR [#13](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/13), fusionado y desplegado.
+
+- `src/components/SiteFooter.tsx` — footer con iconos a Instagram, TikTok, YouTube y Facebook de `@katyshei` (cuenta de marca), montado en `layout.tsx` así que aparece en todas las páginas.
+- Links usados (marca, confirmados por el usuario):
+  - Instagram: https://www.instagram.com/katyshei
+  - TikTok: https://www.tiktok.com/@katyshei
+  - YouTube: https://youtube.com/@katyshei
+  - Facebook: https://www.facebook.com/share/19txkMiPRg/?mibextid=wwXIfr
+- **Cuentas personales dadas por el usuario, no usadas todavía — guardadas para cuando se quieran agregar a cada perfil individual:**
+  - Shei — TikTok: https://www.tiktok.com/@sheirivera1
+  - Kat — Instagram: https://www.instagram.com/kat_rivera_ · TikTok: https://www.tiktok.com/@kat_rivera_ · Facebook: https://www.facebook.com/share/1THuDpBDgZ/?mibextid=wwXIfr
+  - Luz: no se recibieron redes personales todavía.
+
+### Pendiente
+- Agregar los links personales de cada creadora a su propio perfil, si se quiere (ver arriba).
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
