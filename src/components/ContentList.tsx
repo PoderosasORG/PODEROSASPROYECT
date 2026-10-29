@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 
 type Product = {
@@ -151,6 +152,14 @@ export function ContentList({
             </div>
 
             <div className="flex flex-col gap-2 items-end">
+              {product.content_type === "curso" && (
+                <Link
+                  href={`/panel/contenido/${product.id}/lecciones`}
+                  className="rounded-full border border-gold text-gold px-4 py-1.5 text-xs hover:bg-gold hover:text-white transition-colors text-center"
+                >
+                  Gestionar módulos
+                </Link>
+              )}
               <button
                 onClick={() => setEditingId(product.id)}
                 disabled={busyId === product.id}
