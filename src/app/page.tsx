@@ -3,6 +3,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { getEventStats } from "@/lib/eventStats";
+import { WaitlistForm } from "@/components/WaitlistForm";
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -136,36 +137,43 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* La analogía del GPS */}
-      <section className="px-6 py-24 max-w-4xl mx-auto text-center flex flex-col gap-6">
-        <h2 className="font-serif text-4xl">El GPS de tu vida</h2>
-        <p className="text-foreground/70">
-          La mujer no necesita que le digan &ldquo;conduce más rápido&rdquo;.
-          Necesita una ruta. Poderosas funciona como un GPS: identifica dónde
-          estás, define a dónde quieres llegar, elige una ruta, avanza,
-          revisa, recalcula cuando algo cambia y reconoce en quién te
-          convertiste.
+      {/* Curso virtual — lista de espera, sin cobrar todavía */}
+      <section className="px-6 py-24 max-w-4xl mx-auto text-center flex flex-col items-center gap-6">
+        <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+          Próximamente · Curso virtual Poderosas
+        </span>
+        <h2 className="font-serif text-4xl">Metodología Poderosa</h2>
+        <p className="text-foreground/70 max-w-2xl">
+          Un curso, tres mentoras: cada módulo te lo enseña Kat, Shei o Luz
+          desde su propia área — comunicación y estrategia digital,
+          psicología y bienestar, o autoconocimiento y energía. Incluye
+          cartilla descargable y entregables prácticos, para que lo que
+          aprendas lo apliques, no solo lo veas.
         </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2 w-full">
           <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Identificar</p>
+            <p className="font-serif text-lg text-gold">Kat</p>
             <p className="text-sm text-foreground/60 mt-2">
-              Dónde estás y qué sientes hoy.
+              Comunicación y estrategia digital.
             </p>
           </div>
           <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Comprender</p>
+            <p className="font-serif text-lg text-gold">Shei</p>
             <p className="text-sm text-foreground/60 mt-2">
-              Qué necesitas ordenar y priorizar.
+              Psicología y bienestar.
             </p>
           </div>
           <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Aplicar</p>
+            <p className="font-serif text-lg text-gold">Luz</p>
             <p className="text-sm text-foreground/60 mt-2">
-              El siguiente paso concreto, en acción.
+              Autoconocimiento y energía.
             </p>
           </div>
         </div>
+        <p className="text-sm text-gold font-medium mt-2">
+          Beneficios exclusivos para quienes se inscriban primero en la lista de espera.
+        </p>
+        <WaitlistForm source="curso-metodologia-poderosa" />
       </section>
 
       {/* Creadoras */}
