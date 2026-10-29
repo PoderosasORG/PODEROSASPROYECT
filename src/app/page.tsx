@@ -351,6 +351,26 @@ export default async function Home() {
                 un escaneo que visualiza tu campo energético
               </p>
             </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">💗</p>
+              <p className="text-sm font-medium mt-1">Curso corto de amor propio</p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">💬</p>
+              <p className="text-sm font-medium mt-1">
+                Curso corto de fortalecimiento de comunicación en pareja
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">📖</p>
+              <p className="text-sm font-medium mt-1">
+                Libro de interpretación de las líneas de las manos
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">🤲</p>
+              <p className="text-sm font-medium mt-1">Curso de quiromancia</p>
+            </div>
           </div>
           <p className="text-xs text-foreground/50 max-w-sm">
             Beneficios exclusivos para quienes se inscriban en la lista de
