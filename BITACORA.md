@@ -694,3 +694,14 @@ El usuario pidió ampliar de 2 a 4 beneficios por inscribirse primero. PR [#22](
 - Video del evento cuando el usuario lo tenga.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 15) — 8 beneficios en la lista de espera del curso
+
+El usuario pidió 4 tarjetas más. PR [#23](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/23), fusionado y desplegado. Ahora son 8 en total: 30% eventos, ebook, 30 plantillas, 50% Bio-Well, curso corto de amor propio, curso corto de comunicación en pareja, libro de líneas de las manos, curso de quiromancia.
+
+### Pendiente
+- Confirmar los temas reales de las 30 plantillas (hoy son placeholder: amor propio, autoconocimiento, relaciones de pareja).
+- Cuando el curso tenga nombre final, precio y fecha de lanzamiento, reemplazar esta sección de lista de espera por la página de venta real con checkout.
+- Video del evento cuando el usuario lo tenga.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
