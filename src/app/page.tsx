@@ -170,8 +170,12 @@ export default async function Home() {
             </p>
           </div>
         </div>
-        <p className="text-sm text-gold font-medium mt-2">
-          Beneficios exclusivos para quienes se inscriban primero en la lista de espera.
+        <div className="flex flex-col sm:flex-row gap-4 mt-2 text-sm text-foreground/80">
+          <p>🎁 30% de descuento en todos los eventos presenciales</p>
+          <p>📘 Un ebook de regalo</p>
+        </div>
+        <p className="text-xs uppercase tracking-wide text-gold font-medium">
+          Solo para quienes se inscriban primero en la lista de espera
         </p>
         <WaitlistForm source="curso-metodologia-poderosa" />
       </section>
