@@ -316,7 +316,7 @@ export default async function Home() {
 
         <div
           id="lista-espera-curso"
-          className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-5 px-6 text-center scroll-mt-16"
+          className="max-w-2xl mx-auto mt-20 flex flex-col items-center gap-5 px-6 text-center scroll-mt-16"
         >
           <h3 className="font-serif text-2xl">Inscríbete en la lista de espera</h3>
           <p className="text-foreground/70">
@@ -336,6 +336,20 @@ export default async function Home() {
               <p className="text-2xl">📘</p>
               <p className="text-sm font-medium mt-1">Un ebook de regalo</p>
               <p className="text-xs text-foreground/60">cuando abramos las inscripciones al curso</p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">📝</p>
+              <p className="text-sm font-medium mt-1">30 plantillas de regalo</p>
+              <p className="text-xs text-foreground/60">
+                sobre amor propio, autoconocimiento y relaciones de pareja
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">✨</p>
+              <p className="text-sm font-medium mt-1">50% de descuento en tu sesión Bio-Well</p>
+              <p className="text-xs text-foreground/60">
+                un escaneo que visualiza tu campo energético
+              </p>
             </div>
           </div>
           <p className="text-xs text-foreground/50 max-w-sm">
