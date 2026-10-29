@@ -137,47 +137,100 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Curso virtual — lista de espera, sin cobrar todavía */}
-      <section className="px-6 py-24 max-w-4xl mx-auto text-center flex flex-col items-center gap-6">
-        <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-          Próximamente · Curso virtual Poderosas
-        </span>
-        <h2 className="font-serif text-4xl">Metodología Poderosa</h2>
-        <p className="text-foreground/70 max-w-2xl">
-          Un curso, tres mentoras: cada módulo te lo enseña Kat, Shei o Luz
-          desde su propia área — comunicación y estrategia digital,
-          psicología y bienestar, o autoconocimiento y energía. Incluye
-          cartilla descargable y entregables prácticos, para que lo que
-          aprendas lo apliques, no solo lo veas.
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-2 w-full">
-          <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Kat</p>
-            <p className="text-sm text-foreground/60 mt-2">
-              Comunicación y estrategia digital.
-            </p>
-          </div>
-          <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Shei</p>
-            <p className="text-sm text-foreground/60 mt-2">
-              Psicología y bienestar.
-            </p>
-          </div>
-          <div className="rounded-2xl bg-white p-6 border border-gold-light/60">
-            <p className="font-serif text-lg text-gold">Luz</p>
-            <p className="text-sm text-foreground/60 mt-2">
-              Autoconocimiento y energía.
-            </p>
-          </div>
+      {/* Curso virtual — lista de espera, sin cobrar todavía.
+          Estructura inspirada en páginas de venta de cursos que sí
+          convierten (dolor → qué aprendes módulo a módulo → beneficios
+          → CTA), adaptada a Poderosas: sin precio ni testimonios
+          falsos porque el curso todavía no existe, solo lista de espera. */}
+      <section className="px-6 py-24 bg-white">
+        <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
+          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+            Próximamente · Curso virtual
+          </span>
+          <h2 className="font-serif text-4xl sm:text-5xl leading-tight">
+            No necesitas más fuerza de voluntad.
+            <br />
+            Necesitas un método que sí puedas sostener.
+          </h2>
+          <p className="text-foreground/70 max-w-xl">
+            Metodología Poderosa es el curso virtual donde Kat, Shei y Luz te
+            acompañan, cada una desde su área, a ordenar lo que sientes,
+            definir lo que quieres y convertirlo en pasos que de verdad
+            cumples.
+          </p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-4 mt-2 text-sm text-foreground/80">
-          <p>🎁 30% de descuento en todos los eventos presenciales</p>
-          <p>📘 Un ebook de regalo</p>
+
+        <div className="max-w-xl mx-auto mt-14 flex flex-col gap-4 px-6">
+          <h3 className="font-serif text-2xl text-center mb-2">¿Te pasa esto?</h3>
+          {[
+            "Sabes que algo tiene que cambiar, pero no sabes por dónde empezar.",
+            "Has intentado de todo — libros, videos, propósitos de año nuevo — y nada se queda.",
+            "Tomas una decisión un lunes y para el viernes ya la abandonaste.",
+            "Buscas claridad en redes sociales y terminas con más ruido, no menos.",
+          ].map((pain) => (
+            <p key={pain} className="flex gap-3 text-foreground/80">
+              <span className="text-gold">✦</span>
+              {pain}
+            </p>
+          ))}
         </div>
-        <p className="text-xs uppercase tracking-wide text-gold font-medium">
-          Solo para quienes se inscriban primero en la lista de espera
-        </p>
-        <WaitlistForm source="curso-metodologia-poderosa" />
+
+        <div className="max-w-4xl mx-auto mt-16 px-6">
+          <h3 className="font-serif text-2xl text-center mb-10">
+            Así funciona Metodología Poderosa
+          </h3>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+              <span className="font-serif text-3xl text-gold-light">01</span>
+              <p className="font-serif text-lg">Kat — Identificar</p>
+              <p className="text-sm text-foreground/60">
+                Comunicación y estrategia digital: cómo nombrar lo que
+                quieres contarle al mundo y construir una voz propia, sin
+                perderte en lo que &ldquo;deberías&rdquo; mostrar.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+              <span className="font-serif text-3xl text-gold-light">02</span>
+              <p className="font-serif text-lg">Shei — Comprender</p>
+              <p className="text-sm text-foreground/60">
+                Psicología y bienestar: qué hay detrás de lo que sientes,
+                para dejar de repetir patrones que ya no te sirven.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+              <span className="font-serif text-3xl text-gold-light">03</span>
+              <p className="font-serif text-lg">Luz — Aplicar</p>
+              <p className="text-sm text-foreground/60">
+                Autoconocimiento y energía: cómo sostener el cambio en el
+                tiempo, con herramientas prácticas para el día a día.
+              </p>
+            </div>
+          </div>
+          <p className="text-center text-sm text-foreground/60 mt-8">
+            Incluye cartilla descargable y entregables prácticos para cada
+            módulo — para aplicar lo que aprendes, no solo verlo.
+          </p>
+        </div>
+
+        <div className="max-w-xl mx-auto mt-16 flex flex-col items-center gap-5 px-6 text-center">
+          <h3 className="font-serif text-2xl">Por inscribirte primero, te llevas</h3>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">🎁</p>
+              <p className="text-sm font-medium mt-1">30% de descuento</p>
+              <p className="text-xs text-foreground/60">en todos los eventos presenciales</p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 p-5">
+              <p className="text-2xl">📘</p>
+              <p className="text-sm font-medium mt-1">Un ebook de regalo</p>
+              <p className="text-xs text-foreground/60">al abrir las inscripciones</p>
+            </div>
+          </div>
+          <p className="text-xs uppercase tracking-wide text-gold font-medium mt-2">
+            Solo para quienes se inscriban primero en la lista de espera
+          </p>
+          <WaitlistForm source="curso-metodologia-poderosa" />
+        </div>
       </section>
 
       {/* Creadoras */}
