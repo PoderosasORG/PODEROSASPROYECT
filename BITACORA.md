@@ -742,3 +742,21 @@ El usuario pidió un brief muy detallado: revisar todo el flujo del QR antes de 
 - Video del evento cuando el usuario lo tenga.
 - Limpiar el perfil de prueba "QA CRM".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-29 (continuación) — Ronda de QA general: confirmación de pago, redirecciones, limpieza
+
+El usuario pidió seguir revisando "que todos los botones funcionen" y mejorar lo que se encuentre. PR [#26](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/26), fusionado y desplegado. Se usó un sub-agente para revisar páginas no cubiertas antes (`/mis-compras`, `/pago/confirmacion`, `/escaner`, `/login`, `/registro`, `/panel`).
+
+**Encontrado y arreglado:**
+- `/pago/confirmacion` mostraba el mensaje genérico "Ya puedes acceder a tu contenido" incluso cuando la compra era una boleta de evento (sin contenido digital que "acceder", lo que importa es el correo con el QR). Ahora distingue: compra de evento aprobada → "Te acabamos de enviar un correo con tu boleta y el código QR... revisa tu bandeja (y spam)" + botón "Volver al evento" en vez de "Volver al perfil".
+- `/escaner` y `/panel` redirigían a `/login` sin `?next=`, a diferencia de `/mis-compras` — una creadora que entraba directo a esas rutas sin sesión terminaba en el panel/home genérico en vez de donde iba. Ya preservan `?next=` igual que `/mis-compras`.
+- **"QA CRM"** (cuenta de prueba vieja que seguía apareciendo en "otras poderosas" de los tres perfiles) desactivada vía `UPDATE creators SET is_active = false` — confirmado que ya no aparece en producción.
+
+**Revisado y confirmado sin problemas:** `/mis-compras` redirige bien a login con `?next=` y vuelve; `/login`/`/registro` visual y funcionalmente consistentes con el resto del sitio; validación HTML5 nativa funciona en los formularios; sin errores de consola en ninguna página revisada.
+
+### Pendiente
+- Logo ilustrado (corona dorada) — el usuario va a intentar generarlo con ChatGPT y lo manda cuando lo tenga; confirmado que si lo manda, se puede incrustar en el correo igual que el QR (como adjunto, no como imagen remota).
+- Confirmar los temas reales de las 30 plantillas de la lista de espera del curso.
+- Cuando el curso tenga nombre final, precio y fecha, reemplazar la sección de lista de espera por la página de venta real.
+- Video del evento cuando el usuario lo tenga.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
