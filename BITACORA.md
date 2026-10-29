@@ -630,3 +630,21 @@ Primera mejora de conversión real implementada de las tres que pidió el usuari
 - Página de venta del curso nuevo cuando esté definido (nombre, precio, descripción).
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 11) — Sección "Metodología Poderosa" (lista de espera del curso)
+
+Reemplaza "El GPS de tu vida" en la landing. PR [#18](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/18), fusionado y desplegado. Probado de punta a punta en local (formulario real, guarda en DB).
+
+- Título confirmado por el usuario: "Metodología Poderosa" (puede cambiar después).
+- Copy: "un curso, tres mentoras", cada módulo enseñado por una desde su área (Kat: comunicación/estrategia digital; Shei: psicología/bienestar; Luz: autoconocimiento/energía), cartilla + entregables.
+- **Decisión explícita del usuario:** no es checkout real todavía — es una lista de espera (correo → tabla `waitlist_signups`), porque el curso sigue en edición sin nombre/precio definitivo. Cuando esté listo, esta sección se reemplaza por la página de venta real.
+- Beneficios por inscribirse primero: el usuario propuso ideas (30% en eventos presenciales, ebook de regalo) pero no confirmó los números exactos — se dejó copy genérico ("beneficios exclusivos para quienes se inscriban primero") a propósito, para no prometer algo no confirmado. Pendiente definir el beneficio exacto.
+- `waitlist_signups`: tabla sin políticas RLS públicas — solo el servidor (admin/service role) puede escribir, nadie puede leer la lista desde el navegador. Duplicados (mismo correo + misma fuente) no dan error al usuario, solo confirman igual.
+- **Nota de proceso:** durante la verificación en el navegador, un clic sin `tabId` explícito aterrizó por accidente en una pestaña de producción que el usuario tenía abierta (no en la de desarrollo local) — no se guardó ningún dato de prueba ahí, pero quedó como recordatorio: siempre pasar `tabId` explícito cuando haya más de una pestaña abierta, en vez de confiar en la pestaña "activa" por defecto.
+
+### Pendiente
+- Definir el beneficio exacto por inscribirse primero en la lista de espera (el usuario mencionó 30% en eventos + ebook como ideas, sin confirmar).
+- Video del evento cuando el usuario lo tenga.
+- Página de venta real del curso cuando tenga nombre/precio/descripción definidos — reemplazaría esta sección de lista de espera.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
