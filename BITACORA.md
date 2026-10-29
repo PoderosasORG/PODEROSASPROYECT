@@ -665,3 +665,17 @@ El usuario confirmó los beneficios (30% en eventos + ebook) y pidió mejorar el
 - Video del evento cuando el usuario lo tenga.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 13) — Copy final y definitivo de la sección del curso
+
+El usuario entregó el texto completo y definitivo de la sección (hero, dolores, método en 3 pasos con "qué te llevas", resultados, cierre emocional, lista de espera con disclaimer legal) — se montó tal cual, sin reescribir. PR [#21](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/21), fusionado y desplegado.
+
+- Dos CTAs intermedios ("Quiero ser parte de Poderosas" y "Quiero recibir información del lanzamiento") son anclas (`#lista-espera-curso`) que bajan al formulario real — probado en navegador, funciona.
+- El usuario incluyó su propio disclaimer legal ("Beneficios exclusivos... sujetos a las condiciones que se comuniquen en el lanzamiento") — buena práctica, se dejó tal cual la escribió.
+- Esta es ahora la versión definitiva de la sección hasta que el curso esté listo para venderse de verdad (con precio y checkout).
+
+### Pendiente
+- Cuando el curso tenga nombre final, precio y fecha de lanzamiento, reemplazar esta sección de lista de espera por la página de venta real con checkout.
+- Video del evento cuando el usuario lo tenga.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
