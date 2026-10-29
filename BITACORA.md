@@ -705,3 +705,40 @@ El usuario pidió 4 tarjetas más. PR [#23](https://github.com/PoderosasORG/PODE
 - Video del evento cuando el usuario lo tenga.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-29 — Rediseño completo del correo de confirmación de boleta + PDF
+
+El usuario pidió un brief muy detallado: revisar todo el flujo del QR antes de tocar nada, rediseñar el correo con identidad de marca, agregar botón real de Google Maps, investigar si el QR funciona sin internet, evaluar y si es viable implementar una entrada descargable, usar datos reales (nunca "undefined" ni textos de prueba), y probar todo antes de dar por terminado. PR [#25](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/25), fusionado y desplegado.
+
+**Investigación del flujo existente (antes de tocar nada):**
+- El QR se genera en `src/app/api/webhooks/wompi/route.ts` al aprobarse el pago (Wompi), usando `event_ticket.id` como valor codificado.
+- Se envía embebido como **adjunto** del correo (`cid:boleta-qr`, librería `qrcode`) — no se carga desde una URL externa.
+- Se valida en `/api/escaner/check-in` contra `event_tickets` en Supabase, marcando `checked_in_at` para que no se reuse — requiere sesión de una creadora autenticada.
+
+**Hallazgo clave sobre "funciona sin internet":**
+- **Mostrar** el QR sí funciona sin internet una vez el correo ya se sincronizó al teléfono, porque es un adjunto embebido, no una imagen remota.
+- **Validar** el QR en la puerta sí necesita internet — pero del lado de quien escanea (el staff con la app `/escaner`), no de la asistente. No se intentó simular "validación offline" — eso cambiaría la lógica de seguridad y no se pidió.
+
+**Cambios implementados:**
+- `src/lib/sendTicketEmail.ts` reescrito con el texto exacto que entregó el usuario, identidad visual de marca (crema, serif + sans, dorado suave), estructura con tablas e inline styles (compatible Gmail/Outlook/móvil, sin JavaScript), meta viewport, saludo neutro si no hay nombre (nunca "Hola Prueba" ni ids de debug en producción).
+- **Botón "Cómo llegar"**: link real a Google Maps construido con la dirección exacta como texto de búsqueda (`Edificio Emprendu, Calle 85 # 12-66, Bogotá, Colombia`) — nunca coordenadas inventadas. Verificado navegando al link: resuelve a "Emprendu - Calle 85, Ac. 85 #12-66", la ubicación correcta.
+- **Entrada descargable en PDF** (nuevo): `src/lib/generateTicketPdf.ts` (usa `pdf-lib`, nueva dependencia pura JS sin binarios nativos, segura para Vercel) + `src/app/api/boleta/[ticketId]/pdf/route.ts`. Usa los mismos datos reales y el mismo QR que el correo — se evaluaron tres opciones (QR en correo / PDF descargable / wallet pass) y se recomendó+implementó la primera más esta segunda por ser las más simples y fiables; un pase de Apple/Google Wallet se descartó por requerir registro con esas plataformas, fuera de alcance razonable aquí.
+- Correo de soporte (`katysheicomunicacion@gmail.com`) centralizado en una constante, para cambiarlo fácil cuando exista el definitivo.
+
+**Pruebas reales ejecutadas (no solo "debería funcionar"):**
+- `npm run build` completo sin errores de tipos, confirmando que la nueva ruta `/api/boleta/[ticketId]/pdf` compila.
+- Vista previa visual del HTML en el navegador (desktop y mobile 375px) vía una ruta temporal que nunca se commiteó, solo existió durante la prueba y se borró después.
+- Envío real de un correo completo (con el adjunto QR) a una cuenta propia — confirmado que llega bien y se ve como se diseñó.
+- Descarga del PDF con un id de boleta **real** ya existente en la base de datos (de una prueba de compra anterior) — PDF válido, QR escaneable.
+- Confirmado en producción después del deploy: `GET /api/boleta/.../pdf` devuelve `200 application/pdf`.
+- Las tres rutas de depuración usadas (`debugtestticketemail`, `debuglisttickets`, `debugpreviewemail`) se crearon, usaron y borraron en la misma sesión — nunca llegaron a un commit.
+
+**Pendiente — el logo ilustrado:** el usuario pidió mejorar el logo a una corona dorada elegante tipo "PODEROSA" (mandó una referencia). No se implementó: no hay herramienta de generación de imágenes disponible en esta sesión para crear ilustración original. Queda pendiente que el usuario decida cómo resolverlo (ver pregunta en el siguiente mensaje al usuario).
+
+### Pendiente
+- Resolver el logo ilustrado (corona) — ver arriba.
+- Confirmar los temas reales de las 30 plantillas de la lista de espera del curso.
+- Cuando el curso tenga nombre final, precio y fecha, reemplazar la sección de lista de espera por la página de venta real.
+- Video del evento cuando el usuario lo tenga.
+- Limpiar el perfil de prueba "QA CRM".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
