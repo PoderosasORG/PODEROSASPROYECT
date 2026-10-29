@@ -648,3 +648,20 @@ Reemplaza "El GPS de tu vida" en la landing. PR [#18](https://github.com/Poderos
 - Página de venta real del curso cuando tenga nombre/precio/descripción definidos — reemplazaría esta sección de lista de espera.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 12) — Copy profesional de la sección del curso
+
+El usuario confirmó los beneficios (30% en eventos + ebook) y pidió mejorar el copy de la sección del curso dando referencias reales (mariademondo.com/curso-amor-propio, isabellacortesb.com, valentinaortizf.co, mindvalley.com). PR [#19](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/19) (beneficios) y [#20](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/20) (copy), ambos fusionados y desplegados.
+
+- Se visitó la referencia mariademondo.com/curso-amor-propio y se identificó su estructura (que sí funciona en páginas de venta de cursos): dolor/empatía → módulos explicados uno por uno → beneficios → CTA → (precio y testimonios cuando existan).
+- Se aplicó esa estructura a "Metodología Poderosa", adaptada a que sigue siendo **lista de espera** (no hay precio ni testimonios porque el curso no existe todavía — eso se agregará cuando el curso esté listo, nunca inventado):
+  - Headline más fuerte: "No necesitas más fuerza de voluntad. Necesitas un método que sí puedas sostener."
+  - 4 bullets de "¿Te pasa esto?" (dolor real de la audiencia objetivo)
+  - 3 módulos numerados (01/02/03), cada uno con 2-3 líneas de qué se aprende, usando el marco que el sitio ya tenía (Identificar/Comprender/Aplicar) para que se sienta consistente con el resto del sitio, no como algo pegado aparte
+  - Beneficios en tarjetas visuales justo antes del formulario
+
+### Pendiente
+- Cuando el curso tenga nombre final, precio y fecha de lanzamiento, reemplazar esta sección de lista de espera por la página de venta real con checkout.
+- Video del evento cuando el usuario lo tenga.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
