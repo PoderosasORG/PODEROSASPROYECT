@@ -679,3 +679,18 @@ El usuario entregó el texto completo y definitivo de la sección (hero, dolores
 - Video del evento cuando el usuario lo tenga.
 - Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-28 (continuación 14) — 4 beneficios en la lista de espera del curso
+
+El usuario pidió ampliar de 2 a 4 beneficios por inscribirse primero. PR [#22](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/22), fusionado y desplegado.
+
+- **30 plantillas de regalo** — temas inventados a modo de placeholder (amor propio, autoconocimiento, relaciones de pareja) a pedido del usuario ("invéntate otros temas, esos ya después los sacamos nosotros") — pendiente que confirme los temas reales.
+- **50% de descuento en sesión Bio-Well** — investigado en internet: la cámara Bio-Well es un dispositivo real de bioelectrografía (GDV, Gas Discharge Visualization) que escanea las yemas de los dedos y genera una visualización del "campo energético" (estrés, centros de energía). Es tecnología real y usada en el mundo del bienestar/holístico, pero **no está validada científicamente** como medición exacta de chakras o salud — se describió en el sitio de forma neutra ("un escaneo que visualiza tu campo energético"), sin afirmar beneficios médicos no comprobados. Es un beneficio real (descuento en un servicio que Luz ya ofrece dentro de su área de análisis energético), no inventado.
+- Ahora son 4 tarjetas en cuadrícula 2x2: eventos, ebook, plantillas, Bio-Well.
+
+### Pendiente
+- Confirmar los temas reales de las 30 plantillas (hoy son placeholder).
+- Cuando el curso tenga nombre final, precio y fecha de lanzamiento, reemplazar esta sección de lista de espera por la página de venta real con checkout.
+- Video del evento cuando el usuario lo tenga.
+- Limpiar el perfil de prueba "QA CRM" que sigue apareciendo en "otras poderosas".
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
