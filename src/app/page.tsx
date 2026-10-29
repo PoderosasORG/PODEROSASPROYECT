@@ -138,96 +138,210 @@ export default async function Home() {
       </section>
 
       {/* Curso virtual — lista de espera, sin cobrar todavía.
-          Estructura inspirada en páginas de venta de cursos que sí
-          convierten (dolor → qué aprendes módulo a módulo → beneficios
-          → CTA), adaptada a Poderosas: sin precio ni testimonios
-          falsos porque el curso todavía no existe, solo lista de espera. */}
+          Copy final entregado por el usuario, montado tal cual. */}
       <section className="px-6 py-24 bg-white">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
           <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
             Próximamente · Curso virtual
           </span>
           <h2 className="font-serif text-4xl sm:text-5xl leading-tight">
-            No necesitas más fuerza de voluntad.
-            <br />
-            Necesitas un método que sí puedas sostener.
+            Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
           </h2>
-          <p className="text-foreground/70 max-w-xl">
-            Metodología Poderosa es el curso virtual donde Kat, Shei y Luz te
-            acompañan, cada una desde su área, a ordenar lo que sientes,
-            definir lo que quieres y convertirlo en pasos que de verdad
-            cumples.
+          <p className="text-foreground/70 max-w-xl font-medium">
+            Un método práctico para entender lo que sientes, descubrir lo que
+            realmente quieres y empezar a convertirlo en realidad.
           </p>
+          <p className="text-foreground/70 max-w-xl">
+            A veces sabes que quieres algo diferente, pero no sabes por dónde
+            empezar. O tienes tantas ideas, dudas y expectativas encima que
+            terminas dejando para después lo que de verdad importa.
+          </p>
+          <p className="text-foreground/70 max-w-xl">
+            Metodología Poderosa te ayuda a poner en orden tus pensamientos,
+            reconectar contigo y transformar tus deseos en pasos concretos
+            que puedas llevar a tu vida real.
+          </p>
+          <p className="text-foreground/70 max-w-xl font-medium">
+            No se trata de convertirte en otra persona. Se trata de aprender
+            a elegir tu propio camino.
+          </p>
+          <a
+            href="#lista-espera-curso"
+            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Quiero ser parte de Poderosas
+          </a>
         </div>
 
-        <div className="max-w-xl mx-auto mt-14 flex flex-col gap-4 px-6">
-          <h3 className="font-serif text-2xl text-center mb-2">¿Te pasa esto?</h3>
+        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6">
+          <h3 className="font-serif text-2xl text-center mb-2">
+            ¿Sientes que quieres cambiar algo, pero no sabes cómo empezar?
+          </h3>
           {[
-            "Sabes que algo tiene que cambiar, pero no sabes por dónde empezar.",
-            "Has intentado de todo — libros, videos, propósitos de año nuevo — y nada se queda.",
-            "Tomas una decisión un lunes y para el viernes ya la abandonaste.",
-            "Buscas claridad en redes sociales y terminas con más ruido, no menos.",
+            "Tienes ganas de hacer algo diferente, pero no consigues identificar qué es lo que realmente quieres.",
+            "Empiezas proyectos, haces planes y te llenas de motivación, pero te cuesta mantener el rumbo.",
+            "Te descubres tomando decisiones pensando en lo que esperan los demás, en lugar de preguntarte qué quieres tú.",
+            "Consumes consejos, guardas publicaciones y buscas respuestas, pero sigues sintiendo que necesitas ordenar tus ideas.",
+            "Sabes que tienes cosas por hacer y sueños por cumplir, pero te cuesta convertirlos en acciones concretas.",
           ].map((pain) => (
             <p key={pain} className="flex gap-3 text-foreground/80">
               <span className="text-gold">✦</span>
               {pain}
             </p>
           ))}
+          <p className="text-center text-foreground/70 mt-4">
+            No necesitas tener toda tu vida resuelta para empezar. Necesitas
+            un punto de partida y herramientas para avanzar.
+          </p>
+          <p className="text-center font-medium">
+            No tienes que resolverlo todo de una vez. Empieza por ti.
+          </p>
         </div>
 
-        <div className="max-w-4xl mx-auto mt-16 px-6">
-          <h3 className="font-serif text-2xl text-center mb-10">
-            Así funciona Metodología Poderosa
-          </h3>
+        <div className="max-w-4xl mx-auto mt-20 px-6">
+          <p className="text-center text-foreground/70 max-w-2xl mx-auto mb-10">
+            Metodología Poderosa es un curso virtual que te acompaña a
+            recorrer tres pasos fundamentales para construir una vida más
+            alineada con quien eres y con lo que quieres.
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
             <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">01</span>
-              <p className="font-serif text-lg">Kat — Identificar</p>
+              <p className="font-serif text-lg">Reconoce quién eres</p>
               <p className="text-sm text-foreground/60">
-                Comunicación y estrategia digital: cómo nombrar lo que
-                quieres contarle al mundo y construir una voz propia, sin
-                perderte en lo que &ldquo;deberías&rdquo; mostrar.
+                Comprende mejor lo que sientes, identifica tus necesidades y
+                reconoce aquello que influye en tus decisiones.
+              </p>
+              <p className="text-sm text-foreground/60">
+                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
+                herramientas de autoconocimiento para entenderte mejor y
+                empezar a escucharte con más intención.
               </p>
             </div>
             <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">02</span>
-              <p className="font-serif text-lg">Shei — Comprender</p>
+              <p className="font-serif text-lg">Descubre qué quieres</p>
               <p className="text-sm text-foreground/60">
-                Psicología y bienestar: qué hay detrás de lo que sientes,
-                para dejar de repetir patrones que ya no te sirven.
+                Distingue tus deseos de las expectativas externas, explora
+                tus posibilidades y define qué es importante para ti en esta
+                etapa de tu vida.
+              </p>
+              <p className="text-sm text-foreground/60">
+                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
+                mayor claridad sobre tus prioridades, tus valores y la
+                dirección que quieres tomar.
               </p>
             </div>
             <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">03</span>
-              <p className="font-serif text-lg">Luz — Aplicar</p>
+              <p className="font-serif text-lg">Convierte tus deseos en acciones</p>
               <p className="text-sm text-foreground/60">
-                Autoconocimiento y energía: cómo sostener el cambio en el
-                tiempo, con herramientas prácticas para el día a día.
+                Pasa de las ideas a los pasos concretos. Aprende a organizar
+                tus objetivos, tomar decisiones y construir una forma de
+                avanzar que puedas sostener en tu día a día.
+              </p>
+              <p className="text-sm text-foreground/60">
+                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
+                ejercicios y herramientas prácticas para empezar a
+                materializar lo que quieres.
               </p>
             </div>
           </div>
-          <p className="text-center text-sm text-foreground/60 mt-8">
-            Incluye cartilla descargable y entregables prácticos para cada
-            módulo — para aplicar lo que aprendes, no solo verlo.
+        </div>
+
+        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6">
+          <h3 className="font-serif text-2xl text-center mb-2">
+            ¿Qué vas a conseguir con Metodología Poderosa?
+          </h3>
+          <p className="text-center text-foreground/70">
+            Al finalizar el recorrido, habrás trabajado para:
+          </p>
+          {[
+            "Entenderte mejor: reconocer qué sientes, qué necesitas y qué quieres cambiar.",
+            "Tomar decisiones con más claridad: identificar tus prioridades y evaluar qué tiene sentido para ti.",
+            "Dejar de acumular ideas sin rumbo: convertir tus deseos en objetivos y próximos pasos.",
+            "Reconocer lo que te frena: explorar patrones y expectativas que pueden estar dificultando tu avance.",
+            "Construir un plan propio: definir acciones realistas que puedas empezar a aplicar en tu vida cotidiana.",
+          ].map((item) => (
+            <p key={item} className="flex gap-3 text-foreground/80">
+              <span className="text-gold">✦</span>
+              {item}
+            </p>
+          ))}
+          <p className="text-center text-foreground/70 mt-4">
+            No necesitas tener todas las respuestas antes de empezar. El
+            proceso está diseñado para ayudarte a encontrarlas y trabajar
+            con ellas paso a paso.
           </p>
         </div>
 
-        <div className="max-w-xl mx-auto mt-16 flex flex-col items-center gap-5 px-6 text-center">
-          <h3 className="font-serif text-2xl">Por inscribirte primero, te llevas</h3>
+        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6 text-center">
+          <p className="font-serif text-2xl">
+            No es solo información. Es un proceso para llevar a tu vida.
+          </p>
+          <p className="text-foreground/70">
+            El curso incluye una cartilla descargable y ejercicios prácticos
+            para acompañar cada módulo.
+          </p>
+          <p className="text-foreground/70">
+            Porque leer una idea inspiradora puede hacerte reflexionar
+            durante unos minutos. Trabajarla, escribir tus respuestas y
+            llevarla a tu realidad te permite convertir esa reflexión en
+            algo útil para ti.
+          </p>
+          <p className="text-foreground/70">
+            Tendrás herramientas para explorar lo que sientes, aclarar lo
+            que quieres y definir cómo empezar a actuar.
+          </p>
+          <p className="text-foreground/70 mt-4">
+            Tu próximo capítulo no tiene que empezar cuando tengas todo
+            resuelto.
+          </p>
+          <p className="text-foreground/70">
+            Puede empezar cuando decidas dedicarte un espacio para
+            escucharte, reconocer lo que necesitas y dar un primer paso.
+          </p>
+          <p className="font-medium">
+            Metodología Poderosa es una invitación a dejar de vivir en
+            automático y empezar a construir, con intención, una vida más
+            tuya.
+          </p>
+          <a
+            href="#lista-espera-curso"
+            className="mt-2 self-center rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Quiero recibir información del lanzamiento
+          </a>
+        </div>
+
+        <div
+          id="lista-espera-curso"
+          className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-5 px-6 text-center scroll-mt-16"
+        >
+          <h3 className="font-serif text-2xl">Inscríbete en la lista de espera</h3>
+          <p className="text-foreground/70">
+            Déjanos tu correo para recibir información cuando abramos las
+            inscripciones.
+          </p>
+          <p className="text-sm text-foreground/70">
+            Además, por apuntarte primero, podrás acceder a:
+          </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
             <div className="rounded-2xl border border-gold-light/60 p-5">
               <p className="text-2xl">🎁</p>
               <p className="text-sm font-medium mt-1">30% de descuento</p>
-              <p className="text-xs text-foreground/60">en todos los eventos presenciales</p>
+              <p className="text-xs text-foreground/60">en los eventos presenciales de Poderosas</p>
             </div>
             <div className="rounded-2xl border border-gold-light/60 p-5">
               <p className="text-2xl">📘</p>
               <p className="text-sm font-medium mt-1">Un ebook de regalo</p>
-              <p className="text-xs text-foreground/60">al abrir las inscripciones</p>
+              <p className="text-xs text-foreground/60">cuando abramos las inscripciones al curso</p>
             </div>
           </div>
-          <p className="text-xs uppercase tracking-wide text-gold font-medium mt-2">
-            Solo para quienes se inscriban primero en la lista de espera
+          <p className="text-xs text-foreground/50 max-w-sm">
+            Beneficios exclusivos para quienes se inscriban en la lista de
+            espera, sujetos a las condiciones que se comuniquen en el
+            lanzamiento.
           </p>
           <WaitlistForm source="curso-metodologia-poderosa" />
         </div>
