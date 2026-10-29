@@ -9,7 +9,7 @@ export default async function EscanerPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/login?next=/escaner");
   }
 
   const { data: creator } = await supabase

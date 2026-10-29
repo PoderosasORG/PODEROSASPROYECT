@@ -11,7 +11,7 @@ export default async function PanelPage() {
   } = await supabase.auth.getUser();
 
   if (!user) {
-    redirect("/login");
+    redirect("/login?next=/panel");
   }
 
   const { data: profile } = await supabase

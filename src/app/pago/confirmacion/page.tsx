@@ -9,6 +9,10 @@ const STATUS_COPY: Record<string, { title: string; message: string }> = {
     title: "¡Pago aprobado!",
     message: "Tu compra quedó confirmada. Ya puedes acceder a tu contenido.",
   },
+  "approved-event": {
+    title: "¡Tu entrada está confirmada!",
+    message: "Te acabamos de enviar un correo con tu boleta y el código QR para el evento. Revisa tu bandeja de entrada (y spam, por si acaso).",
+  },
   declined: {
     title: "Pago rechazado",
     message: "Tu banco o tarjeta rechazó el pago. Puedes intentar de nuevo con otro medio de pago.",
@@ -48,7 +52,7 @@ export default async function ConfirmacionPage({
 
   const { data: order } = await supabase
     .from("orders")
-    .select("id, status, creator_id, creators(slug, wompi_public_key)")
+    .select("id, status, creator_id, creators(slug, wompi_public_key), products(type)")
     .eq("id", orderId)
     .maybeSingle();
 
@@ -65,6 +69,7 @@ export default async function ConfirmacionPage({
 
   let status = order.status;
   const creator = Array.isArray(order.creators) ? order.creators[0] : order.creators;
+  const product = Array.isArray(order.products) ? order.products[0] : order.products;
 
   // Feedback inmediato para el comprador. El webhook de Wompi es la
   // fuente de verdad definitiva y actualizará el mismo registro
@@ -90,17 +95,19 @@ export default async function ConfirmacionPage({
     }
   }
 
-  const copy = STATUS_COPY[status] ?? STATUS_COPY.pending;
+  const copyKey = status === "approved" && product?.type === "event" ? "approved-event" : status;
+  const copy = STATUS_COPY[copyKey] ?? STATUS_COPY.pending;
+  const isEvent = product?.type === "event";
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
       <h1 className="font-serif text-3xl">{copy.title}</h1>
       <p className="text-foreground/70 max-w-md">{copy.message}</p>
       <Link
-        href={creator?.slug ? `/${creator.slug}` : "/"}
+        href={isEvent ? "/evento" : creator?.slug ? `/${creator.slug}` : "/"}
         className="mt-4 rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
       >
-        Volver al perfil
+        {isEvent ? "Volver al evento" : "Volver al perfil"}
       </Link>
     </div>
   );
