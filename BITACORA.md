@@ -760,3 +760,27 @@ El usuario pidió seguir revisando "que todos los botones funcionen" y mejorar l
 - Cuando el curso tenga nombre final, precio y fecha, reemplazar la sección de lista de espera por la página de venta real.
 - Video del evento cuando el usuario lo tenga.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-29 (continuación 2) — Función para agregar módulos a un curso existente
+
+El curso "Metodología Poderosa" (hasta ahora solo lista de espera en la landing) empieza a construirse de verdad: Luz es el módulo 01, Kat el 02, Shei el 03 — Kat ya tiene sus videos editados y listos. PR [#27](https://github.com/PoderosasORG/PODEROSASPROYECT/pull/27), fusionado y desplegado.
+
+**Decisión de arquitectura confirmada con el usuario:** el curso conjunto vive bajo **una sola cuenta** (la que recibe el pago) porque el sistema ata cada producto a un solo `creator_id` con sus propias llaves de Wompi. Se eligió la cuenta de **Shei**, que ya tiene Wompi configurado (Kat y Luz todavía no — pendiente de antes). Luz y Kat tienen sus propios paneles en poderosas.org y van a agregar sus módulos ellas mismas, desde sus propias sesiones, cuando tengan sus videos listos.
+
+**Aclaración importante que surgió en la conversación:** el sitio ya tenía un "Subir video desde galería" nativo, pero es para videos **públicos y gratis** incrustados en el "Sobre mí" de cada perfil (bucket `covers`) — no sirve para un curso de pago. Se confirmó con el usuario que el curso sigue siendo de pago, así que se necesitaba el mecanismo real de curso (`course_lessons` + enlaces firmados solo para quien compró), que ya existía para *crear* un curso de una vez, pero no para volver después y agregarle más módulos.
+
+**Lo construido:** `/panel/contenido/[productId]/lecciones` — pantalla nueva (solo visible para la creadora dueña del producto) donde se pueden subir más videos como módulos, renombrarlos o borrarlos, sin recrear el curso. Enlazada como "Gestionar módulos" desde la lista de contenido de cada creadora, solo para productos tipo "curso". Reutiliza toda la infraestructura ya probada (bucket privado `product-files`, tabla `course_lessons`, enlaces firmados de `/mis-compras`) — no se tocó nada de pagos.
+
+**Flujo real para crear el curso ahora:**
+1. Quien tenga acceso a la cuenta de Shei entra a `/panel/subir`, elige "Curso virtual", pone nombre "Metodología Poderosa" (o el que decidan), precio, descripción, y sube los videos de Kat como primeros módulos.
+2. Desde esta sesión de Claude Code se van a subir los archivos de Kat que están en la computadora local — pendiente de hacer en la siguiente parte de la sesión.
+3. Cuando Luz y Shei tengan sus videos, cada una entra a su propio panel → Tu contenido → busca el curso (una vez que lo vean ahí, si comparten visibilidad) → "Gestionar módulos" → agrega los suyos.
+
+### Pendiente
+- Subir los archivos de video de Kat desde esta sesión (ya están en la computadora local, pendiente ubicarlos y subirlos).
+- Crear el producto del curso "Metodología Poderosa" bajo la cuenta de Shei.
+- Logo ilustrado (corona dorada) — pendiente que el usuario lo genere con ChatGPT.
+- Confirmar los temas reales de las 30 plantillas de la lista de espera.
+- Reemplazar la sección de lista de espera por la página de venta real una vez el curso tenga precio y fecha definitivos.
+- Video del evento cuando el usuario lo tenga.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
