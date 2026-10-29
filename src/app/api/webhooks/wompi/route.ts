@@ -112,8 +112,8 @@ export async function POST(req: NextRequest) {
         await sendTicketEmail({
           to: order.buyer_email,
           buyerName: order.buyer_name ?? "",
-          eventTitle: product.title,
           ticketId: ticket.id,
+          siteUrl: req.nextUrl.origin,
         });
       } catch (err) {
         // No tumbamos el webhook por un fallo de correo: la boleta ya
