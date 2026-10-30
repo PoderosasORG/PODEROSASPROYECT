@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Lista de espera (sin cobro): solo guarda el correo de quien quiere
 // que le avisen cuando un producto (ej. el curso virtual) esté listo.
 export async function POST(req: NextRequest) {
+  const { limited, retryAfter } = await checkRateLimit(req, "waitlist", {
+    limit: 5,
+    windowSeconds: 60,
+  });
+  if (limited) return rateLimitResponse(retryAfter!);
+
   const body = await req.json().catch(() => null);
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase() : "";
   const source = typeof body?.source === "string" ? body.source.trim() : "general";

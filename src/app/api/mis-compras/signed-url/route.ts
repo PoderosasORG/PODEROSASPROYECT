@@ -1,10 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 const SIGNED_URL_TTL_SECONDS = 60 * 10; // 10 minutos: alcanza para ver/descargar, no para compartir el link.
 
 export async function POST(req: NextRequest) {
+  // Frena un script que pida este link firmado en bucle (cada link nuevo
+  // es una oportunidad más de compartirlo/descargarlo). Alguien viendo
+  // varios módulos de un curso real nunca se acerca a este límite.
+  const { limited, retryAfter } = await checkRateLimit(req, "signed-url", {
+    limit: 20,
+    windowSeconds: 60,
+  });
+  if (limited) return rateLimitResponse(retryAfter!);
+
   const supabase = await createClient();
   const {
     data: { user },

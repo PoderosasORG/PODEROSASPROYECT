@@ -1,8 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
+  // Aunque ya requiere sesión de creadora, esto frena a alguien con una
+  // cuenta válida intentando adivinar/probar ids de boleta en bloque.
+  const { limited, retryAfter } = await checkRateLimit(req, "escaner-checkin", {
+    limit: 30,
+    windowSeconds: 60,
+  });
+  if (limited) return rateLimitResponse(retryAfter!);
+
   const supabase = await createClient();
   const {
     data: { user },
