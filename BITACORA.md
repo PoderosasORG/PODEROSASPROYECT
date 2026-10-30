@@ -784,3 +784,25 @@ El curso "Metodología Poderosa" (hasta ahora solo lista de espera en la landing
 - Reemplazar la sección de lista de espera por la página de venta real una vez el curso tenga precio y fecha definitivos.
 - Video del evento cuando el usuario lo tenga.
 - Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, límite de tasa, deploy automático de Vercel.
+
+## 2026-10-29/30 — Función de módulos de curso probada + límite de tasa real + reproductor sin descarga
+
+**Demo del flujo de "Subir curso" y "Gestionar módulos":** se creó una cuenta de creadora sintética temporal (`qa-demo-curso`, vía admin, sin tocar la cuenta real de Shei) para mostrarle al usuario visualmente, paso a paso, cómo se ve el asistente de subida y la nueva pantalla de "Gestionar módulos" antes de que lo use de verdad. Cuenta borrada al terminar.
+
+**Archivos de video de Kat localizados:** carpeta `C:\Users\delga\OneDrive\Desktop\SHEINA PODEROSAS [QUÉ QUIERO}\CURSO FINAL SHEI\` — Introducción + 3 módulos en 2 partes cada uno (7 videos, 3.4 GB total, el más grande 789 MB). **Alertado al usuario:** esto puede exceder el límite del plan gratuito de Supabase Storage. El usuario decidió subirlos manualmente él mismo (no se subieron desde esta sesión) usando la pantalla "Gestionar módulos" ya construida.
+
+**Seguridad de los videos del curso — pedido explícito del usuario, con investigación de `C:\Users\delga\mystery-tienda`:**
+- Se explicó honestamente que **no existe forma de hacer un video 100% imposible de copiar** en un navegador (grabación de pantalla siempre es posible) — se evitó prometer algo falso.
+- Reutilizado de mystery-tienda: patrón de límite de tasa por IP+ámbito sobre Redis (`app/lib/rateLimit.js` allá → `src/lib/rateLimit.ts` acá), fail-open si Redis falla. Aplicado a los 4 endpoints públicos sin protección detectados en la auditoría del 21 de octubre: `/api/checkout-evento`, `/api/escaner/check-in`, `/api/mis-compras/signed-url`, `/api/waitlist`.
+- `PurchasedContent.tsx`: los videos de curso ahora se reproducen **dentro de la página** (no en pestaña nueva como archivo crudo) — así el navegador no les pone su botón nativo de "Descargar". Los archivos descargables (ebooks/plantillas) no cambiaron, esos sí deben poder descargarse.
+- **Infraestructura nueva:** Redis Cloud, plan gratuito (30MB, $0/mes), base de datos "Poderosas" bajo la cuenta `sheina.bautista@...` / poderosas.org. Variable `REDIS_URL` agregada en Vercel (Production/Preview/Development).
+- **Incidente real durante el despliegue, resuelto en caliente:** el usuario pegó accidentalmente el comando completo `redis-cli -u redis://...` como valor de `REDIS_URL` en vez de solo la URL — `new Redis()` lanzaba una excepción sin capturar, y los 4 endpoints recién protegidos empezaron a devolver 500 en producción. Se detectó al instante verificando con `curl` después del deploy (no se asumió que "debería funcionar"), se revisaron los logs de Vercel (`vercel logs`) para confirmar la causa exacta, se aplicó un hotfix (capturar el error de `new Redis()` para que siempre caiga a fail-open) y se desplegó de inmediato. Luego el usuario corrigió el valor real en Vercel y se confirmó con una prueba real (8 solicitudes seguidas a `/api/waitlist`: las primeras 5 dieron 200, de la 6ª en adelante 429) que el límite de tasa ya funciona de verdad.
+- **Aviso de seguridad real:** el usuario pegó la contraseña de Redis directo en el chat (no en el portapapeles como pide su propia regla) — se le avisó de inmediato, como exige el CLAUDE.md del proyecto.
+
+### Pendiente
+- El usuario sigue pendiente de subir manualmente los 7 videos del curso de Kat/Shei (ver carpeta arriba) — puede toparse con el límite de Supabase Storage, no verificado todavía.
+- Logo ilustrado (corona dorada) — pendiente que el usuario lo genere con ChatGPT.
+- Confirmar los temas reales de las 30 plantillas de la lista de espera.
+- Reemplazar la sección de lista de espera por la página de venta real una vez el curso tenga precio y fecha definitivos.
+- Video del evento cuando el usuario lo tenga.
+- Lo de siempre: Wompi independiente para Kat y Luz, DB de pruebas separada, cupones, deploy automático de Vercel.
