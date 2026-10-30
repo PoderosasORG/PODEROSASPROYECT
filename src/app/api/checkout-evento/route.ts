@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -8,6 +9,16 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // aquí no hay sesión de Supabase. La orden se crea con el service role
 // (admin), guardando nombre/correo directo en vez de un buyer_id.
 export async function POST(req: NextRequest) {
+  // Sin esto, un script podía crear órdenes "pending" sin límite — no
+  // roba dinero (Wompi sigue siendo la fuente de verdad del pago), pero
+  // podía inflar la tabla de órdenes y, si hay cupo limitado, acaparar
+  // cupos con órdenes que nunca se pagan.
+  const { limited, retryAfter } = await checkRateLimit(req, "checkout-evento", {
+    limit: 8,
+    windowSeconds: 60,
+  });
+  if (limited) return rateLimitResponse(retryAfter!);
+
   const body = await req.json().catch(() => null);
   const productId = body?.productId;
   const buyerName = typeof body?.buyerName === "string" ? body.buyerName.trim() : "";
