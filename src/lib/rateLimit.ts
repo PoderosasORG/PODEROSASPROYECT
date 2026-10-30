@@ -11,13 +11,20 @@ let redisClient: Redis | null | undefined;
 function getRedisClient(): Redis | null {
   if (!process.env.REDIS_URL) return null;
   if (redisClient === undefined) {
-    redisClient = new Redis(process.env.REDIS_URL, {
-      maxRetriesPerRequest: 1,
-      connectTimeout: 3000,
-    });
-    redisClient.on("error", (err) => {
-      console.error("[rateLimit] Error de conexión a Redis:", err);
-    });
+    try {
+      redisClient = new Redis(process.env.REDIS_URL, {
+        maxRetriesPerRequest: 1,
+        connectTimeout: 3000,
+      });
+      redisClient.on("error", (err) => {
+        console.error("[rateLimit] Error de conexión a Redis:", err);
+      });
+    } catch (err) {
+      // REDIS_URL mal escrita (ej. pegaron el comando "redis-cli -u ..."
+      // en vez de solo la URL) no debe tumbar endpoints de pago reales.
+      console.error("[rateLimit] REDIS_URL inválida, siguiendo sin límite de tasa:", err);
+      redisClient = null;
+    }
   }
   return redisClient;
 }
