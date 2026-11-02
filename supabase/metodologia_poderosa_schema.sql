@@ -38,13 +38,16 @@ alter table category_modules enable row level security;
 alter table category_module_files enable row level security;
 
 -- COURSE_CATEGORIES
+drop policy if exists "categories_select_published_product" on course_categories;
 create policy "categories_select_published_product" on course_categories for select using (
   exists (select 1 from products p where p.id = product_id and p.is_published = true)
   or owner_id = auth.uid()
 );
+drop policy if exists "categories_update_own" on course_categories;
 create policy "categories_update_own" on course_categories for update using (owner_id = auth.uid());
 
 -- CATEGORY_MODULES: público si publicado y hay acceso al producto; la dueña ve/edita los suyos siempre.
+drop policy if exists "modules_select_with_access" on category_modules;
 create policy "modules_select_with_access" on category_modules for select using (
   (
     is_published = true
@@ -57,6 +60,7 @@ create policy "modules_select_with_access" on category_modules for select using 
     select 1 from course_categories c where c.id = category_id and c.owner_id = auth.uid()
   )
 );
+drop policy if exists "modules_manage_own_category" on category_modules;
 create policy "modules_manage_own_category" on category_modules for all using (
   exists (select 1 from course_categories c where c.id = category_id and c.owner_id = auth.uid())
 ) with check (
@@ -64,6 +68,7 @@ create policy "modules_manage_own_category" on category_modules for all using (
 );
 
 -- CATEGORY_MODULE_FILES: mismas reglas, a través del módulo.
+drop policy if exists "module_files_select_with_access" on category_module_files;
 create policy "module_files_select_with_access" on category_module_files for select using (
   exists (
     select 1 from category_modules m
@@ -75,6 +80,7 @@ create policy "module_files_select_with_access" on category_module_files for sel
       )
   )
 );
+drop policy if exists "module_files_manage_own_category" on category_module_files;
 create policy "module_files_manage_own_category" on category_module_files for all using (
   exists (
     select 1 from category_modules m
@@ -86,6 +92,7 @@ create policy "module_files_manage_own_category" on category_module_files for al
     select 1 from category_modules m
     join course_categories c on c.id = m.category_id
     where m.id = module_id and c.owner_id = auth.uid()
+      and (storage.foldername(file_path))[1] = c.owner_id::text
   )
 );
 
@@ -127,6 +134,7 @@ returning id;
 -- quien subió el archivo, lo cual no sirve para que un comprador descargue
 -- el material de apoyo de Metodología Poderosa.
 -- ============================================================
+drop policy if exists "product_files_buyer_read_module_material" on storage.objects;
 create policy "product_files_buyer_read_module_material" on storage.objects for select
   using (
     bucket_id = 'product-files'
@@ -135,6 +143,7 @@ create policy "product_files_buyer_read_module_material" on storage.objects for 
       join category_modules m on m.id = f.module_id
       join course_categories c on c.id = m.category_id
       where f.file_path = storage.objects.name
+        and (storage.foldername(f.file_path))[1] = c.owner_id::text
         and (
           (m.is_published = true and public.has_access_to_product(c.product_id))
           or c.owner_id = auth.uid()
