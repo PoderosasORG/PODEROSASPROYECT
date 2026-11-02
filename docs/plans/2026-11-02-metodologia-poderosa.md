@@ -1173,7 +1173,7 @@ export default async function MetodologiaPoderosaPage() {
             Inicia sesión para comprarlo
           </a>
         ) : (
-          <BuyButton productId={product.id} priceCents={product.price_cents} />
+          <BuyButton productId={product.id} slug="cursos/metodologia-poderosa" accentColor="#c9a24b" />
         )}
       </div>
     );
@@ -1200,9 +1200,11 @@ export default async function MetodologiaPoderosaPage() {
 }
 ```
 
-Nota: revisar la firma real de `BuyButton` (`src/components/BuyButton.tsx`) antes de este paso
-— si espera props distintas a `productId`/`priceCents`, ajustar la llamada para que coincida
-exactamente (no inventar props nuevas sin mirar el componente existente).
+Nota: `BuyButton` (`src/components/BuyButton.tsx`) ya se verificó durante la planificación —
+espera `productId`, `slug` y `accentColor` (no `priceCents`, que no existe en ese componente).
+`slug` solo se usa para el redirect de `/login?next=/${slug}` si la compra falla por sesión
+vencida a mitad del flujo; como esta página ya filtra usuarios sin sesión antes de renderizar
+`BuyButton`, ese caso es un respaldo, no el camino principal.
 
 - [ ] **Step 2: Verificación manual**
 
