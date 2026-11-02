@@ -13,7 +13,16 @@ type Product = {
   product_files: ProductFile[];
 };
 
-export function PurchasedContent({ product }: { product: Product }) {
+export function PurchasedContent({
+  product,
+  hasCategorizedCourse = false,
+}: {
+  product: Product;
+  // Productos como "Metodología Poderosa" guardan su contenido en
+  // course_categories/category_modules, no en course_lessons/product_files,
+  // así que aquí solo se enlaza a su página de curso.
+  hasCategorizedCourse?: boolean;
+}) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [playingLessonId, setPlayingLessonId] = useState<string | null>(null);
@@ -132,7 +141,16 @@ export function PurchasedContent({ product }: { product: Product }) {
         </ul>
       )}
 
-      {lessons.length === 0 && files.length === 0 && (
+      {hasCategorizedCourse && (
+        <a
+          href="/cursos/metodologia-poderosa"
+          className="inline-block rounded-full border px-4 py-1 text-xs hover:bg-gold-light/30"
+        >
+          Ir al curso
+        </a>
+      )}
+
+      {!hasCategorizedCourse && lessons.length === 0 && files.length === 0 && (
         <p className="text-sm text-foreground/60">Esta creadora todavía no subió el contenido.</p>
       )}
 
