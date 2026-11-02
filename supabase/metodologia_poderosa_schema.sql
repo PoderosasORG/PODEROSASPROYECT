@@ -119,3 +119,25 @@ returning id;
 --   ('<id-del-producto-de-arriba>', '<uuid-de-luz>', '¿Quién soy?', 0),
 --   ('<id-del-producto-de-arriba>', '<uuid-de-shei>', '¿Qué quiero?', 1),
 --   ('<id-del-producto-de-arriba>', '<uuid-de-kat>', '¿Cómo lo logro?', 2);
+
+-- ============================================================
+-- Permite que quien compró el curso (o la dueña de la categoría) lea el
+-- material de apoyo de un módulo, sin importar quién lo subió. La política
+-- "product_files_owner_read" de content_upload_schema.sql solo deja leer a
+-- quien subió el archivo, lo cual no sirve para que un comprador descargue
+-- el material de apoyo de Metodología Poderosa.
+-- ============================================================
+create policy "product_files_buyer_read_module_material" on storage.objects for select
+  using (
+    bucket_id = 'product-files'
+    and exists (
+      select 1 from category_module_files f
+      join category_modules m on m.id = f.module_id
+      join course_categories c on c.id = m.category_id
+      where f.file_path = storage.objects.name
+        and (
+          (m.is_published = true and public.has_access_to_product(c.product_id))
+          or c.owner_id = auth.uid()
+        )
+    )
+  );

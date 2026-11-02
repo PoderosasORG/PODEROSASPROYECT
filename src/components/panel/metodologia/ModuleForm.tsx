@@ -23,6 +23,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [bunnyVideoId, setBunnyVideoId] = useState(existing?.bunny_video_id ?? null);
+  const [savedModuleId, setSavedModuleId] = useState(existing?.id ?? null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
@@ -73,12 +74,23 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
     setError(null);
     setSaving(true);
     try {
+      const supabase = createClient();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        setError("Sesión inválida, recarga la página.");
+        setSaving(false);
+        return;
+      }
+
       let videoId = bunnyVideoId;
       if (videoFile) {
         setUploadProgress(0);
         videoId = await uploadVideoToBunny(videoFile);
         setBunnyVideoId(videoId);
         setUploadProgress(null);
+        setVideoFile(null);
       }
       if (!videoId) {
         setError("Elige un video antes de guardar.");
@@ -86,11 +98,9 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
         return;
       }
 
-      const supabase = createClient();
-
       let customThumbnailUrl = existing?.custom_thumbnail_url ?? null;
       if (thumbnailFile) {
-        const path = `${categoryId}/${Date.now()}-${thumbnailFile.name}`;
+        const path = `${user.id}/metodologia/${categoryId}/${Date.now()}-${thumbnailFile.name}`;
         const { error: thumbError } = await supabase.storage.from("covers").upload(path, thumbnailFile);
         if (thumbError) throw thumbError;
         customThumbnailUrl = supabase.storage.from("covers").getPublicUrl(path).data.publicUrl;
@@ -106,26 +116,29 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
         is_published: publish,
       };
 
-      const { data: savedModule, error: saveError } = existing
-        ? await supabase.from("category_modules").update(row).eq("id", existing.id).select().single()
+      const { data: savedModule, error: saveError } = savedModuleId
+        ? await supabase.from("category_modules").update(row).eq("id", savedModuleId).select().single()
         : await supabase.from("category_modules").insert(row).select().single();
 
       if (saveError) throw saveError;
+      setSavedModuleId(savedModule.id);
 
       if (hasSupportMaterial && supportFile) {
-        const filePath = `${savedModule.id}/${Date.now()}-${supportFile.name}`;
+        const filePath = `${user.id}/metodologia/${savedModule.id}/${Date.now()}-${supportFile.name}`;
         const { error: uploadError } = await supabase.storage.from("product-files").upload(filePath, supportFile);
         if (uploadError) throw uploadError;
-        await supabase.from("category_module_files").insert({
+        const { error: fileRowError } = await supabase.from("category_module_files").insert({
           module_id: savedModule.id,
           file_path: filePath,
           file_name: supportFile.name,
         });
+        if (fileRowError) throw fileRowError;
       }
 
       onDone(savedModule as CategoryModule);
     } catch (err) {
       setError(err instanceof Error ? err.message : "No se pudo guardar el módulo.");
+      setUploadProgress(null);
     } finally {
       setSaving(false);
     }
