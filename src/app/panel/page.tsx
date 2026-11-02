@@ -26,6 +26,12 @@ export default async function PanelPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  const { data: ownedCategory } = await supabase
+    .from("course_categories")
+    .select("id")
+    .eq("owner_id", user.id)
+    .maybeSingle();
+
   return (
     <div className="flex flex-1 flex-col items-center bg-beige-light px-6 py-16 gap-8">
       <div className="w-full max-w-2xl flex items-center justify-between">
@@ -81,6 +87,14 @@ export default async function PanelPage() {
             >
               Mis clientes
             </Link>
+            {ownedCategory && (
+              <Link
+                href="/panel/metodologia-poderosa"
+                className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
+              >
+                METODOLOGÍA PODEROSA — Cargar material del curso
+              </Link>
+            )}
           </div>
         </div>
       ) : (
