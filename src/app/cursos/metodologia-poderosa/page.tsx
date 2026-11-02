@@ -16,6 +16,7 @@ export default async function MetodologiaPoderosaPage() {
   const { data: anyCategory } = await supabase
     .from("course_categories")
     .select("product_id")
+    .order("order_index")
     .limit(1)
     .maybeSingle();
 

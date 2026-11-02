@@ -46,6 +46,14 @@ create policy "categories_select_published_product" on course_categories for sel
 drop policy if exists "categories_update_own" on course_categories;
 create policy "categories_update_own" on course_categories for update using (owner_id = auth.uid());
 
+-- Restricción a nivel de columna: aunque la política RLS pase, Postgres
+-- solo deja a las creadoras (rol authenticated) cambiar el título. Sin esto,
+-- cualquiera de las 3 admins podría hacer `update course_categories set
+-- product_id = '<su propio producto>'` y desviar el pago del BuyButton hacia
+-- ella — justo lo que el anclaje por course_categories busca evitar.
+revoke update on course_categories from authenticated;
+grant update (title) on course_categories to authenticated;
+
 -- CATEGORY_MODULES: público si publicado y hay acceso al producto; la dueña ve/edita los suyos siempre.
 drop policy if exists "modules_select_with_access" on category_modules;
 create policy "modules_select_with_access" on category_modules for select using (
