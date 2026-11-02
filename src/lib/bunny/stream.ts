@@ -28,7 +28,7 @@ export async function createBunnyVideo(title: string): Promise<{ videoId: string
 export function createTusUploadAuth(videoId: string) {
   const libraryId = requireEnv("BUNNY_STREAM_LIBRARY_ID");
   const apiKey = requireEnv("BUNNY_STREAM_API_KEY");
-  const expire = Math.floor(Date.now() / 1000) + 60 * 60; // 1 hora para completar la subida
+  const expire = Math.floor(Date.now() / 1000) + 60 * 60 * 24; // 24 horas, para cubrir subidas grandes en conexiones lentas
 
   const signature = crypto
     .createHash("sha256")
