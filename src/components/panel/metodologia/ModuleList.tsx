@@ -1,7 +1,7 @@
 // src/components/panel/metodologia/ModuleList.tsx
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CategoryModule } from "@/lib/metodologiaPoderosa";
@@ -19,11 +19,20 @@ export function ModuleList({
   const [editing, setEditing] = useState<CategoryModule | "new" | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
+  useEffect(() => {
+    setModules(initialModules);
+  }, [initialModules]);
+
   async function handleDelete(module: CategoryModule) {
     if (!confirm(`¿Borrar el módulo "${module.title}"? Esto no se puede deshacer.`)) return;
     setBusyId(module.id);
     const supabase = createClient();
-    await supabase.from("category_modules").delete().eq("id", module.id);
+    const { error } = await supabase.from("category_modules").delete().eq("id", module.id);
+    if (error) {
+      alert("No se pudo borrar el módulo, intenta de nuevo.");
+      setBusyId(null);
+      return;
+    }
     setModules((prev) => prev.filter((m) => m.id !== module.id));
     setBusyId(null);
   }
