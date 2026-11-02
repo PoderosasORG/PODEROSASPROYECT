@@ -45,7 +45,11 @@ export function CourseViewer({
       </aside>
 
       <main className="flex-1 p-6">
-        {selected ? <ModulePlayer module={selected} /> : <p>Todavía no hay módulos publicados.</p>}
+        {selected ? (
+          <ModulePlayer key={selected.id} module={selected} />
+        ) : (
+          <p>Todavía no hay módulos publicados.</p>
+        )}
       </main>
     </div>
   );
