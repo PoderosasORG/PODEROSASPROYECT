@@ -85,7 +85,7 @@ export function ModuleList({
             <div className="flex flex-col">
               <button
                 onClick={() => handleMove(module, -1)}
-                disabled={busyId === module.id || index === 0}
+                disabled={busyId !== null || index === 0}
                 className="text-xs disabled:opacity-30"
                 aria-label="Subir"
               >
@@ -93,7 +93,7 @@ export function ModuleList({
               </button>
               <button
                 onClick={() => handleMove(module, 1)}
-                disabled={busyId === module.id || index === sorted.length - 1}
+                disabled={busyId !== null || index === sorted.length - 1}
                 className="text-xs disabled:opacity-30"
                 aria-label="Bajar"
               >

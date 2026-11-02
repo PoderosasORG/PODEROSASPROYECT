@@ -22,7 +22,8 @@ export default async function MetodologiaPoderosaPanelPage() {
     .from("category_modules")
     .select("id, category_id, title, description, bunny_video_id, custom_thumbnail_url, order_index, is_published")
     .eq("category_id", category.id)
-    .order("order_index");
+    .order("order_index")
+    .order("created_at");
 
   return (
     <div className="flex flex-1 flex-col items-center bg-beige-light px-6 py-16 gap-8">

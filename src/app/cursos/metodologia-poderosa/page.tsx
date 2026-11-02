@@ -9,11 +9,23 @@ export default async function MetodologiaPoderosaPage() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const { data: product } = await supabase
-    .from("products")
-    .select("id, title, description, price_cents, cover_image_url")
-    .eq("title", "Metodología Poderosa")
+  // El producto se ancla a través de course_categories (solo se siembran a mano
+  // desde el SQL Editor; ninguna creadora puede insertarlas), no por título:
+  // cualquiera podría publicar un producto llamado "Metodología Poderosa" y
+  // desviar el pago del BuyButton hacia ella.
+  const { data: anyCategory } = await supabase
+    .from("course_categories")
+    .select("product_id")
+    .limit(1)
     .maybeSingle();
+
+  const { data: product } = anyCategory
+    ? await supabase
+        .from("products")
+        .select("id, title, description, price_cents, cover_image_url")
+        .eq("id", anyCategory.product_id)
+        .maybeSingle()
+    : { data: null };
 
   if (!product) {
     return (
@@ -52,7 +64,8 @@ export default async function MetodologiaPoderosaPage() {
     .select("id, category_id, title, description, custom_thumbnail_url, order_index, is_published")
     .in("category_id", (categories ?? []).map((c) => c.id))
     .eq("is_published", true)
-    .order("order_index");
+    .order("order_index")
+    .order("created_at");
 
   if (!categories || categories.length === 0) {
     redirect("/panel");
