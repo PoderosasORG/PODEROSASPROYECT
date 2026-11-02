@@ -20,7 +20,7 @@ export default async function MetodologiaPoderosaPanelPage() {
 
   const { data: modules } = await supabase
     .from("category_modules")
-    .select("id, title, description, bunny_video_id, custom_thumbnail_url, order_index, is_published")
+    .select("id, category_id, title, description, bunny_video_id, custom_thumbnail_url, order_index, is_published")
     .eq("category_id", category.id)
     .order("order_index");
 
