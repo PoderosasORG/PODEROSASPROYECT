@@ -100,6 +100,40 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
+        <section className="px-6 pb-10">
+          <div className="max-w-3xl mx-auto">
+            <p className="text-center text-sm uppercase tracking-wide text-gold font-medium mb-6">
+              Además, tu compra incluye
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {[
+                { emoji: "🎁", title: "30% de descuento", desc: "en los eventos presenciales de Poderosas" },
+                { emoji: "📘", title: "Un ebook de regalo" },
+                {
+                  emoji: "📝",
+                  title: "30 plantillas de regalo",
+                  desc: "sobre amor propio, autoconocimiento y relaciones de pareja",
+                },
+                {
+                  emoji: "✨",
+                  title: "50% de descuento en tu sesión Bio-Well",
+                  desc: "un escaneo que visualiza tu campo energético",
+                },
+                { emoji: "💗", title: "Curso corto de amor propio" },
+                { emoji: "💬", title: "Curso corto de fortalecimiento de comunicación en pareja" },
+                { emoji: "📖", title: "Libro de interpretación de las líneas de las manos" },
+                { emoji: "🤲", title: "Curso de quiromancia" },
+              ].map((bonus) => (
+                <div key={bonus.title} className="rounded-2xl border border-gold-light/60 p-5 bg-white">
+                  <p className="text-2xl">{bonus.emoji}</p>
+                  <p className="text-sm font-medium mt-1">{bonus.title}</p>
+                  {bonus.desc && <p className="text-xs text-foreground/60">{bonus.desc}</p>}
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         <section className="px-6 pb-24">
           <div className="max-w-sm mx-auto rounded-2xl bg-white p-8 flex flex-col items-center gap-2 text-center border border-gold-light/60 sticky bottom-4 sm:static shadow-lg sm:shadow-none">
             <p className="text-xs uppercase tracking-wide text-gold font-medium">
