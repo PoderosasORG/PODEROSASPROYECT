@@ -23,4 +23,5 @@ export type CategoryModuleFile = {
   module_id: string;
   file_path: string;
   file_name: string;
+  display_name: string | null;
 };
