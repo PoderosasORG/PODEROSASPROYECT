@@ -27,6 +27,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [savingAction, setSavingAction] = useState<"draft" | "publish" | null>(null);
 
   async function uploadVideoToBunny(file: File): Promise<string> {
     const authRes = await fetch("/api/panel/metodologia/upload-auth", {
@@ -73,6 +74,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
     }
     setError(null);
     setSaving(true);
+    setSavingAction(publish ? "publish" : "draft");
     try {
       const supabase = createClient();
       const {
@@ -81,6 +83,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
       if (!user) {
         setError("Sesión inválida, recarga la página.");
         setSaving(false);
+        setSavingAction(null);
         return;
       }
 
@@ -95,6 +98,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
       if (!videoId) {
         setError("Elige un video antes de guardar.");
         setSaving(false);
+        setSavingAction(null);
         return;
       }
 
@@ -141,6 +145,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
       setUploadProgress(null);
     } finally {
       setSaving(false);
+      setSavingAction(null);
     }
   }
 
@@ -238,14 +243,14 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
           disabled={saving}
           className="rounded-full border border-gold px-5 py-2 text-gold text-sm hover:bg-gold hover:text-white transition-colors disabled:opacity-50"
         >
-          Guardar como borrador
+          {savingAction === "draft" ? "Guardando..." : "Guardar como borrador"}
         </button>
         <button
           onClick={() => handleSubmit(true)}
           disabled={saving}
           className="rounded-full bg-gold px-5 py-2 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors disabled:opacity-50"
         >
-          Publicar
+          {savingAction === "publish" ? "Publicando..." : "Publicar"}
         </button>
         <button onClick={onCancel} disabled={saving} className="text-sm text-foreground/60 hover:underline">
           Cancelar
