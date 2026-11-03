@@ -55,22 +55,8 @@ export default async function MetodologiaPoderosaPage() {
     const priceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
 
     const bonuses = [
-      { emoji: "🎁", title: "30% de descuento", desc: "en los eventos presenciales de Poderosas" },
-      { emoji: "📘", title: "Ebook de 50 acuerdos en pareja", desc: "para fortalecer la relación" },
-      {
-        emoji: "📝",
-        title: "30 plantillas de regalo",
-        desc: "sobre amor propio, autoconocimiento y relaciones de pareja",
-      },
-      {
-        emoji: "✨",
-        title: "50% de descuento en tu sesión Bio-Well",
-        desc: "un escaneo que visualiza tu campo energético",
-      },
-      { emoji: "💗", title: "Curso corto de amor propio" },
-      { emoji: "💬", title: "Curso corto de fortalecimiento de comunicación en pareja" },
-      { emoji: "📖", title: "Libro de interpretación de las líneas de las manos" },
-      { emoji: "🤲", title: "Curso de quiromancia" },
+      { emoji: "📘", title: "Ebook de relaciones de pareja", desc: "totalmente gratis por la compra del curso" },
+      { emoji: "📝", title: "10 plantillas de regalo", desc: "totalmente gratis por la compra del curso" },
     ];
 
     const includedItems = [
