@@ -108,7 +108,7 @@ export default async function MetodologiaPoderosaPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {[
                 { emoji: "🎁", title: "30% de descuento", desc: "en los eventos presenciales de Poderosas" },
-                { emoji: "📘", title: "Un ebook de regalo" },
+                { emoji: "📘", title: "Ebook de 50 acuerdos en pareja", desc: "para fortalecer la relación" },
                 {
                   emoji: "📝",
                   title: "30 plantillas de regalo",
