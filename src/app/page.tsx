@@ -145,7 +145,7 @@ export default async function Home() {
 
       {/* Curso virtual — ya a la venta. Copy final entregado por el
           usuario, montado tal cual. */}
-      <section className="px-6 py-24 bg-white">
+      <section className="px-6 py-24 bg-beige">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
           <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
             Curso virtual · Metodología Poderosa
