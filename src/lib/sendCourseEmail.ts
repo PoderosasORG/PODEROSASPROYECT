@@ -1,0 +1,147 @@
+import "server-only";
+import { Resend } from "resend";
+
+// Misma dirección de origen y correo de soporte que sendTicketEmail.ts —
+// cuando se actualice uno, actualizar el otro (ver el comentario de ahí).
+const FROM_ADDRESS = "Poderosas <onboarding@resend.dev>";
+const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
+
+// Separado de sendCourseEmail para poder generar una vista previa del
+// HTML sin enviar ningún correo real, igual que buildTicketEmailHtml.
+export function buildCourseEmailHtml(params: {
+  buyerName: string;
+  courseTitle: string;
+  courseUrl: string;
+}) {
+  const trimmedName = params.buyerName.trim();
+  const firstName = trimmedName ? trimmedName.split(/\s+/)[0] : "";
+  const greeting = firstName ? `Hola, ${firstName}.` : "Hola.";
+
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tu curso — Poderosas</title>
+  </head>
+  <body style="margin:0; padding:0; background:#fffdf8; font-family: Georgia, 'Times New Roman', serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fffdf8;">
+      <tr>
+        <td align="center" style="padding: 24px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%; max-width: 520px; background:#ffffff;">
+
+            <!-- Encabezado -->
+            <tr>
+              <td align="center" style="background:#f3e9dc; padding: 36px 24px; border-bottom: 1px solid #e6cd8f;">
+                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">Poderosas</p>
+                <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">Confirmación de compra</p>
+              </td>
+            </tr>
+
+            <!-- Mensaje de bienvenida -->
+            <tr>
+              <td style="padding: 32px 32px 8px;">
+                <h1 style="margin:0 0 16px; font-family: Georgia, serif; font-size: 24px; color:#3a2e2e; font-weight: normal;">¡Tu curso está confirmado!</h1>
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  ${greeting} ¡Gracias por confiar en ${params.courseTitle}!
+                </p>
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  Tu pago quedó confirmado y ya tienes acceso completo, de por vida, a todo el contenido.
+                </p>
+                <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  Nos alegra mucho acompañarte en este proceso.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Acceso al curso -->
+            <tr>
+              <td style="padding: 24px 32px 8px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e6cd8f;">
+                  <tr>
+                    <td style="padding: 18px 20px 6px; font-family: Arial, Helvetica, sans-serif; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color:#9a7b2e;">
+                      Tu curso
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 0 20px 16px; font-family: Georgia, serif; font-size: 16px; color:#3a2e2e;">
+                      ${params.courseTitle}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td align="center" style="padding: 0 20px 24px;">
+                      <a href="${params.courseUrl}" style="display:inline-block; background:#c9a24b; color:#ffffff; font-family: Arial, Helvetica, sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; text-decoration:none; padding: 14px 32px;">
+                        Entrar al curso
+                      </a>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Información útil -->
+            <tr>
+              <td style="padding: 24px 32px 32px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf5ec;">
+                  <tr>
+                    <td style="padding: 20px;">
+                      <p style="margin:0 0 8px; font-family: Georgia, serif; font-size: 15px; color:#3a2e2e;">Guarda este correo</p>
+                      <p style="margin:0 0 12px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#6b5e52;">
+                        También puedes entrar al curso en cualquier momento desde tu cuenta en poderosas.org → Mi panel → Mis compras.
+                      </p>
+                      <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#6b5e52;">
+                        Si tienes algún inconveniente con tu acceso, puedes escribirnos a
+                        <a href="mailto:${SUPPORT_EMAIL}" style="color:#9a7b2e;">${SUPPORT_EMAIL}</a>.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Cierre -->
+            <tr>
+              <td align="center" style="background:#3a2e2e; padding: 32px 24px;">
+                <p style="margin:0 0 6px; font-family: Georgia, serif; font-size: 15px; color:#f3e9dc; font-style: italic;">
+                  Un espacio para ti, una oportunidad para conectar contigo.
+                </p>
+                <p style="margin:0 0 20px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#cdbfae; max-width: 380px;">
+                  Gracias por elegir ser parte de Poderosas. Esperamos que este curso te acompañe en tu propio proceso.
+                </p>
+                <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color:#f3e9dc;">
+                  Con cariño,<br />Equipo Poderosas
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+    `;
+}
+
+export async function sendCourseEmail(params: {
+  to: string;
+  buyerName: string;
+  courseTitle: string;
+  courseUrl: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("Falta RESEND_API_KEY");
+  }
+
+  const resend = new Resend(apiKey);
+  const html = buildCourseEmailHtml(params);
+
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.to,
+    subject: `Tu compra de "${params.courseTitle}" está confirmada`,
+    html,
+  });
+}
