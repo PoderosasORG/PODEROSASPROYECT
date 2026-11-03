@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import type { CategoryModule, CategoryModuleFile } from "@/lib/metodologiaPoderosa";
 import { createClient } from "@/lib/supabase/client";
+import { ModuleQA } from "./ModuleQA";
 
 type PlayableModule = Pick<CategoryModule, "id" | "title" | "description">;
 
@@ -60,6 +61,8 @@ export function ModulePlayer({ module }: { module: PlayableModule }) {
       )}
 
       {module.description && <ModuleDescription description={module.description} />}
+
+      <ModuleQA moduleId={module.id} />
     </div>
   );
 }

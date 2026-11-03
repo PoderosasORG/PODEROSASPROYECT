@@ -2,6 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CategoryModule } from "@/lib/metodologiaPoderosa";
@@ -107,6 +108,14 @@ export function ModuleList({
                 {!module.bunny_video_id && " · video sin terminar de subir"}
               </p>
             </div>
+            {module.bunny_video_id && (
+              <Link
+                href={`/panel/metodologia-poderosa/${module.id}/vista-previa`}
+                className="text-xs text-gold hover:underline"
+              >
+                Vista previa
+              </Link>
+            )}
             <button
               onClick={() => setEditing(module)}
               disabled={busyId === module.id}
