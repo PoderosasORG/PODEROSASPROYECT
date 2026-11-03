@@ -10,7 +10,7 @@ export async function SiteHeader() {
 
   return (
     <header className="flex items-center justify-between px-6 py-4 bg-white/70 border-b border-gold-light/40">
-      <Link href="/" className="font-serif text-lg text-gold">
+      <Link href="/" className="font-serif text-2xl text-gold">
         Poderosas
       </Link>
       <nav className="flex items-center gap-4 text-sm">
