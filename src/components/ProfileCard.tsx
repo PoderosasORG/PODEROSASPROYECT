@@ -32,7 +32,7 @@ export function ProfileCard({ slug, name, role, bio, avatarUrl }: ProfileCardPro
       <div className="flex flex-col items-center text-center gap-2 px-6 py-7">
         <h3 className="font-serif text-2xl">{name}</h3>
         <p className="text-xs uppercase tracking-[0.2em] text-gold">{role}</p>
-        <p className="text-sm text-foreground/70 max-w-xs">{bio}</p>
+        <p className="text-sm text-foreground/70 max-w-xs line-clamp-2">{bio}</p>
         <span className="mt-2 text-sm font-medium text-gold group-hover:text-foreground transition-colors">
           Ver perfil →
         </span>

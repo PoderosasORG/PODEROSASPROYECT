@@ -32,7 +32,7 @@ export default async function Home() {
   const eventStats = await getEventStats();
   const { data: creators } = await supabase
     .from("creators")
-    .select("slug, display_name, bio, avatar_url")
+    .select("slug, display_name, bio, short_bio, avatar_url")
     .eq("is_active", true)
     .in("slug", CREATOR_ORDER);
   const { data: courseProduct } = await supabase
@@ -52,7 +52,13 @@ export default async function Home() {
       slug,
       name: creator?.display_name || defaults.name,
       role: defaults.role,
-      bio: (creator?.bio ? stripHtml(creator.bio) : "") || defaults.bio,
+      // short_bio es para esta tarjeta específicamente (texto corto a propósito);
+      // bio es el "Acerca de mí" largo del perfil público (/slug) — no deben
+      // mezclarse, o la tarjeta se desborda con el texto largo (pasó con Shei).
+      bio:
+        (creator?.short_bio ? stripHtml(creator.short_bio) : "") ||
+        (creator?.bio ? stripHtml(creator.bio) : "") ||
+        defaults.bio,
       initials: (creator?.display_name || defaults.name).charAt(0).toUpperCase(),
       avatarUrl: creator?.avatar_url ?? null,
     };
