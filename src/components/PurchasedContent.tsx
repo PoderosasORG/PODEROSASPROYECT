@@ -142,12 +142,15 @@ export function PurchasedContent({
       )}
 
       {hasCategorizedCourse && (
-        <a
-          href="/cursos/metodologia-poderosa"
-          className="inline-block rounded-full border px-4 py-1 text-xs hover:bg-gold-light/30"
-        >
-          Ir al curso
-        </a>
+        <div className="flex items-center justify-between gap-4 bg-gold-light/15 rounded-xl p-4">
+          <p className="text-sm text-foreground/70">Tienes acceso completo a este curso.</p>
+          <a
+            href="/cursos/metodologia-poderosa"
+            className="shrink-0 rounded-full bg-gold px-5 py-2 text-white text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Ir al curso
+          </a>
+        </div>
       )}
 
       {!hasCategorizedCourse && lessons.length === 0 && files.length === 0 && (

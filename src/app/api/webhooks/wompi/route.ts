@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTicketEmail } from "@/lib/sendTicketEmail";
+import { sendCourseEmail } from "@/lib/sendCourseEmail";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -119,6 +120,29 @@ export async function POST(req: NextRequest) {
         // No tumbamos el webhook por un fallo de correo: la boleta ya
         // quedó creada en la base de datos y se puede reenviar a mano.
         console.error("No se pudo enviar el correo de la boleta:", err);
+      }
+    }
+  }
+
+  // Confirmación de compra de un curso con categorías (ej. Metodología
+  // Poderosa) — distinto de los cursos "normales" (lecciones sueltas),
+  // que hoy no mandan correo de confirmación.
+  if (justApproved && product?.type === "course" && order.buyer_email) {
+    const { count: categorizedCount } = await admin
+      .from("course_categories")
+      .select("id", { count: "exact", head: true })
+      .eq("product_id", order.product_id);
+
+    if (categorizedCount && categorizedCount > 0) {
+      try {
+        await sendCourseEmail({
+          to: order.buyer_email,
+          buyerName: order.buyer_name ?? "",
+          courseTitle: product.title,
+          courseUrl: `${req.nextUrl.origin}/cursos/metodologia-poderosa`,
+        });
+      } catch (err) {
+        console.error("No se pudo enviar el correo de confirmación del curso:", err);
       }
     }
   }

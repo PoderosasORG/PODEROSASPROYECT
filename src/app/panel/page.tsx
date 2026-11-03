@@ -32,6 +32,12 @@ export default async function PanelPage() {
     .eq("owner_id", user.id)
     .maybeSingle();
 
+  const { count: purchaseCount } = await supabase
+    .from("orders")
+    .select("id", { count: "exact", head: true })
+    .eq("buyer_id", user.id)
+    .eq("status", "approved");
+
   const actions = creator
     ? [
         { href: "/panel/subir", label: "Subir contenido", primary: true },
@@ -98,10 +104,18 @@ export default async function PanelPage() {
         </div>
       ) : (
         <div className="w-full max-w-4xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-4">
-          <p className="text-sm text-foreground/60">
-            Esta cuenta es de cliente. Cuando compres productos y membresías,
-            aparecerán en &quot;Mis compras&quot;.
-          </p>
+          {purchaseCount && purchaseCount > 0 ? (
+            <>
+              <h2 className="font-serif text-xl">Tus compras</h2>
+              <p className="text-sm text-foreground/60">
+                Tienes {purchaseCount} {purchaseCount === 1 ? "curso o producto activo" : "cursos o productos activos"}.
+              </p>
+            </>
+          ) : (
+            <p className="text-sm text-foreground/60">
+              Todavía no has comprado nada. Cuando compres un curso o producto, lo verás aquí.
+            </p>
+          )}
           <Link
             href="/mis-compras"
             className="self-start rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
