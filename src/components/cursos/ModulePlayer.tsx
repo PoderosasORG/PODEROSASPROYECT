@@ -70,6 +70,8 @@ function ModuleFileLink({ file }: { file: CategoryModuleFile }) {
   return (
     <a
       href={`/api/metodologia-poderosa/files/${file.id}/download`}
+      target="_blank"
+      rel="noopener noreferrer"
       className="text-sm text-gold hover:underline"
     >
       Descargar: {file.display_name || file.file_name}
