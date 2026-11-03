@@ -164,24 +164,10 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
-        <section className="px-6 pb-10">
-          <div className="max-w-3xl mx-auto">
-            <p className="text-center text-sm uppercase tracking-wide text-gold font-medium mb-6">
-              Además, tu compra incluye
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {bonuses.map((bonus) => (
-                <div key={bonus.title} className="rounded-2xl border border-gold-light/60 p-5 bg-white">
-                  <p className="text-2xl">{bonus.emoji}</p>
-                  <p className="text-sm font-medium mt-1">{bonus.title}</p>
-                  {bonus.desc && <p className="text-xs text-foreground/60">{bonus.desc}</p>}
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Precio + resumen de todo lo incluido, estilo "todo lo que te llevas" */}
+        {/* Precio + resumen de todo lo incluido, estilo "todo lo que te llevas" —
+            los beneficios (bonuses) ya se listan aquí abajo, con insignia
+            "Incluido"; antes también se repetían arriba en cuadritos con
+            emoji, mismo contenido duplicado, se quitó por pedido del usuario. */}
         <section className="px-6 pb-10">
           <div className="max-w-xl mx-auto rounded-2xl bg-white border border-gold-light/60 p-6 sm:p-8">
             <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">El precio</p>
