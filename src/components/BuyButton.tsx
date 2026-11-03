@@ -7,10 +7,14 @@ export function BuyButton({
   productId,
   slug,
   accentColor,
+  size = "small",
+  label = "Comprar",
 }: {
   productId: string;
   slug: string;
   accentColor: string;
+  size?: "small" | "large";
+  label?: string;
 }) {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
@@ -45,10 +49,14 @@ export function BuyButton({
     <button
       onClick={handleClick}
       disabled={loading}
-      className="rounded-full px-4 py-1.5 text-xs text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+      className={
+        size === "large"
+          ? "w-full sm:w-auto rounded-full px-10 py-4 text-base font-medium text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+          : "rounded-full px-4 py-1.5 text-xs text-white hover:opacity-90 transition-opacity disabled:opacity-50"
+      }
       style={{ backgroundColor: accentColor }}
     >
-      {loading ? "Un momento..." : "Comprar"}
+      {loading ? "Un momento..." : label}
     </button>
   );
 }

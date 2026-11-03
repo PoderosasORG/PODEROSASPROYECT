@@ -169,7 +169,12 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
 
       <label className="flex flex-col gap-1 text-sm">
         {bunnyVideoId ? "Reemplazar video (opcional)" : "Video"}
-        <input type="file" accept="video/*" onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)} />
+        <input
+          type="file"
+          accept="video/*"
+          onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+          className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
+        />
       </label>
       {uploadProgress !== null && (
         <p className="text-xs text-foreground/60">Subiendo video: {uploadProgress}%</p>
@@ -199,6 +204,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
           <input
             type="file"
             onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
+            className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
           />
         )}
       </fieldset>
@@ -216,7 +222,12 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
 
       <label className="flex flex-col gap-1 text-sm">
         Miniatura personalizada (opcional — si no eliges una, se usa un fotograma automático)
-        <input type="file" accept="image/*" onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)} />
+        <input
+          type="file"
+          accept="image/*"
+          onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
+          className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
+        />
       </label>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
