@@ -2,6 +2,73 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-11-03 — Identidad visual DEFINITIVA: rosa + dorado (decidida y aprobada)
+
+**Esto ya es la marca oficial, no hay que volver a decidirlo.** El usuario
+aprobó explícitamente esta paleta ("perfecto esa es la identidad visual
+que quiero"). Aplicada en todo el código (`src/app/globals.css`, un solo
+lugar — tokens, no hay que tocar componentes para cambiar el tema).
+
+**Colores (hex exactos):**
+- Dorado (acento: botones, bordes, textos destacados): `#BD7D47`
+- Dorado claro: `#E0B384`
+- Rosa (tarjetas/paneles de contraste): `#F2A0BF`
+- Rosa claro / fondo general del sitio: `#FBDFE7`
+- Vino (solo para secciones de contraste oscuras, ej. hero del evento,
+  podcast — nunca morado): `#5C1030` → `#8A1F4F` en degradado
+- Texto: `#452530`
+
+El dorado se sacó por muestreo de píxeles directo de la imagen real del
+logo que aportó el usuario (no es un tono inventado) — ver
+`src/app/cursos/metodologia-poderosa/page.tsx` y el historial de PRs de
+esta fecha para el detalle del proceso.
+
+**Tipografía:** Playfair Display (`--font-serif`, títulos) + Poppins
+(`--font-sans`, texto de apoyo) — ya eran las fuentes del sitio, se
+mantuvieron igual al definir la identidad rosa+dorado.
+
+**Logo:** la imagen real que aportó el usuario (corona dorada + palabra
+"PODEROSA"), NO un logo redibujado por Claude — se intentó dibujar un
+SVG propio y el usuario lo rechazó ("se ve como dibujado... no tan
+real"). El patrón correcto cuando el usuario ya tiene un logo generado
+con IA: usarlo tal cual (recortado/ajustado si hace falta), nunca
+intentar replicarlo a mano.
+- Favicon del sitio: recorte cuadrado de la corona (ver
+  `src/app/icon.png`, `public/favicon.ico`, `public/apple-touch-icon.png`).
+- Wordmark solo (sin corona, a pedido del usuario): recorte de la misma
+  imagen, usado en la ficha de marca.
+
+**Entregables para el usuario** (pedidos para replicar la marca fuera
+del código — redes sociales, diapositivas del evento presencial):
+- Documento de marca (Word): colores, tipografía, logo — para
+  guardar y compartir con Luz y Kat.
+- Plantilla de PowerPoint con la paleta ya aplicada, para que cada una
+  ponga el contenido de su charla del evento del 21 de noviembre.
+- Fichas vivas (Claude Artifacts, privadas del usuario, no versionadas
+  en este repo): "Identidad Poderosas" y "Ruta al 21 de noviembre".
+
+**Lección:** cuando el usuario reporta "se ve morado, no rosado" o
+similar sobre un color ya cambiado, antes de sospechar un bug de código
+revisar si el artifact/página se está viendo en modo oscuro del
+dispositivo — los tokens de modo oscuro pueden estar mal elegidos
+mientras los de modo claro sí están bien (pasó con la ficha de marca).
+
+## 2026-11-03 — Checkout del curso sin cuenta previa (antes exigía login)
+
+Investigado (Baymard Institute y otras fuentes): forzar login/registro
+antes de pagar es causa comprobada de abandono de carrito (18-24%). Se
+aplicó al curso el mismo patrón que ya tenía `/evento`: paga con
+nombre+correo, sin cuenta; la cuenta se crea sola al aprobarse el pago
+(webhook de Wompi crea el usuario en Supabase Auth, vincula
+`orders.buyer_id`, y manda un enlace de "crear tu contraseña" en el
+correo de confirmación). `BuyButton` ya no redirige a `/login` — abre
+un formulario corto (nombre+correo) en el momento.
+
+**Pendiente de verificar por el usuario:** una compra real de punta a
+punta (hoy solo se probó hasta llegar a Wompi, sin completar un pago
+real) — confirmar que la cuenta se crea, el correo con el enlace de
+contraseña llega, y el acceso al curso funciona después de ponerla.
+
 ## 2026-11-02/03 — Metodología Poderosa (curso multi-administradora)
 
 Feature completa: curso "Metodología Poderosa", 3 categorías fijas
