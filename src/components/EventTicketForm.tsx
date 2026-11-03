@@ -5,7 +5,6 @@ import { useState } from "react";
 export function EventTicketForm({ productId }: { productId: string }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [imageConsent, setImageConsent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +16,9 @@ export function EventTicketForm({ productId }: { productId: string }) {
       const res = await fetch("/api/checkout-evento", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId, buyerName: name, buyerEmail: email, imageConsent }),
+        // Comprar la entrada implica autorizar el uso de imagen — no hay
+        // opción de marcar que no, por eso no es un checkbox separado.
+        body: JSON.stringify({ productId, buyerName: name, buyerEmail: email, imageConsent: true }),
       });
       const data = await res.json();
 
@@ -55,19 +56,10 @@ export function EventTicketForm({ productId }: { productId: string }) {
           className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
         />
       </label>
-      <label className="flex items-start gap-2.5 text-sm text-left text-foreground/70">
-        <input
-          type="checkbox"
-          required
-          checked={imageConsent}
-          onChange={(e) => setImageConsent(e.target.checked)}
-          className="mt-0.5 shrink-0 accent-gold"
-        />
-        <span>
-          Autorizo la grabación de contenido audiovisual con mi imagen con fines de difusión
-          de la marca.
-        </span>
-      </label>
+      <p className="text-xs text-foreground/50 text-left leading-relaxed">
+        Al comprar tu entrada autorizas la grabación de contenido audiovisual con tu imagen
+        con fines de difusión de la marca.
+      </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
