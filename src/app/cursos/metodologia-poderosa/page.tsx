@@ -275,7 +275,7 @@ export default async function MetodologiaPoderosaPage() {
                 {previewCategories.slice(0, 3).map((category, index) => (
                   <div
                     key={category.id}
-                    className="rounded-2xl bg-white p-6 flex flex-col gap-2 border border-gold-light/50"
+                    className="rounded-2xl bg-white/80 p-6 flex flex-col gap-2 border border-gold-light/60 shadow-sm"
                   >
                     <span className="font-serif text-3xl text-gold-light">
                       {String(index + 1).padStart(2, "0")}
@@ -323,7 +323,7 @@ export default async function MetodologiaPoderosaPage() {
             las cartillas descargables (portada + 2 páginas de ejercicio),
             no representaciones inventadas del material. */}
         <section className="px-6 py-14">
-          <div className="max-w-xl mx-auto text-center flex flex-col gap-4">
+          <div className="max-w-xl mx-auto text-center flex flex-col gap-4 rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-8">
             <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
               No es solo un curso. Es un espacio para trabajar en ti.
             </h2>
