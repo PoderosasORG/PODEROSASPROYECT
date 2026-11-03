@@ -128,6 +128,52 @@ export async function POST(req: NextRequest) {
   // Poderosa) — distinto de los cursos "normales" (lecciones sueltas),
   // que hoy no mandan correo de confirmación.
   if (justApproved && product?.type === "course" && order.buyer_email) {
+    // Compra sin cuenta (el checkout ya no exige login antes de pagar):
+    // la orden llega con buyer_id null. has_access_to_product exige
+    // buyer_id = auth.uid(), así que sin esto el pago quedaría aprobado
+    // pero sin dar acceso a nada. Se crea (o se encuentra, si ya existía)
+    // la cuenta con ese correo y se vincula a la orden.
+    let setPasswordUrl: string | undefined;
+    if (!order.buyer_id) {
+      try {
+        const { data: created, error: createError } = await admin.auth.admin.createUser({
+          email: order.buyer_email,
+          email_confirm: true,
+          user_metadata: { full_name: order.buyer_name ?? "" },
+        });
+
+        let accountUserId = created?.user?.id;
+
+        if (createError) {
+          // Ya existe una cuenta con ese correo (comprador recurrente que
+          // nunca inició sesión en este checkout) — se busca en vez de
+          // fallar. listUsers no filtra por email en todas las versiones
+          // del SDK, así que se recorre la lista corta de resultados.
+          const { data: list } = await admin.auth.admin.listUsers({ perPage: 200 });
+          accountUserId = list?.users.find(
+            (u) => u.email?.toLowerCase() === order.buyer_email!.toLowerCase(),
+          )?.id;
+        }
+
+        if (accountUserId) {
+          await admin.from("orders").update({ buyer_id: accountUserId }).eq("id", order.id);
+
+          const { data: link } = await admin.auth.admin.generateLink({
+            type: "recovery",
+            email: order.buyer_email,
+            options: {
+              redirectTo: `${req.nextUrl.origin}/auth/confirm?next=/actualizar-contrasena`,
+            },
+          });
+          setPasswordUrl = link?.properties?.action_link;
+        }
+      } catch (err) {
+        // No tumba el webhook: la orden ya quedó aprobada. Si esto
+        // falla, toca vincular la cuenta a mano desde el panel.
+        console.error("No se pudo crear/vincular la cuenta del comprador:", err);
+      }
+    }
+
     const { count: categorizedCount } = await admin
       .from("course_categories")
       .select("id", { count: "exact", head: true })
@@ -140,6 +186,7 @@ export async function POST(req: NextRequest) {
           buyerName: order.buyer_name ?? "",
           courseTitle: product.title,
           courseUrl: `${req.nextUrl.origin}/cursos/metodologia-poderosa`,
+          setPasswordUrl,
         });
       } catch (err) {
         console.error("No se pudo enviar el correo de confirmación del curso:", err);

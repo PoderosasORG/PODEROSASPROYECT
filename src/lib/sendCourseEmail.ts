@@ -12,10 +12,38 @@ export function buildCourseEmailHtml(params: {
   buyerName: string;
   courseTitle: string;
   courseUrl: string;
+  setPasswordUrl?: string;
 }) {
   const trimmedName = params.buyerName.trim();
   const firstName = trimmedName ? trimmedName.split(/\s+/)[0] : "";
   const greeting = firstName ? `Hola, ${firstName}.` : "Hola.";
+
+  const accountBlock = params.setPasswordUrl
+    ? `
+            <tr>
+              <td style="padding: 0 32px 8px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf5ec; border: 1px solid #e6cd8f;">
+                  <tr>
+                    <td style="padding: 20px;">
+                      <p style="margin:0 0 8px; font-family: Georgia, serif; font-size: 15px; color:#3a2e2e;">Te creamos tu cuenta</p>
+                      <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#6b5e52;">
+                        Compraste sin pasar por el registro, así que ya te dejamos una cuenta lista con este correo. Solo falta que elijas tu contraseña para poder iniciar sesión cuando quieras.
+                      </p>
+                      <table role="presentation" cellpadding="0" cellspacing="0">
+                        <tr>
+                          <td align="center" style="background:#c9a24b;">
+                            <a href="${params.setPasswordUrl}" style="display:inline-block; color:#ffffff; font-family: Arial, Helvetica, sans-serif; font-size: 13px; letter-spacing: 1px; text-transform: uppercase; text-decoration:none; padding: 12px 24px;">
+                              Crear mi contraseña
+                            </a>
+                          </td>
+                        </tr>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>`
+    : "";
 
   return `
 <!DOCTYPE html>
@@ -54,6 +82,8 @@ export function buildCourseEmailHtml(params: {
                 </p>
               </td>
             </tr>
+
+${accountBlock}
 
             <!-- Acceso al curso -->
             <tr>
@@ -129,6 +159,7 @@ export async function sendCourseEmail(params: {
   buyerName: string;
   courseTitle: string;
   courseUrl: string;
+  setPasswordUrl?: string;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {
