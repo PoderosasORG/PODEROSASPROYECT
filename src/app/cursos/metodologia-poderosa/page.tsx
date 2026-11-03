@@ -177,5 +177,5 @@ export default async function MetodologiaPoderosaPage() {
     redirect("/panel");
   }
 
-  return <CourseViewer categories={categories} modules={modules ?? []} />;
+  return <CourseViewer categories={categories} modules={modules ?? []} productId={product.id} />;
 }

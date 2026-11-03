@@ -4,6 +4,7 @@
 import { useState } from "react";
 import type { CategoryModule, CourseCategory } from "@/lib/metodologiaPoderosa";
 import { ModulePlayer } from "./ModulePlayer";
+import { CourseBonuses } from "./CourseBonuses";
 
 type SidebarCategory = Pick<CourseCategory, "id" | "title" | "order_index">;
 type SidebarModule = Pick<
@@ -14,9 +15,11 @@ type SidebarModule = Pick<
 export function CourseViewer({
   categories,
   modules,
+  productId,
 }: {
   categories: SidebarCategory[];
   modules: SidebarModule[];
+  productId: string;
 }) {
   const [selected, setSelected] = useState<SidebarModule | null>(modules[0] ?? null);
   const [openCategoryId, setOpenCategoryId] = useState<string | null>(
@@ -55,6 +58,7 @@ export function CourseViewer({
             </div>
           );
         })}
+        <CourseBonuses productId={productId} />
       </aside>
 
       <main className="flex-1 px-6 py-10 md:px-12 flex justify-center">
