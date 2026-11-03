@@ -58,7 +58,7 @@ export function CourseViewer({
       </aside>
 
       <main className="flex-1 px-6 py-10 md:px-12 flex justify-center">
-        <div className="w-full max-w-2xl">
+        <div className="w-full max-w-3xl">
           {selected ? (
             <ModulePlayer key={selected.id} module={selected} />
           ) : (
