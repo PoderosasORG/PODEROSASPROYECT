@@ -109,6 +109,19 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
         const { error: thumbError } = await supabase.storage.from("covers").upload(path, thumbnailFile);
         if (thumbError) throw thumbError;
         customThumbnailUrl = supabase.storage.from("covers").getPublicUrl(path).data.publicUrl;
+
+        // Guardamos la URL en nuestra base, pero el video en sí lo reproduce
+        // Bunny — sin esto, la miniatura que sube la administradora nunca
+        // se ve, Bunny sigue mostrando la que generó automáticamente.
+        const thumbRes = await fetch("/api/panel/metodologia/thumbnail", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ categoryId, videoId, thumbnailUrl: customThumbnailUrl }),
+        });
+        if (!thumbRes.ok) {
+          const thumbBody = await thumbRes.json().catch(() => ({ error: "Error desconocido" }));
+          throw new Error(thumbBody.error ?? "No se pudo fijar la miniatura en Bunny");
+        }
       }
 
       const row = {
@@ -151,103 +164,104 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
     }
   }
 
+  const fileInputClass =
+    "rounded-lg border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors";
+
   return (
-    <div className="w-full max-w-lg bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-4">
+    <div className="w-full max-w-lg flex flex-col gap-5">
       <h2 className="font-serif text-xl">{existing ? "Editar módulo" : "Cargar material"}</h2>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Título
-        <input
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          className="rounded border px-3 py-2"
-        />
-      </label>
+      <section className="bg-white rounded-2xl border border-gold-light/60 p-5 flex flex-col gap-4">
+        <h3 className="text-xs uppercase tracking-wide text-gold font-medium">1. Información del módulo</h3>
+        <label className="flex flex-col gap-1 text-sm">
+          Título
+          <input
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            className="rounded-lg border border-gold-light/60 px-3 py-2"
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm">
+          Descripción
+          <textarea
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="rounded-lg border border-gold-light/60 px-3 py-2"
+            rows={3}
+          />
+        </label>
+        <label className="flex flex-col gap-1 text-sm w-28">
+          Orden (0 = primero)
+          <input
+            type="number"
+            min={0}
+            value={orderIndex}
+            onChange={(e) => setOrderIndex(Number(e.target.value))}
+            className="rounded-lg border border-gold-light/60 px-3 py-2"
+          />
+        </label>
+      </section>
 
-      <label className="flex flex-col gap-1 text-sm">
-        Descripción
-        <textarea
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="rounded border px-3 py-2"
-          rows={3}
-        />
-      </label>
+      <section className="bg-white rounded-2xl border border-gold-light/60 p-5 flex flex-col gap-4">
+        <h3 className="text-xs uppercase tracking-wide text-gold font-medium">2. Video</h3>
+        <label className="flex flex-col gap-1 text-sm">
+          {bunnyVideoId ? "Reemplazar video (opcional)" : "Video"}
+          <input
+            type="file"
+            accept="video/*"
+            onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
+            className={fileInputClass}
+          />
+        </label>
+        {uploadProgress !== null && (
+          <p className="text-xs text-foreground/60">Subiendo video: {uploadProgress}%</p>
+        )}
+        <label className="flex flex-col gap-1 text-sm">
+          Miniatura personalizada (opcional — si no eliges una, Bunny usa un fotograma automático)
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
+            className={fileInputClass}
+          />
+        </label>
+      </section>
 
-      <label className="flex flex-col gap-1 text-sm">
-        {bunnyVideoId ? "Reemplazar video (opcional)" : "Video"}
-        <input
-          type="file"
-          accept="video/*"
-          onChange={(e) => setVideoFile(e.target.files?.[0] ?? null)}
-          className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
-        />
-      </label>
-      {uploadProgress !== null && (
-        <p className="text-xs text-foreground/60">Subiendo video: {uploadProgress}%</p>
-      )}
-
-      <fieldset className="flex flex-col gap-2 text-sm">
-        <legend className="mb-1">¿Tiene material de apoyo?</legend>
-        <div className="flex gap-4">
-          <label className="flex items-center gap-1">
-            <input
-              type="radio"
-              checked={hasSupportMaterial}
-              onChange={() => setHasSupportMaterial(true)}
-            />
-            Sí
-          </label>
-          <label className="flex items-center gap-1">
-            <input
-              type="radio"
-              checked={!hasSupportMaterial}
-              onChange={() => setHasSupportMaterial(false)}
-            />
-            No
-          </label>
-        </div>
-        {hasSupportMaterial && (
-          <div className="flex flex-col gap-2">
-            <input
-              type="file"
-              onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
-              className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
-            />
-            <label className="flex flex-col gap-1 text-xs text-foreground/70">
-              Nombre que verán las usuarias (opcional — si lo dejas vacío, se usa el nombre del archivo tal cual)
-              <input
-                type="text"
-                value={supportFileDisplayName}
-                onChange={(e) => setSupportFileDisplayName(e.target.value)}
-                placeholder="Ej: Cartilla de ejercicios"
-                className="rounded border border-gold-light/60 px-3 py-2 text-sm text-foreground"
-              />
+      <section className="bg-white rounded-2xl border border-gold-light/60 p-5 flex flex-col gap-3">
+        <h3 className="text-xs uppercase tracking-wide text-gold font-medium">3. Material de apoyo</h3>
+        <fieldset className="flex flex-col gap-3 text-sm">
+          <legend className="sr-only">¿Tiene material de apoyo?</legend>
+          <div className="flex gap-4">
+            <label className="flex items-center gap-1.5">
+              <input type="radio" checked={hasSupportMaterial} onChange={() => setHasSupportMaterial(true)} />
+              Sí
+            </label>
+            <label className="flex items-center gap-1.5">
+              <input type="radio" checked={!hasSupportMaterial} onChange={() => setHasSupportMaterial(false)} />
+              No
             </label>
           </div>
-        )}
-      </fieldset>
-
-      <label className="flex flex-col gap-1 text-sm">
-        Orden (0 = primero)
-        <input
-          type="number"
-          min={0}
-          value={orderIndex}
-          onChange={(e) => setOrderIndex(Number(e.target.value))}
-          className="rounded border px-3 py-2 w-24"
-        />
-      </label>
-
-      <label className="flex flex-col gap-1 text-sm">
-        Miniatura personalizada (opcional — si no eliges una, se usa un fotograma automático)
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => setThumbnailFile(e.target.files?.[0] ?? null)}
-          className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
-        />
-      </label>
+          {hasSupportMaterial && (
+            <div className="flex flex-col gap-3 bg-beige-light/60 rounded-xl p-3">
+              <input
+                type="file"
+                onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
+                className={fileInputClass}
+              />
+              <label className="flex flex-col gap-1 text-xs text-foreground/70">
+                Nombre que verán las usuarias (opcional — si lo dejas vacío, se usa el nombre del archivo tal cual)
+                <input
+                  type="text"
+                  value={supportFileDisplayName}
+                  onChange={(e) => setSupportFileDisplayName(e.target.value)}
+                  placeholder="Ej: Cartilla de ejercicios"
+                  className="rounded-lg border border-gold-light/60 px-3 py-2 text-sm text-foreground bg-white"
+                />
+              </label>
+            </div>
+          )}
+        </fieldset>
+      </section>
 
       {error && <p className="text-sm text-red-600">{error}</p>}
 

@@ -51,6 +51,19 @@ export function getSignedPlaybackUrl(videoId: string): string {
   return `https://iframe.mediadelivery.net/embed/${libraryId}/${videoId}?token=${token}&expires=${expires}`;
 }
 
+export async function setBunnyThumbnail(videoId: string, thumbnailUrl: string): Promise<void> {
+  const libraryId = requireEnv("BUNNY_STREAM_LIBRARY_ID");
+  const apiKey = requireEnv("BUNNY_STREAM_API_KEY");
+
+  const res = await fetch(
+    `${BUNNY_STREAM_API}/library/${libraryId}/videos/${videoId}/thumbnail?thumbnailUrl=${encodeURIComponent(thumbnailUrl)}`,
+    { method: "POST", headers: { AccessKey: apiKey } },
+  );
+  if (!res.ok) {
+    throw new Error(`Bunny rechazó la miniatura (${res.status}): ${await res.text()}`);
+  }
+}
+
 export async function deleteBunnyVideo(videoId: string): Promise<void> {
   const libraryId = requireEnv("BUNNY_STREAM_LIBRARY_ID");
   const apiKey = requireEnv("BUNNY_STREAM_API_KEY");
