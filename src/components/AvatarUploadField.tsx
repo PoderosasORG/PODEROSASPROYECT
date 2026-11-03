@@ -49,7 +49,7 @@ export function AvatarUploadField({
 
   return (
     <div className="flex flex-col items-center gap-3">
-      <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-white shadow-inner bg-gradient-to-br from-pink-light to-gold-light flex items-center justify-center">
+      <div className="h-44 w-44 rounded-2xl overflow-hidden border-4 border-white shadow-md bg-gradient-to-br from-pink-light to-gold-light flex items-center justify-center">
         {preview ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={preview} alt="Foto de perfil" className="h-full w-full object-cover" />
