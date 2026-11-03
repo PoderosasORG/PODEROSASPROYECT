@@ -33,32 +33,32 @@ export function EventTicketForm({ productId }: { productId: string }) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm">
-      <label className="flex flex-col gap-1 text-sm">
+    <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-sm mx-auto">
+      <label className="flex flex-col gap-1.5 text-sm text-left">
         Nombre completo
         <input
           type="text"
           required
           value={name}
           onChange={(e) => setName(e.target.value)}
-          className="rounded border px-3 py-2"
+          className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Correo (ahí te llega la boleta)
+      <label className="flex flex-col gap-1.5 text-sm text-left">
+        Correo electrónico (ahí recibirás tu confirmación)
         <input
           type="email"
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="rounded border px-3 py-2"
+          className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
         />
       </label>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
         type="submit"
         disabled={loading}
-        className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors disabled:opacity-50"
+        className="mt-1 rounded-full bg-gold px-6 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors disabled:opacity-50"
       >
         {loading ? "Un momento..." : "Comprar mi entrada"}
       </button>
