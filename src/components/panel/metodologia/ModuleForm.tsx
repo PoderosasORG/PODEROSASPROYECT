@@ -26,6 +26,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
   const [bunnyVideoId, setBunnyVideoId] = useState(existing?.bunny_video_id ?? null);
   const [savedModuleId, setSavedModuleId] = useState(existing?.id ?? null);
   const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [videoJustUploaded, setVideoJustUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
   const [savingAction, setSavingAction] = useState<"draft" | "publish" | null>(null);
@@ -91,10 +92,12 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
       let videoId = bunnyVideoId;
       if (videoFile) {
         setUploadProgress(0);
+        setVideoJustUploaded(false);
         videoId = await uploadVideoToBunny(videoFile);
         setBunnyVideoId(videoId);
         setUploadProgress(null);
         setVideoFile(null);
+        setVideoJustUploaded(true);
       }
       if (!videoId) {
         setError("Elige un video antes de guardar.");
@@ -215,6 +218,26 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
         </label>
         {uploadProgress !== null && (
           <p className="text-xs text-foreground/60">Subiendo video: {uploadProgress}%</p>
+        )}
+        {videoJustUploaded && (
+          <p className="text-xs text-green-700 bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+            ✓ El video ya se subió correctamente. Guarda abajo para confirmarlo, y después puedes usar
+            &quot;Vista previa&quot; para verlo tal como lo verá quien compre el curso.
+          </p>
+        )}
+        {!videoJustUploaded && bunnyVideoId && (
+          <p className="text-xs text-foreground/50">
+            Ya tienes un video guardado para este módulo. {savedModuleId && (
+              <a
+                href={`/panel/metodologia-poderosa/${savedModuleId}/vista-previa`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold hover:underline"
+              >
+                Ver vista previa
+              </a>
+            )}
+          </p>
         )}
         <label className="flex flex-col gap-1 text-sm">
           Miniatura personalizada (opcional — si no eliges una, Bunny usa un fotograma automático)
