@@ -65,24 +65,13 @@ export function ModulePlayer({ module }: { module: PlayableModule }) {
 }
 
 function ModuleFileLink({ file }: { file: CategoryModuleFile }) {
-  const [url, setUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    const supabase = createClient();
-    supabase.storage
-      .from("product-files")
-      .createSignedUrl(file.file_path, 60 * 10, { download: file.file_name })
-      .then(({ data }) => setUrl(data?.signedUrl ?? null));
-  }, [file.file_path, file.file_name]);
-
-  if (!url) return <p className="text-sm text-foreground/40">{file.file_name} (cargando...)</p>;
-
-  // download (con nombre de archivo) le pide a Supabase que mande
-  // Content-Disposition: attachment — así el navegador lo guarda en
-  // el dispositivo en vez de navegar a él o abrirlo en una pestaña,
-  // tanto en celular como en computador.
+  // Pasa por nuestra propia API (no un link directo a Supabase) para que la
+  // descarga funcione también en celular — ver el comentario en esa ruta.
   return (
-    <a href={url} download={file.file_name} className="text-sm text-gold hover:underline">
+    <a
+      href={`/api/metodologia-poderosa/files/${file.id}/download`}
+      className="text-sm text-gold hover:underline"
+    >
       Descargar: {file.file_name}
     </a>
   );
