@@ -50,15 +50,35 @@ export function ModulePlayer({ module }: { module: PlayableModule }) {
         </div>
       )}
 
-      {module.description && <p className="text-foreground/70">{module.description}</p>}
-
       {files.length > 0 && (
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-2 bg-gold-light/15 border border-gold-light/50 rounded-xl p-4">
           <h2 className="font-serif text-lg">Material de apoyo</h2>
           {files.map((file) => (
             <ModuleFileLink key={file.id} file={file} />
           ))}
         </div>
+      )}
+
+      {module.description && <ModuleDescription description={module.description} />}
+    </div>
+  );
+}
+
+function ModuleDescription({ description }: { description: string }) {
+  const [expanded, setExpanded] = useState(false);
+  const isLong = description.length > 220;
+  const preview = isLong ? `${description.slice(0, 220).trimEnd()}…` : description;
+
+  return (
+    <div className="text-foreground/70">
+      <p>{expanded ? description : preview}</p>
+      {isLong && (
+        <button
+          onClick={() => setExpanded((prev) => !prev)}
+          className="text-sm text-gold hover:underline mt-1"
+        >
+          {expanded ? "Ver menos" : "Ver más"}
+        </button>
       )}
     </div>
   );
