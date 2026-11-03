@@ -60,30 +60,6 @@ export function PurchasedContent({
     }
   }
 
-  // Los archivos descargables (ebooks, plantillas) sí están pensados
-  // para descargarse — ese comportamiento se mantiene igual.
-  async function downloadFile(id: string) {
-    setLoadingId(id);
-    setError(null);
-    try {
-      const res = await fetch("/api/mis-compras/signed-url", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ kind: "file", id }),
-      });
-      const data = await res.json();
-      if (!res.ok || !data.url) {
-        setError(data.error ?? "No se pudo abrir el contenido.");
-        return;
-      }
-      window.open(data.url, "_blank");
-    } catch {
-      setError("No se pudo conectar con el servidor.");
-    } finally {
-      setLoadingId(null);
-    }
-  }
-
   const lessons = [...product.course_lessons].sort((a, b) => a.order_index - b.order_index);
   const files = [...product.product_files].sort((a, b) => a.order_index - b.order_index);
 
@@ -129,13 +105,14 @@ export function PurchasedContent({
           {files.map((file) => (
             <li key={file.id} className="flex items-center justify-between gap-2 text-sm">
               <span>{file.file_name}</span>
-              <button
-                onClick={() => downloadFile(file.id)}
-                disabled={loadingId === file.id}
-                className="rounded-full border px-4 py-1 text-xs hover:bg-gold-light/30 disabled:opacity-50"
+              <a
+                href={`/api/mis-compras/files/${file.id}/download`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="rounded-full border px-4 py-1 text-xs hover:bg-gold-light/30"
               >
-                {loadingId === file.id ? "Cargando..." : "Descargar"}
-              </button>
+                Descargar
+              </a>
             </li>
           ))}
         </ul>
