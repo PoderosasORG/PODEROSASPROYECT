@@ -23,9 +23,17 @@ export async function POST(req: NextRequest) {
   const productId = body?.productId;
   const buyerName = typeof body?.buyerName === "string" ? body.buyerName.trim() : "";
   const buyerEmail = typeof body?.buyerEmail === "string" ? body.buyerEmail.trim().toLowerCase() : "";
+  const imageConsent = body?.imageConsent === true;
 
   if (typeof productId !== "string" || !buyerName || !EMAIL_RE.test(buyerEmail)) {
     return NextResponse.json({ error: "Falta nombre, correo o evento válidos." }, { status: 400 });
+  }
+
+  if (!imageConsent) {
+    return NextResponse.json(
+      { error: "Debes autorizar el uso de tu imagen para completar la compra." },
+      { status: 400 },
+    );
   }
 
   const admin = createAdminClient();
@@ -83,6 +91,7 @@ export async function POST(req: NextRequest) {
     amount_cents: product.price_cents,
     currency: product.currency,
     status: "pending",
+    image_consent: imageConsent,
   });
 
   if (orderError) {
