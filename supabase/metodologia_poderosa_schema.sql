@@ -4,6 +4,11 @@
 -- Pega esto completo en Supabase → SQL Editor → Run.
 -- ============================================================
 
+-- Nombre bonito para los bonos descargables (ebook, plantillas) que la
+-- dueña del producto sube como product_files — mismo motivo que
+-- display_name en category_module_files.
+alter table product_files add column if not exists display_name text;
+
 create table if not exists course_categories (
   id uuid primary key default gen_random_uuid(),
   product_id uuid not null references products (id) on delete cascade,
