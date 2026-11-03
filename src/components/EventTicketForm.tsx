@@ -56,9 +56,10 @@ export function EventTicketForm({ productId }: { productId: string }) {
           className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
         />
       </label>
-      <p className="text-xs text-foreground/50 text-left leading-relaxed">
+      <p className="text-[11px] text-foreground/40 text-left leading-relaxed">
         Al comprar tu entrada autorizas la grabación de contenido audiovisual con tu imagen
-        con fines de difusión de la marca.
+        con fines de difusión de la marca. Si no estás de acuerdo, notifícanos a{" "}
+        katysheicomunicacion@gmail.com.
       </p>
       {error && <p className="text-sm text-red-600">{error}</p>}
       <button
