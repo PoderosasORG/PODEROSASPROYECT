@@ -33,6 +33,10 @@ create table if not exists category_module_files (
   created_at timestamptz not null default now()
 );
 
+-- Nombre que ve la usuaria (distinto del nombre real del archivo subido,
+-- que suele venir feo/largo). Si queda vacío, se muestra file_name.
+alter table category_module_files add column if not exists display_name text;
+
 alter table course_categories enable row level security;
 alter table category_modules enable row level security;
 alter table category_module_files enable row level security;

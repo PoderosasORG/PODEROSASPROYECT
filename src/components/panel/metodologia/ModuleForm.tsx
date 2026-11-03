@@ -20,6 +20,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
   const [orderIndex, setOrderIndex] = useState(existing?.order_index ?? nextOrderIndex);
   const [hasSupportMaterial, setHasSupportMaterial] = useState(false);
   const [supportFile, setSupportFile] = useState<File | null>(null);
+  const [supportFileDisplayName, setSupportFileDisplayName] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [thumbnailFile, setThumbnailFile] = useState<File | null>(null);
   const [bunnyVideoId, setBunnyVideoId] = useState(existing?.bunny_video_id ?? null);
@@ -135,6 +136,7 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
           module_id: savedModule.id,
           file_path: filePath,
           file_name: supportFile.name,
+          display_name: supportFileDisplayName.trim() || null,
         });
         if (fileRowError) throw fileRowError;
       }
@@ -206,11 +208,23 @@ export function ModuleForm({ categoryId, existing, nextOrderIndex, onDone, onCan
           </label>
         </div>
         {hasSupportMaterial && (
-          <input
-            type="file"
-            onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
-            className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
-          />
+          <div className="flex flex-col gap-2">
+            <input
+              type="file"
+              onChange={(e) => setSupportFile(e.target.files?.[0] ?? null)}
+              className="rounded border border-gold-light/60 px-3 py-2 text-sm file:mr-3 file:rounded-full file:border file:border-gold file:bg-white file:px-3 file:py-1.5 file:text-gold file:text-xs file:font-medium file:cursor-pointer hover:file:bg-gold hover:file:text-white file:transition-colors"
+            />
+            <label className="flex flex-col gap-1 text-xs text-foreground/70">
+              Nombre que verán las usuarias (opcional — si lo dejas vacío, se usa el nombre del archivo tal cual)
+              <input
+                type="text"
+                value={supportFileDisplayName}
+                onChange={(e) => setSupportFileDisplayName(e.target.value)}
+                placeholder="Ej: Cartilla de ejercicios"
+                className="rounded border border-gold-light/60 px-3 py-2 text-sm text-foreground"
+              />
+            </label>
+          </div>
         )}
       </fieldset>
 

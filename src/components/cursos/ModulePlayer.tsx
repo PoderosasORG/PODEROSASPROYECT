@@ -27,7 +27,7 @@ export function ModulePlayer({ module }: { module: PlayableModule }) {
     const supabase = createClient();
     supabase
       .from("category_module_files")
-      .select("id, module_id, file_path, file_name")
+      .select("id, module_id, file_path, file_name, display_name")
       .eq("module_id", module.id)
       .then(({ data }) => setFiles(data ?? []));
   }, [module.id]);
@@ -72,7 +72,7 @@ function ModuleFileLink({ file }: { file: CategoryModuleFile }) {
       href={`/api/metodologia-poderosa/files/${file.id}/download`}
       className="text-sm text-gold hover:underline"
     >
-      Descargar: {file.file_name}
+      Descargar: {file.display_name || file.file_name}
     </a>
   );
 }
