@@ -80,18 +80,15 @@ export default async function MetodologiaPoderosaPage() {
       },
     ];
 
-    const bonuses = [
-      { emoji: "📘", title: "Ebook de relaciones de pareja", desc: "totalmente gratis por la compra del curso" },
-      { emoji: "📝", title: "10 plantillas de regalo", desc: "totalmente gratis por la compra del curso" },
+    // El curso es el producto; el ebook y las plantillas son el regalo por
+    // comprarlo, no el atractivo principal — se separan visualmente abajo.
+    const coreItems = [
+      "Las 3 categorías del método: ¿Quién soy? · ¿Qué quiero? · ¿Cómo lo logro?",
+      "Todos los módulos en video, a tu ritmo y cuantas veces quieras",
+      "Material de apoyo descargable en cada módulo",
     ];
 
-    const includedItems = [
-      { title: "Las 3 categorías del método", desc: "¿Quién soy? · ¿Qué quiero? · ¿Cómo lo logro?" },
-      { title: "Todos los módulos en video", desc: "a tu ritmo, cuantas veces quieras" },
-      { title: "Material de apoyo descargable", desc: "cartillas y ejercicios de cada módulo" },
-      ...bonuses.map((b) => ({ title: b.title, desc: b.desc ?? "" })),
-      { title: "Acceso de por vida", desc: "sin suscripciones ni fechas límite" },
-    ];
+    const bonusItems = ["Ebook de relaciones de pareja", "10 plantillas de regalo"];
 
     const faqs = [
       {
@@ -176,31 +173,46 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
-        {/* Precio + resumen de todo lo incluido, estilo "todo lo que te llevas" —
-            los beneficios (bonuses) ya se listan aquí abajo, con insignia
-            "Incluido"; antes también se repetían arriba en cuadritos con
-            emoji, mismo contenido duplicado, se quitó por pedido del usuario. */}
+        {/* Tarjeta de compra: presentación editorial de producto premium,
+            no una lista de características. El curso (coreItems) se separa
+            visualmente del regalo (bonusItems) para que el ebook/plantillas
+            nunca compitan con la metodología como "el producto". */}
         <section className="px-6 pb-10">
-          <div className="max-w-xl mx-auto rounded-2xl bg-white border border-gold-light/60 p-6 sm:p-8">
-            <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">El precio</p>
-            <p className="font-serif text-5xl text-foreground text-center mt-1">{priceLabel}</p>
-            <p className="text-sm text-foreground/60 text-center mb-6">
-              Un solo pago. Acceso inmediato y de por vida. Sin suscripciones.
+          <div className="max-w-xl mx-auto rounded-3xl bg-white border border-gold-light/50 p-8 sm:p-10">
+            <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">
+              Metodología Poderosa
+            </p>
+            <p className="text-sm text-foreground/60 text-center mt-1 mb-8">
+              Tu proceso de autoconocimiento, claridad y acción, en un solo lugar.
             </p>
 
-            <p className="text-xs uppercase tracking-wide text-gold font-medium mb-3">Todo lo que te llevas</p>
-            <div className="flex flex-col divide-y divide-gold-light/30">
-              {includedItems.map((item) => (
-                <div key={item.title} className="flex items-center justify-between gap-4 py-2.5">
-                  <div>
-                    <p className="text-sm text-foreground">{item.title}</p>
-                    {item.desc && <p className="text-xs text-foreground/50">{item.desc}</p>}
-                  </div>
-                  <span className="shrink-0 rounded-full bg-gold-light/30 text-gold px-3 py-1 text-[11px] uppercase tracking-wide font-medium">
-                    Incluido
-                  </span>
-                </div>
+            <p className="font-serif text-lg text-foreground mb-3">Incluye</p>
+            <ul className="flex flex-col gap-2.5 mb-8">
+              {coreItems.map((item) => (
+                <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/80 leading-relaxed">
+                  <span className="text-gold mt-0.5">—</span>
+                  <span>{item}</span>
+                </li>
               ))}
+            </ul>
+
+            <div className="bg-beige-light/70 rounded-2xl p-5 mb-8">
+              <p className="text-xs uppercase tracking-wide text-gold font-medium mb-2.5">
+                De regalo, por tu compra
+              </p>
+              <ul className="flex flex-col gap-1.5">
+                {bonusItems.map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm text-foreground/70">
+                    <span className="text-gold mt-0.5">—</span>
+                    <span>{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div className="text-center border-t border-gold-light/30 pt-8">
+              <p className="font-serif text-5xl text-foreground">{priceLabel}</p>
+              <p className="text-sm text-foreground/60 mt-2">Pago único · Acceso de por vida</p>
             </div>
 
             <div className="flex flex-col items-center gap-2 mt-6">
