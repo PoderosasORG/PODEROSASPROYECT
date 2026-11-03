@@ -3,7 +3,6 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { getEventStats } from "@/lib/eventStats";
-import { WaitlistForm } from "@/components/WaitlistForm";
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -36,6 +35,15 @@ export default async function Home() {
     .select("slug, display_name, bio, avatar_url")
     .eq("is_active", true)
     .in("slug", CREATOR_ORDER);
+  const { data: courseProduct } = await supabase
+    .from("products")
+    .select("price_cents")
+    .eq("title", "Metodología Poderosa")
+    .eq("is_published", true)
+    .maybeSingle();
+  const coursePriceLabel = courseProduct
+    ? `$${Math.round(courseProduct.price_cents / 100).toLocaleString("es-CO")} COP`
+    : null;
 
   const profiles = CREATOR_ORDER.map((slug) => {
     const defaults = CREATOR_DEFAULTS[slug];
@@ -137,12 +145,12 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Curso virtual — lista de espera, sin cobrar todavía.
-          Copy final entregado por el usuario, montado tal cual. */}
+      {/* Curso virtual — ya a la venta. Copy final entregado por el
+          usuario, montado tal cual. */}
       <section className="px-6 py-24 bg-white">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
           <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-            Próximamente · Curso virtual
+            Curso virtual · Metodología Poderosa
           </span>
           <h2 className="font-serif text-4xl sm:text-5xl leading-tight">
             Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
@@ -165,12 +173,12 @@ export default async function Home() {
             No se trata de convertirte en otra persona. Se trata de aprender
             a elegir tu propio camino.
           </p>
-          <a
-            href="#lista-espera-curso"
+          <Link
+            href="/cursos/metodologia-poderosa"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
             Quiero ser parte de Poderosas
-          </a>
+          </Link>
         </div>
 
         <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6">
@@ -306,78 +314,24 @@ export default async function Home() {
             automático y empezar a construir, con intención, una vida más
             tuya.
           </p>
-          <a
-            href="#lista-espera-curso"
-            className="mt-2 self-center rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
-          >
-            Quiero recibir información del lanzamiento
-          </a>
         </div>
 
-        <div
-          id="lista-espera-curso"
-          className="max-w-2xl mx-auto mt-20 flex flex-col items-center gap-5 px-6 text-center scroll-mt-16"
-        >
-          <h3 className="font-serif text-2xl">Inscríbete en la lista de espera</h3>
-          <p className="text-foreground/70">
-            Déjanos tu correo para recibir información cuando abramos las
-            inscripciones.
-          </p>
-          <p className="text-sm text-foreground/70">
-            Además, por apuntarte primero, podrás acceder a:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">🎁</p>
-              <p className="text-sm font-medium mt-1">30% de descuento</p>
-              <p className="text-xs text-foreground/60">en los eventos presenciales de Poderosas</p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">📘</p>
-              <p className="text-sm font-medium mt-1">Un ebook de regalo</p>
-              <p className="text-xs text-foreground/60">cuando abramos las inscripciones al curso</p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">📝</p>
-              <p className="text-sm font-medium mt-1">30 plantillas de regalo</p>
-              <p className="text-xs text-foreground/60">
-                sobre amor propio, autoconocimiento y relaciones de pareja
+        <div className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-3 px-6 text-center">
+          {coursePriceLabel && (
+            <div className="w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
+              <p className="text-xs uppercase tracking-wide text-gold font-medium">
+                Metodología Poderosa
               </p>
+              <p className="font-serif text-4xl text-foreground">{coursePriceLabel}</p>
+              <p className="text-sm text-foreground/60">Acceso de por vida a las 3 categorías</p>
             </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">✨</p>
-              <p className="text-sm font-medium mt-1">50% de descuento en tu sesión Bio-Well</p>
-              <p className="text-xs text-foreground/60">
-                un escaneo que visualiza tu campo energético
-              </p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">💗</p>
-              <p className="text-sm font-medium mt-1">Curso corto de amor propio</p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">💬</p>
-              <p className="text-sm font-medium mt-1">
-                Curso corto de fortalecimiento de comunicación en pareja
-              </p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">📖</p>
-              <p className="text-sm font-medium mt-1">
-                Libro de interpretación de las líneas de las manos
-              </p>
-            </div>
-            <div className="rounded-2xl border border-gold-light/60 p-5">
-              <p className="text-2xl">🤲</p>
-              <p className="text-sm font-medium mt-1">Curso de quiromancia</p>
-            </div>
-          </div>
-          <p className="text-xs text-foreground/50 max-w-sm">
-            Beneficios exclusivos para quienes se inscriban en la lista de
-            espera, sujetos a las condiciones que se comuniquen en el
-            lanzamiento.
-          </p>
-          <WaitlistForm source="curso-metodologia-poderosa" />
+          )}
+          <Link
+            href="/cursos/metodologia-poderosa"
+            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Comprar el curso
+          </Link>
         </div>
       </section>
 
