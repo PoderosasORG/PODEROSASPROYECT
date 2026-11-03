@@ -5,16 +5,16 @@
      como acento (botones, bordes, textos destacados); lo que antes era
      crema/beige pasa a rosa empolvado para que coincida con el póster y
      el logo de la corona del evento presencial. */
-  --background: #fdf0f3;
+  --background: #fbdfe7;
   --foreground: #452530;
 
-  --color-beige: #f6c3d4;
-  --color-beige-light: #fdedf1;
+  --color-beige: #f2a0bf;
+  --color-beige-light: #fbdfe7;
   --color-white: #ffffff;
   --color-gold: #bd7d47;
   --color-gold-light: #e0b384;
-  --color-pink: #e8789e;
-  --color-pink-light: #fbe6ea;
+  --color-pink: #e2457a;
+  --color-pink-light: #f7c9d8;
   --color-text: #452530;
 }
 
