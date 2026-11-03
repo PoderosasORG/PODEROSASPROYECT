@@ -211,7 +211,7 @@ export default async function Home() {
             alineada con quien eres y con lo que quieres.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">01</span>
               <p className="font-serif text-lg">Reconoce quién eres</p>
               <p className="text-sm text-foreground/60">
@@ -224,7 +224,7 @@ export default async function Home() {
                 empezar a escucharte con más intención.
               </p>
             </div>
-            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">02</span>
               <p className="font-serif text-lg">Descubre qué quieres</p>
               <p className="text-sm text-foreground/60">
@@ -238,7 +238,7 @@ export default async function Home() {
                 dirección que quieres tomar.
               </p>
             </div>
-            <div className="rounded-2xl bg-beige-light p-6 flex flex-col gap-2">
+            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
               <span className="font-serif text-3xl text-gold-light">03</span>
               <p className="font-serif text-lg">Convierte tus deseos en acciones</p>
               <p className="text-sm text-foreground/60">
@@ -281,7 +281,7 @@ export default async function Home() {
           </p>
         </div>
 
-        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6 text-center">
+        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6 py-8 text-center rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm">
           <p className="font-serif text-2xl">
             No es solo información. Es un proceso para llevar a tu vida.
           </p>
@@ -316,7 +316,7 @@ export default async function Home() {
 
         <div className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-3 px-6 text-center">
           {coursePriceLabel && (
-            <div className="w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
+            <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col items-center gap-1">
               <p className="text-xs uppercase tracking-wide text-gold font-medium">
                 Metodología Poderosa
               </p>
