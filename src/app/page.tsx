@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
-import { getEventStats, EVENT_DISCOUNT_SLOTS } from "@/lib/eventStats";
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -29,7 +28,6 @@ export const revalidate = 0;
 
 export default async function Home() {
   const supabase = await createClient();
-  const eventStats = await getEventStats();
   const { data: creators } = await supabase
     .from("creators")
     .select("slug, display_name, bio, short_bio, avatar_url")
@@ -106,8 +104,8 @@ export default async function Home() {
           <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
             Masterclass presencial · Poderosa
           </span>
-          <h2 className="font-serif text-3xl sm:text-5xl leading-tight text-white">
-            Una mañana para volver a ti.
+          <h2 className="font-serif text-3xl sm:text-5xl leading-tight text-white text-center">
+            Un espacio para escucharte, descubrirte y conectar.
           </h2>
           <p className="max-w-xl text-white/80">
             Un encuentro para escucharte, descubrir qué quieres y conectar con
@@ -132,11 +130,7 @@ export default async function Home() {
             </p>
             <p className="font-serif text-4xl text-foreground">$60.000 COP</p>
             <p className="text-sm text-foreground/60 text-center">
-              Precio regular: $120.000 COP · 50% de descuento para las primeras{" "}
-              {EVENT_DISCOUNT_SLOTS} entradas
-              {eventStats && Math.max(EVENT_DISCOUNT_SLOTS - eventStats.sold, 0) > 0
-                ? ` · quedan ${Math.max(EVENT_DISCOUNT_SLOTS - eventStats.sold, 0)}`
-                : ""}
+              Precio regular: $120.000 COP · 50% de descuento para los primeros compradores
             </p>
           </div>
 
