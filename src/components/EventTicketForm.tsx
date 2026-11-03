@@ -64,8 +64,8 @@ export function EventTicketForm({ productId }: { productId: string }) {
           className="mt-0.5 shrink-0 accent-gold"
         />
         <span>
-          Autorizo a Poderosas a tomar fotografías y videos durante el evento y a usar mi
-          imagen con fines de difusión en redes sociales y comunicación de la marca.
+          Autorizo la grabación de contenido audiovisual con mi imagen con fines de difusión
+          de la marca.
         </span>
       </label>
       {error && <p className="text-sm text-red-600">{error}</p>}
