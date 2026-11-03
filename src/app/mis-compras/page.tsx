@@ -20,7 +20,8 @@ export default async function MisComprasPage() {
       `id, created_at, products (
         id, title, type, cover_image_url,
         course_lessons ( id, title, order_index, is_free_preview ),
-        product_files ( id, file_name, order_index )
+        product_files ( id, file_name, order_index ),
+        course_categories ( id )
       )`,
     )
     .eq("buyer_id", user.id)
@@ -39,7 +40,11 @@ export default async function MisComprasPage() {
       ) : (
         <div className="flex flex-col gap-6 w-full max-w-2xl">
           {purchases.map((product) => (
-            <PurchasedContent key={product.id} product={product} />
+            <PurchasedContent
+              key={product.id}
+              product={product}
+              hasCategorizedCourse={(product.course_categories ?? []).length > 0}
+            />
           ))}
         </div>
       )}
