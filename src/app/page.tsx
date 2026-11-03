@@ -99,7 +99,7 @@ export default async function Home() {
       {/* Masterclass presencial — fondo oscuro, listo para una foto más adelante
           (hoy es un degradado; para ponerle una imagen basta con agregar un
           <img> absoluto dentro de este div, igual que en el hero de arriba) */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#161421] via-[#1d1b2e] to-[#262244] px-6 py-20">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#3a1824] via-[#4a1f2d] to-[#5c2436] px-6 py-20">
         <div className="relative max-w-2xl mx-auto flex flex-col items-center text-center gap-4">
           <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
             Masterclass presencial · Poderosa
@@ -365,7 +365,7 @@ export default async function Home() {
 
       {/* Podcast — la foto (Kat y Shei, Shei señalando hacia arriba)
           va justo debajo de este texto, así el gesto apunta hacia él. */}
-      <section className="px-6 py-24 bg-[#161421] text-center flex flex-col items-center gap-5">
+      <section className="px-6 py-24 bg-[#3a1824] text-center flex flex-col items-center gap-5">
         <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
           Nuestro podcast
         </span>
