@@ -143,7 +143,7 @@ export default async function EventoPage() {
       {/* 1. Portada — fondo oscuro como recurso de contraste para esta
           sección únicamente; el resto de la página transiciona a los
           tonos crema/marfil de la marca. */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#211c30] via-[#2b2440] to-beige-light px-6 pt-20 pb-24">
+      <section className="relative overflow-hidden bg-gradient-to-b from-[#3a1824] via-[#5c2436] to-beige-light px-6 pt-20 pb-24">
         <div className="relative max-w-xl mx-auto flex flex-col items-center text-center gap-5">
           <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
             Masterclass presencial · Poderosa

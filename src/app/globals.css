@@ -1,17 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fffdf8;
-  --foreground: #3a2e2e;
+  /* Identidad rosa + dorado (noviembre 2026): el dorado se mantiene igual
+     como acento (botones, bordes, textos destacados); lo que antes era
+     crema/beige pasa a rosa empolvado para que coincida con el póster y
+     el logo de la corona del evento presencial. */
+  --background: #fdf5f6;
+  --foreground: #452530;
 
-  --color-beige: #f3e9dc;
-  --color-beige-light: #faf5ec;
+  --color-beige: #f6dbe3;
+  --color-beige-light: #fdf3f4;
   --color-white: #ffffff;
-  --color-gold: #c9a24b;
-  --color-gold-light: #e6cd8f;
+  --color-gold: #bd7d47;
+  --color-gold-light: #e0b384;
   --color-pink: #f3c9d1;
   --color-pink-light: #fbe6ea;
-  --color-text: #3a2e2e;
+  --color-text: #452530;
 }
 
 @theme inline {
