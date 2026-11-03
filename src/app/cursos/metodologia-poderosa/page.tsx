@@ -45,14 +45,40 @@ export default async function MetodologiaPoderosaPage() {
       .eq("product_id", product.id)
       .order("order_index");
 
-    const { data: previewModules } = await supabase
-      .from("category_modules")
-      .select("category_id, title, order_index")
-      .in("category_id", (previewCategories ?? []).map((c) => c.id))
-      .eq("is_published", true)
-      .order("order_index");
-
     const priceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
+
+    // Copy exacto entregado por el usuario para los 3 pilares — se mapea por
+    // posición (order_index 0/1/2), no por el título real de la categoría,
+    // porque es texto de venta fijo, no un listado dinámico del contenido.
+    const pillarCopy = [
+      {
+        title: "¿Quién soy?",
+        desc: "Reconoce tu historia, comprende quién eres y descubre qué aspectos de ti necesitan atención y transformación.",
+      },
+      {
+        title: "¿Qué quiero?",
+        desc: "Conecta con tus deseos, identifica lo que realmente importa para ti y dale claridad a eso que quieres para tu vida.",
+      },
+      {
+        title: "¿Cómo lo logro?",
+        desc: "Convierte tus deseos en posibilidades concretas y construye un camino propio para empezar a hacerlos realidad.",
+      },
+    ];
+
+    const transformationBenefits = [
+      {
+        title: "Mayor comprensión de ti misma.",
+        desc: "Reconoce tus emociones, necesidades, fortalezas y aquello que deseas trabajar en tu vida.",
+      },
+      {
+        title: "Herramientas para decidir con mayor claridad.",
+        desc: "Identifica tus prioridades, reconoce lo que realmente quieres y aprende a elegir de manera más consciente.",
+      },
+      {
+        title: "Un punto de partida para avanzar.",
+        desc: "Convierte tus ideas y deseos en objetivos y define pequeñas acciones que puedas llevar a tu vida cotidiana.",
+      },
+    ];
 
     const bonuses = [
       { emoji: "📘", title: "Ebook de relaciones de pareja", desc: "totalmente gratis por la compra del curso" },
@@ -96,38 +122,32 @@ export default async function MetodologiaPoderosaPage() {
             {product.title}
           </h1>
           <p className="max-w-xl text-foreground/70 text-lg">
-            {product.description ||
-              "Un método práctico para entender lo que sientes, descubrir lo que realmente quieres y empezar a convertirlo en realidad."}
+            Un espacio para hacer una pausa, escucharte, reconectar contigo y empezar a construir
+            una vida más alineada con lo que realmente eres y deseas.
           </p>
         </section>
 
         {previewCategories && previewCategories.length > 0 && (
-          <section className="px-6 pb-10">
-            <div className="max-w-3xl mx-auto">
+          <section className="px-6 pb-14">
+            <div className="max-w-4xl mx-auto">
               <p className="text-center text-sm uppercase tracking-wide text-gold font-medium mb-6">
-                Qué incluye
+                Los 3 pilares de tu transformación
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {previewCategories.map((category, index) => (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+                {previewCategories.slice(0, 3).map((category, index) => (
                   <div
                     key={category.id}
-                    className="rounded-2xl bg-white p-5 flex flex-col gap-2 border border-gold-light/40"
+                    className="rounded-2xl bg-white p-6 flex flex-col gap-2 border border-gold-light/50"
                   >
-                    <span className="font-serif text-2xl text-gold-light">
+                    <span className="font-serif text-3xl text-gold-light">
                       {String(index + 1).padStart(2, "0")}
                     </span>
-                    <p className="font-serif text-lg">{category.title}</p>
-                    {previewModules && previewModules.filter((m) => m.category_id === category.id).length > 0 && (
-                      <ul className="flex flex-col gap-1 mt-1">
-                        {previewModules
-                          .filter((m) => m.category_id === category.id)
-                          .map((m) => (
-                            <li key={m.title} className="text-xs text-foreground/60">
-                              · {m.title}
-                            </li>
-                          ))}
-                      </ul>
-                    )}
+                    <p className="font-serif text-xl text-foreground font-semibold">
+                      {pillarCopy[index]?.title ?? category.title}
+                    </p>
+                    <p className="text-sm text-foreground/60 leading-relaxed">
+                      {pillarCopy[index]?.desc}
+                    </p>
                   </div>
                 ))}
               </div>
@@ -135,18 +155,24 @@ export default async function MetodologiaPoderosaPage() {
           </section>
         )}
 
-        <section className="px-6 pb-10">
-          <div className="max-w-xl mx-auto flex flex-col gap-3">
-            {[
-              "Entenderte mejor: reconocer qué sientes, qué necesitas y qué quieres cambiar.",
-              "Tomar decisiones con más claridad: identificar tus prioridades y evaluar qué tiene sentido para ti.",
-              "Un plan propio: acciones realistas que puedas empezar a aplicar en tu vida cotidiana.",
-            ].map((item) => (
-              <p key={item} className="flex gap-3 text-foreground/80">
-                <span className="text-gold">✦</span>
-                {item}
-              </p>
-            ))}
+        <section className="px-6 pb-14">
+          <div className="max-w-2xl mx-auto">
+            <p className="text-center text-sm uppercase tracking-wide text-gold font-medium mb-8">
+              Lo que te llevas
+            </p>
+            <div className="flex flex-col gap-7">
+              {transformationBenefits.map((benefit, index) => (
+                <div key={benefit.title} className="flex gap-4">
+                  <span className="shrink-0 font-serif text-xl text-gold-light">
+                    {String(index + 1).padStart(2, "0")}.
+                  </span>
+                  <div>
+                    <p className="text-foreground font-semibold">{benefit.title}</p>
+                    <p className="text-sm text-foreground/60 mt-1 leading-relaxed">{benefit.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         </section>
 
