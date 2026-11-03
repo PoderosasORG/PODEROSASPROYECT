@@ -2,6 +2,50 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-11-02/03 — Metodología Poderosa (curso multi-administradora)
+
+Feature completa: curso "Metodología Poderosa", 3 categorías fijas
+(¿Quién soy? / ¿Qué quiero? / ¿Cómo lo logro?), cada una administrada
+por una cuenta distinta (Luz, Shei, Kat) desde su propio dispositivo.
+Video en Bunny.net Stream (URLs firmadas, sin descarga). Spec:
+`docs/specs/metodologia-poderosa-design.md`, plan:
+`docs/plans/2026-11-02-metodologia-poderosa.md`. Construido con
+subagent-driven-development: 12 tareas + revisión final de toda la
+rama (encontró y cerró 5 Important, uno serio: una administradora
+podía filtrar contenido pagado de otra vía material de apoyo mal
+acotado en Storage — cerrado con RLS por carpeta del dueño).
+
+**Importante — esto ya es PERMANENTE en el código, no hay que volver a
+pedirlo:** cualquier video o módulo que suban Luz, Shei o Kat desde
+`/panel/metodologia-poderosa` (en cualquier computador, no solo el del
+usuario) sale automáticamente con: sidebar colapsable por categoría,
+video enmarcado, material de apoyo arriba de la descripción,
+descripción larga recortada con "Ver más", descarga que funciona en
+celular (pasa por una API propia, abre en pestaña nueva como respaldo).
+
+**Lo único que SÍ hay que hacer cada vez, por archivo** (no es un bug,
+es un campo que cada documento necesita su propio valor): al marcar
+"¿Tiene material de apoyo?" → Sí, aparece un campo "Nombre que verán
+las usuarias" — si se deja vacío, se muestra el nombre feo del
+archivo subido tal cual (ej. "CARTILLA CON EJERCICIOS SHEI PODEROSA
+(1).pdf"). Avisarle a Luz/Shei/Kat que llenen ese campo al subir.
+
+**Pendiente de arreglar manual en Supabase para los archivos ya
+subidos sin ese campo:**
+```sql
+update category_module_files set display_name = '<nombre bonito>' where id = '<id de la fila>';
+```
+
+**Pendiente de verificar por el usuario:**
+- Que el deploy a Vercel esté al día (el agente no puede correr
+  `vercel --prod` directo, el clasificador de seguridad lo bloquea
+  siempre — lo corre el usuario cada vez).
+- Precio real del curso puesto ($200.000 COP ya confirmado, revisar
+  que siga así tras cualquier cambio).
+- Cuenta de Wompi: el producto quedó a nombre de Shei (decisión
+  explícita del usuario — Wompi solo permite una cuenta por persona
+  natural, Oscar no va a monetizar esto).
+
 ## 2026-10-21 (continuación 8)
 - CRM agregado: `/panel/clientes` (ventas individuales de cada creadora,
   protegidas por RLS; + números colectivos de la plataforma sin
