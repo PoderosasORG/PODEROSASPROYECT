@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
-import { getEventStats } from "@/lib/eventStats";
+import { getEventStats, EVENT_DISCOUNT_SLOTS } from "@/lib/eventStats";
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -107,21 +107,20 @@ export default async function Home() {
             Masterclass presencial · Poderosa
           </span>
           <h2 className="font-serif text-3xl sm:text-5xl leading-tight text-white">
-            Es momento de elegirte.
+            Una mañana para volver a ti.
           </h2>
           <p className="max-w-xl text-white/80">
-            Descubre quién eres, conecta con lo que realmente quieres y
-            encuentra herramientas para empezar a alcanzar eso que llevas
-            tanto tiempo posponiendo.
+            Un encuentro para escucharte, descubrir qué quieres y conectar con
+            otras mujeres en una experiencia de reflexión, aprendizaje y conexión.
           </p>
           <p className="text-sm uppercase tracking-wide text-gold-light">
             ¿Quién soy? · ¿Qué quiero? · ¿Cómo lo hago posible?
           </p>
           <p className="text-sm text-white/70">
-            Actividades guiadas · Brunch · Regalos especiales
+            Actividades guiadas · Coffee break · Regalos especiales
           </p>
           <p className="text-sm text-white/70">
-            21 de noviembre · 9:00 a.m. – 1:00 p.m.
+            Sábado 21 de noviembre · 9:00 a.m. – 1:00 p.m.
           </p>
           <p className="text-sm text-white/70">
             Edificio Emprendu · Calle 85 #12-66, Bogotá
@@ -129,16 +128,15 @@ export default async function Home() {
 
           <div className="mt-4 w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
             <p className="text-xs uppercase tracking-wide text-gold font-medium">
-              Precio especial
-              {eventStats && eventStats.capacity
-                ? ` · quedan ${Math.max(eventStats.capacity - eventStats.sold, 0)} cupos de ${eventStats.capacity}`
-                : eventStats && eventStats.sold > 0
-                  ? ` · ${eventStats.sold} ${eventStats.sold === 1 ? "persona ya se unió" : "personas ya se unieron"}`
-                  : " · cupos limitados"}
+              Precio de lanzamiento
             </p>
             <p className="font-serif text-4xl text-foreground">$60.000 COP</p>
-            <p className="text-sm text-foreground/60">
-              Precio regular: $120.000 COP · 50% de descuento
+            <p className="text-sm text-foreground/60 text-center">
+              Precio regular: $120.000 COP · 50% de descuento para las primeras{" "}
+              {EVENT_DISCOUNT_SLOTS} entradas
+              {eventStats && Math.max(EVENT_DISCOUNT_SLOTS - eventStats.sold, 0) > 0
+                ? ` · quedan ${Math.max(EVENT_DISCOUNT_SLOTS - eventStats.sold, 0)}`
+                : ""}
             </p>
           </div>
 
