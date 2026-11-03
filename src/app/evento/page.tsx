@@ -4,7 +4,6 @@ import { EventTicketForm } from "@/components/EventTicketForm";
 import { ProfileCard } from "@/components/ProfileCard";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
-import { EVENT_DISCOUNT_SLOTS } from "@/lib/eventStats";
 
 export const dynamic = "force-dynamic";
 
@@ -55,17 +54,6 @@ export default async function EventoPage() {
     currency: product.currency,
     maximumFractionDigits: 0,
   });
-
-  const { count: sold } = await admin
-    .from("orders")
-    .select("id", { count: "exact", head: true })
-    .eq("product_id", product.id)
-    .eq("status", "approved");
-
-  // El descuento de lanzamiento es para las primeras 15 compras reales,
-  // algo distinto del aforo del lugar (product.capacity) — no se mezclan
-  // para no mostrar una cifra de "cupos" que en realidad es otra cosa.
-  const discountRemaining = Math.max(EVENT_DISCOUNT_SLOTS - (sold ?? 0), 0);
 
   const { data: creatorsData } = await supabase
     .from("creators")
@@ -160,8 +148,8 @@ export default async function EventoPage() {
           <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
             Masterclass presencial · Poderosa
           </span>
-          <h1 className="font-serif text-4xl sm:text-5xl leading-tight text-white">
-            Una mañana para volver a ti.
+          <h1 className="font-serif text-4xl sm:text-5xl leading-tight text-white text-center">
+            Un espacio para escucharte, descubrirte y conectar.
           </h1>
           <p className="max-w-lg text-white/80 text-lg">
             Un encuentro para escucharte, descubrir qué quieres y conectar con otras mujeres en
@@ -182,8 +170,7 @@ export default async function EventoPage() {
             </p>
             <p className="font-serif text-4xl text-foreground">{price}</p>
             <p className="text-sm text-foreground/60 text-center">
-              Precio regular: $120.000 COP · 50% de descuento para las primeras{" "}
-              {EVENT_DISCOUNT_SLOTS} entradas
+              Precio regular: $120.000 COP · 50% de descuento para los primeros compradores
             </p>
           </div>
 
@@ -295,9 +282,7 @@ export default async function EventoPage() {
             </p>
             <p className="font-serif text-4xl text-foreground">{price}</p>
             <p className="text-sm text-foreground/60 text-center">
-              Precio regular: $120.000 COP · 50% de descuento para las primeras{" "}
-              {EVENT_DISCOUNT_SLOTS} compras
-              {discountRemaining > 0 ? ` · quedan ${discountRemaining}` : ""}
+              Precio regular: $120.000 COP · 50% de descuento para los primeros compradores
             </p>
           </div>
 
