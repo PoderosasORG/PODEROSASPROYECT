@@ -449,7 +449,7 @@ export default async function MetodologiaPoderosaPage() {
               <BuyButton
                 productId={product.id}
                 slug="cursos/metodologia-poderosa"
-                accentColor="#c9a24b"
+                accentColor="#bd7d47"
                 size="large"
                 label="Quiero comenzar mi proceso"
               />
@@ -482,7 +482,7 @@ export default async function MetodologiaPoderosaPage() {
           <BuyButton
             productId={product.id}
             slug="cursos/metodologia-poderosa"
-            accentColor="#c9a24b"
+            accentColor="#bd7d47"
             size="large"
             label="Quiero comenzar mi proceso"
           />
