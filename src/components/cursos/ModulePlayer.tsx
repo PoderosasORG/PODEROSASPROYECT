@@ -39,11 +39,11 @@ export function ModulePlayer({ module }: { module: PlayableModule }) {
       {error && <p className="text-sm text-red-600">{error}</p>}
       {!error && !playbackUrl && <p className="text-sm text-foreground/60">Cargando video...</p>}
       {playbackUrl && (
-        <div className="aspect-video w-full">
+        <div className="aspect-video w-full rounded-2xl border border-gold-light/60 shadow-md overflow-hidden bg-black">
           <iframe
             src={playbackUrl}
             loading="lazy"
-            className="w-full h-full rounded-xl"
+            className="w-full h-full"
             allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture"
             allowFullScreen
           />
@@ -71,14 +71,18 @@ function ModuleFileLink({ file }: { file: CategoryModuleFile }) {
     const supabase = createClient();
     supabase.storage
       .from("product-files")
-      .createSignedUrl(file.file_path, 60 * 10)
+      .createSignedUrl(file.file_path, 60 * 10, { download: file.file_name })
       .then(({ data }) => setUrl(data?.signedUrl ?? null));
-  }, [file.file_path]);
+  }, [file.file_path, file.file_name]);
 
   if (!url) return <p className="text-sm text-foreground/40">{file.file_name} (cargando...)</p>;
 
+  // download (con nombre de archivo) le pide a Supabase que mande
+  // Content-Disposition: attachment — así el navegador lo guarda en
+  // el dispositivo en vez de navegar a él o abrirlo en una pestaña,
+  // tanto en celular como en computador.
   return (
-    <a href={url} target="_blank" rel="noreferrer" className="text-sm text-gold hover:underline">
+    <a href={url} download={file.file_name} className="text-sm text-gold hover:underline">
       Descargar: {file.file_name}
     </a>
   );

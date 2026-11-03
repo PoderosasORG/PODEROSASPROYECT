@@ -44,12 +44,14 @@ export function CourseViewer({
         ))}
       </aside>
 
-      <main className="flex-1 p-6">
-        {selected ? (
-          <ModulePlayer key={selected.id} module={selected} />
-        ) : (
-          <p>Todavía no hay módulos publicados.</p>
-        )}
+      <main className="flex-1 px-6 py-10 md:px-12 flex justify-center">
+        <div className="w-full max-w-2xl">
+          {selected ? (
+            <ModulePlayer key={selected.id} module={selected} />
+          ) : (
+            <p>Todavía no hay módulos publicados.</p>
+          )}
+        </div>
       </main>
     </div>
   );
