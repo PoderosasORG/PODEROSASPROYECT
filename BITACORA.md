@@ -2,6 +2,43 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-11-03 — Identidad DEFINITIVA, versión final: fondos con textura (no planos)
+
+Último ajuste sobre la identidad rosa+dorado de más abajo, decidido en
+Canva directamente por la usuaria: los fondos NO son color sólido, llevan
+un degradado suave tipo acuarela/vintage dentro de la misma familia de
+colores (nunca mezclar con tonos fuera de la paleta). Tres variantes
+muestreadas de su diseño en Canva:
+- Rosa (fondo general): tonos entre `#F2A0BF` y `#FBDFE7`, veteado suave.
+- Vino (portada/cierre): entre `#5C1030` y `#3A1824`.
+- Marfil/dorado (tarjetas de contenido): cremas cálidos con `#D4A780` /
+  `#EAD5C0` de acento.
+
+El logo se simplificó a **solo la palabra "PODEROSA"**, sin la corona —
+se intentó mantener la corona (imagen real de la usuaria, recortada) pero
+al verse junto al wordmark en una plantilla se notaba la diferencia de
+calidad entre la foto generada con IA y el resto del diseño vectorial;
+la usuaria pidió quitarla.
+
+**Referencia viva (fuente de verdad del estilo):** diseño de Canva de la
+usuaria con la plantilla ya ajustada a su gusto —
+https://canva.link/buw7jo9mebyafd5 — consultarlo antes de generar
+cualquier pieza visual nueva (diapositivas, posts, pósters).
+
+**Entregado:** `Identidad-de-marca-Poderosas.docx` (documento Word
+actualizado con esta versión — colores planos + texturizados, logo,
+tipografía, el link de Canva y el prompt reutilizable) y
+`Plantilla-Diapositivas-Poderosas.pptx` (11 diapositivas, varios layouts:
+divisor de sección, bloques grandes, grilla de tarjetas, línea de
+tiempo, cita grande, ejercicio con líneas para escribir).
+
+**Lección de proceso:** para sacar colores exactos de un diseño ya hecho
+en Canva (no inventados), la ruta que funcionó fue leer el DOM con
+`javascript_tool` buscando `<img>` grandes (ancho>1500px) para encontrar
+la URL real de la imagen de fondo que Canva renderiza, en vez de intentar
+muestrear directo una captura de pantalla del navegador (la compresión
+JPG y el zoom del viewport desvían bastante el color real).
+
 ## 2026-11-03 — Identidad visual DEFINITIVA: rosa + dorado (decidida y aprobada)
 
 **Esto ya es la marca oficial, no hay que volver a decidirlo.** El usuario
