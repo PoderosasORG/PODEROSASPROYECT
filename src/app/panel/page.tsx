@@ -32,73 +32,72 @@ export default async function PanelPage() {
     .eq("owner_id", user.id)
     .maybeSingle();
 
+  const actions = creator
+    ? [
+        { href: "/panel/subir", label: "Subir contenido", primary: true },
+        { href: "/panel/contenido", label: "Ver mi contenido", primary: false },
+        { href: "/panel/personalizar", label: "Personalizar mi panel", primary: false },
+        { href: "/panel/clientes", label: "Mis clientes", primary: false },
+        ...(ownedCategory
+          ? [{ href: "/panel/metodologia-poderosa", label: "Metodología Poderosa", primary: true }]
+          : []),
+      ]
+    : [];
+
   return (
     <div className="flex flex-1 flex-col items-center bg-beige-light px-6 py-16 gap-8">
-      <div className="w-full max-w-2xl flex items-center justify-between">
+      <div className="w-full max-w-4xl flex items-center justify-between">
         <h1 className="font-serif text-3xl">
           Hola, {profile?.full_name ?? user.email}
         </h1>
         <LogoutButton />
       </div>
 
-      <div className="w-full max-w-2xl bg-white rounded-2xl border border-gold-light/60 p-6">
-        <p className="text-sm text-foreground/60">Correo</p>
-        <p className="mb-4">{user.email}</p>
-        <p className="text-sm text-foreground/60">Tipo de cuenta</p>
-        <p>{profile?.role === "creator" ? "Creadora" : "Cliente"}</p>
-      </div>
+      <div className="w-full max-w-4xl grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <div className="bg-white rounded-2xl border border-gold-light/60 p-6">
+          <p className="text-sm text-foreground/60">Correo</p>
+          <p className="mb-4">{user.email}</p>
+          <p className="text-sm text-foreground/60">Tipo de cuenta</p>
+          <p>{profile?.role === "creator" ? "Creadora" : "Cliente"}</p>
+        </div>
 
-      {creator ? (
-        <div className="w-full max-w-2xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-6">
-          <div className="flex flex-col items-center gap-3 pb-6 border-b border-gold-light/40">
+        {creator && (
+          <div className="bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col items-center gap-3">
             <h2 className="font-serif text-xl">Foto de perfil</h2>
             <p className="text-xs text-foreground/60 text-center max-w-xs">
               Se actualiza en el home y en tu página pública en cuanto la cambies.
             </p>
             <AvatarUploadField creatorId={creator.id} currentAvatarUrl={creator.avatar_url} />
           </div>
+        )}
+      </div>
 
-          <h2 className="font-serif text-xl">Tu espacio de creadora</h2>
-          <p className="text-sm text-foreground/60">
-            Perfil público: <a className="text-gold hover:underline" href={`/${creator.slug}`}>poderosas.org/{creator.slug}</a>
-          </p>
-          <div className="flex gap-3">
-            <Link
-              href="/panel/subir"
-              className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
-            >
-              Subir contenido
-            </Link>
-            <Link
-              href="/panel/contenido"
-              className="rounded-full border border-gold px-6 py-2.5 text-gold text-sm hover:bg-gold hover:text-white transition-colors"
-            >
-              Ver mi contenido
-            </Link>
-            <Link
-              href="/panel/personalizar"
-              className="rounded-full border border-gold px-6 py-2.5 text-gold text-sm hover:bg-gold hover:text-white transition-colors"
-            >
-              Personalizar mi panel
-            </Link>
-            <Link
-              href="/panel/clientes"
-              className="rounded-full border border-gold px-6 py-2.5 text-gold text-sm hover:bg-gold hover:text-white transition-colors"
-            >
-              Mis clientes
-            </Link>
-            {ownedCategory && (
+      {creator ? (
+        <div className="w-full max-w-4xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-5">
+          <div>
+            <h2 className="font-serif text-xl">Tu espacio de creadora</h2>
+            <p className="text-sm text-foreground/60 mt-1">
+              Perfil público: <a className="text-gold hover:underline" href={`/${creator.slug}`}>poderosas.org/{creator.slug}</a>
+            </p>
+          </div>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {actions.map((action) => (
               <Link
-                href="/panel/metodologia-poderosa"
-                className="rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
+                key={action.href}
+                href={action.href}
+                className={
+                  action.primary
+                    ? "rounded-xl bg-gold px-4 py-4 text-white text-sm font-medium text-center hover:bg-gold-light hover:text-foreground transition-colors flex items-center justify-center"
+                    : "rounded-xl border border-gold px-4 py-4 text-gold text-sm font-medium text-center hover:bg-gold hover:text-white transition-colors flex items-center justify-center"
+                }
               >
-                METODOLOGÍA PODEROSA — Cargar material del curso
+                {action.label}
               </Link>
-            )}
+            ))}
           </div>
         </div>
       ) : (
-        <div className="w-full max-w-2xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-4">
+        <div className="w-full max-w-4xl bg-white rounded-2xl border border-gold-light/60 p-6 flex flex-col gap-4">
           <p className="text-sm text-foreground/60">
             Esta cuenta es de cliente. Cuando compres productos y membresías,
             aparecerán en &quot;Mis compras&quot;.
