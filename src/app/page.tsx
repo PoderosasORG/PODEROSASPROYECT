@@ -125,7 +125,7 @@ export default async function Home() {
             <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
           <Link
-            href="/evento#entradas"
+            href="/evento"
             className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
           >
             Asegura tu cupo
@@ -154,11 +154,11 @@ export default async function Home() {
           )}
         </div>
 
-        <div className="aspect-square bg-[#211912] flex flex-col items-start justify-center gap-2 sm:gap-3 p-5 sm:p-10">
-          <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium">
+        <div className="aspect-square bg-[#211912] flex flex-col items-start justify-center gap-2 sm:gap-4 p-5 sm:p-10">
+          <p className="uppercase tracking-[0.25em] text-[10px] sm:text-base text-gold font-medium">
             Tu entrada incluye
           </p>
-          <ul className="flex flex-col gap-1.5 sm:gap-2 text-white/80 text-xs sm:text-base">
+          <ul className="flex flex-col gap-1.5 sm:gap-3 text-white/80 text-xs sm:text-2xl lg:text-3xl">
             <li>— Actividades guiadas</li>
             <li>— Coffee break</li>
             <li>— Regalos especiales</li>
