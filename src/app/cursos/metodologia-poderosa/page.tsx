@@ -15,22 +15,22 @@ const COURSE_COMING_SOON = true;
 // Mismo patrón que src/app/page.tsx (home) para las 3 creadoras — se
 // duplica aquí porque esta página necesita las mismas tarjetas, con sus
 // fotos y bios reales, dentro del flujo de venta (sección "Nuestras
-// Poderosas"), no solo enlazadas desde otra parte del sitio.
+// PODEROSAS"), no solo enlazadas desde otra parte del sitio.
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
     name: "Kat",
-    role: "Poderosas",
-    bio: "Creadora de la metodología Poderosas: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
+    role: "PODEROSAS",
+    bio: "Creadora de la metodología PODEROSAS: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
   },
   shei: {
     name: "Shei",
-    role: "Poderosas",
+    role: "PODEROSAS",
     bio: "Psicóloga | Estratega digital y creadora de contenido",
   },
   luz: {
     name: "Luz",
-    role: "Poderosas",
+    role: "PODEROSAS",
     bio: "Experiencia y sabiduría al servicio de la comunidad, con herramientas propias.",
   },
 };
@@ -245,7 +245,7 @@ export default async function MetodologiaPoderosaPage() {
             href="#tarjeta-compra"
             className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            {COURSE_COMING_SOON ? "Avísenme cuando esté listo" : "Quiero ser parte de Poderosas"}
+            {COURSE_COMING_SOON ? "Avísenme cuando esté listo" : "Quiero ser parte de PODEROSAS"}
           </a>
         </section>
 
@@ -375,11 +375,11 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
-        {/* 6. Nuestras Poderosas */}
+        {/* 6. Nuestras PODEROSAS */}
         <section className="px-6 py-14 bg-white">
           <div className="max-w-4xl mx-auto flex flex-col gap-10">
             <div className="text-center flex flex-col gap-3">
-              <h2 className="font-serif text-3xl sm:text-4xl">Nuestras Poderosas</h2>
+              <h2 className="font-serif text-3xl sm:text-4xl">Nuestras PODEROSAS</h2>
               <p className="text-foreground/70 max-w-xl mx-auto">
                 Tres mujeres, tres trayectorias y una visión compartida: crear herramientas que te
                 acompañen a conocerte, reconocer lo que quieres y encontrar tu propia manera de
@@ -406,7 +406,7 @@ export default async function MetodologiaPoderosaPage() {
         <section id="tarjeta-compra" className="px-6 py-14 scroll-mt-10">
           <div className="max-w-xl mx-auto rounded-3xl bg-white border border-gold-light/50 p-8 sm:p-10">
             <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">
-              Tu experiencia Poderosas incluye
+              Tu experiencia PODEROSAS incluye
             </p>
             <p className="font-serif text-2xl text-foreground text-center mt-2">Metodología Poderosa</p>
             <p className="text-sm text-foreground/60 text-center mt-1 mb-8">

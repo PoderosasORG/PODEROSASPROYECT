@@ -97,7 +97,7 @@ export async function OtherCreatorsSection({ excludeSlug }: { excludeSlug: strin
 
   return (
     <section id="otras-poderosas" className="px-6 py-12 max-w-5xl mx-auto w-full border-t scroll-mt-16">
-      <h2 className="font-serif text-2xl mb-6">Conoce a las otras Poderosas</h2>
+      <h2 className="font-serif text-2xl mb-6">Conoce a las otras PODEROSAS</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
         {creators.map((c) => (
           <Link

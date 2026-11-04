@@ -11,7 +11,7 @@ export async function SiteHeader() {
   return (
     <header className="flex items-center justify-between gap-3 px-4 sm:px-6 py-4 bg-white/70 border-b border-gold-light/40">
       <Link href="/" className="font-serif text-2xl text-gold shrink-0">
-        Poderosas
+        PODEROSAS
       </Link>
       <nav className="flex items-center gap-2 sm:gap-4 text-sm shrink-0">
         {user ? (

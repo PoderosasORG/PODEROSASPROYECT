@@ -18,17 +18,17 @@ const CREATOR_ORDER = ["luz", "kat", "shei"];
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
     name: "Kat",
-    role: "Poderosas",
-    bio: "Creadora de la metodología Poderosas: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
+    role: "PODEROSAS",
+    bio: "Creadora de la metodología PODEROSAS: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
   },
   shei: {
     name: "Shei",
-    role: "Poderosas",
+    role: "PODEROSAS",
     bio: "Contenido y productos digitales enfocados en crecimiento personal y bienestar.",
   },
   luz: {
     name: "Luz",
-    role: "Poderosas",
+    role: "PODEROSAS",
     bio: "Experiencia y sabiduría al servicio de la comunidad, con herramientas propias.",
   },
 };
@@ -78,16 +78,16 @@ export default async function Home() {
           una sola línea), sin el badge/párrafo/CTA que antes iban debajo:
           eso se movió a una sección propia después del grid de la
           masterclass, para que el grid sea lo primero que se vea completo. */}
-      <section className="relative w-full aspect-[8/3] overflow-hidden flex items-center justify-center">
+      <section className="relative w-full aspect-[8/3] overflow-hidden flex items-end justify-center pb-4 sm:pb-8">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/images/creators/landing-hero.webp"
-          alt="Luz, Shei y Kat, las Poderosas"
+          alt="Luz, Shei y Kat, las PODEROSAS"
           className="absolute inset-0 h-full w-full object-cover"
         />
-        <div className="absolute inset-0 bg-black/20" />
-        <h1 className="relative font-serif text-white text-2xl sm:text-5xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
-          Mentoras de mujeres poderosas
+        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
+        <h1 className="relative font-serif text-white text-base sm:text-2xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+          Mentoras de mujeres PODEROSAS
         </h1>
       </section>
 
@@ -104,7 +104,7 @@ export default async function Home() {
             <p className="font-serif text-2xl sm:text-6xl lg:text-7xl leading-[1.05] text-white mt-1">
               Masterclass
               <br />
-              Poderosas
+              PODEROSAS
             </p>
             <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
@@ -121,8 +121,8 @@ export default async function Home() {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src="/images/evento/foto-1.jpg"
-              alt="Masterclass presencial Poderosas"
-              className="w-full h-full object-cover"
+              alt="Masterclass presencial PODEROSAS"
+              className="block w-full h-full object-cover"
             />
           )}
         </div>
@@ -132,8 +132,8 @@ export default async function Home() {
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src="/images/evento/foto-2.jpg"
-              alt="Masterclass presencial Poderosas"
-              className="w-full h-full object-cover"
+              alt="Masterclass presencial PODEROSAS"
+              className="block w-full h-full object-cover"
             />
           )}
         </div>
@@ -150,6 +150,25 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* Menú de accesos rápidos pedido por la usuaria, justo debajo del
+          grid de la masterclass: Home / Mis programas / Quiero iniciar mi
+          proceso, con espacio entre cada palabra para que no se vean
+          pegadas. */}
+      <nav className="flex items-center justify-center gap-6 sm:gap-10 px-6 py-5 bg-white border-b border-gold-light/30 text-sm sm:text-base">
+        <Link href="/" className="text-foreground/70 hover:text-gold transition-colors">
+          Home
+        </Link>
+        <a href="#programas" className="text-foreground/70 hover:text-gold transition-colors">
+          Mis programas
+        </a>
+        <Link
+          href="/cursos/metodologia-poderosa"
+          className="text-foreground/70 hover:text-gold transition-colors"
+        >
+          Quiero iniciar mi proceso
+        </Link>
+      </nav>
+
       {/* Lo que antes iba debajo del título del hero (badge + párrafo +
           CTA a conocer a las creadoras) — movido aquí para que el grid de
           la masterclass sea lo primero que se vea completo. */}
@@ -158,7 +177,7 @@ export default async function Home() {
           Comunidad · Metodología · Transformación
         </span>
         <p className="max-w-xl text-foreground/70 text-lg">
-          Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
+          PODEROSAS es una comunidad de mujeres que quieren crecer, pero muchas
           veces saben que necesitan cambiar algo y no saben por dónde empezar.
           Creamos un método práctico para ordenar lo que sienten, definir lo
           que quieren y convertirlo en pasos concretos.
@@ -167,13 +186,13 @@ export default async function Home() {
           href="#creadoras"
           className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
         >
-          Conoce a las Poderosas
+          Conoce a las PODEROSAS
         </a>
       </section>
 
       {/* Curso virtual — ya a la venta. Copy final entregado por el
           usuario, montado tal cual. */}
-      <section className="px-6 py-24 bg-beige-light">
+      <section id="programas" className="px-6 py-24 bg-beige-light scroll-mt-10">
         <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
           <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
             Curso virtual · Metodología Poderosa
@@ -203,7 +222,7 @@ export default async function Home() {
             href="/cursos/metodologia-poderosa"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Quiero ser parte de Poderosas
+            Quiero ser parte de PODEROSAS
           </Link>
         </div>
 
@@ -365,7 +384,7 @@ export default async function Home() {
       <section id="creadoras" className="px-6 py-24 bg-white/40">
         <div className="max-w-5xl mx-auto flex flex-col gap-10">
           <div className="text-center flex flex-col gap-3">
-            <h2 className="font-serif text-4xl">Nuestras Poderosas</h2>
+            <h2 className="font-serif text-4xl">Nuestras PODEROSAS</h2>
             <p className="text-foreground/70 max-w-xl mx-auto">
               Tres mujeres, tres caminos, un mismo propósito: acompañarte con
               estructura, herramientas y comunidad. Cada una tiene su propio

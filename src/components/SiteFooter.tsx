@@ -41,7 +41,7 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-gold-light/40 bg-beige-light px-6 py-10">
       <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-        <p className="font-serif text-2xl text-foreground/80">Poderosas</p>
+        <p className="font-serif text-2xl text-foreground/80">PODEROSAS</p>
         <div className="flex items-center gap-5">
           {SOCIAL_LINKS.map((social) => (
             <a
@@ -56,7 +56,7 @@ export function SiteFooter() {
             </a>
           ))}
         </div>
-        <p className="text-xs text-foreground/50">© {new Date().getFullYear()} Poderosas</p>
+        <p className="text-xs text-foreground/50">© {new Date().getFullYear()} PODEROSAS</p>
       </div>
     </footer>
   );

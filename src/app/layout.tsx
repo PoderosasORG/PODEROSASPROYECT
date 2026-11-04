@@ -23,9 +23,9 @@ const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], 
 const italiana = Italiana({ variable: "--font-italiana", subsets: ["latin"], weight: "400" });
 
 export const metadata: Metadata = {
-  title: "Poderosas | Comunidad y metodología de transformación personal",
+  title: "PODEROSAS | Comunidad y metodología de transformación personal",
   description:
-    "Poderosas es una comunidad de mujeres que quieren crecer. Herramientas, cursos y acompañamiento para pasar de la confusión a la acción.",
+    "PODEROSAS es una comunidad de mujeres que quieren crecer. Herramientas, cursos y acompañamiento para pasar de la confusión a la acción.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

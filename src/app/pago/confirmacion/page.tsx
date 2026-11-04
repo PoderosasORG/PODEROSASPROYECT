@@ -44,7 +44,7 @@ export default async function ConfirmacionPage({
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
         <h1 className="font-serif text-2xl">No encontramos esa orden</h1>
         <Link href="/" className="text-gold hover:underline">
-          ← Volver a Poderosas
+          ← Volver a PODEROSAS
         </Link>
       </div>
     );
@@ -61,7 +61,7 @@ export default async function ConfirmacionPage({
       <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 py-24 text-center">
         <h1 className="font-serif text-2xl">No encontramos esa orden</h1>
         <Link href="/" className="text-gold hover:underline">
-          ← Volver a Poderosas
+          ← Volver a PODEROSAS
         </Link>
       </div>
     );
