@@ -53,7 +53,7 @@ export default async function VistaPreviaModuloPage({
         </p>
       ) : (
         <div className="w-full max-w-2xl">
-          <ModulePlayer module={module} />
+          <ModulePlayer module={module} showProgress={false} />
         </div>
       )}
     </div>

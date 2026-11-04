@@ -551,5 +551,18 @@ export default async function MetodologiaPoderosaPage() {
     redirect("/panel");
   }
 
-  return <CourseViewer categories={categories} modules={modules ?? []} productId={product.id} />;
+  const moduleIds = (modules ?? []).map((m) => m.id);
+  const { data: progressRows } =
+    moduleIds.length > 0
+      ? await supabase.from("module_progress").select("module_id").in("module_id", moduleIds)
+      : { data: [] as { module_id: string }[] };
+
+  return (
+    <CourseViewer
+      categories={categories}
+      modules={modules ?? []}
+      productId={product.id}
+      completedModuleIds={(progressRows ?? []).map((r) => r.module_id)}
+    />
+  );
 }
