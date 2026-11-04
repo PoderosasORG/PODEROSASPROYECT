@@ -218,35 +218,61 @@ export default async function MetodologiaPoderosaPage() {
 
     return (
       <div className="flex flex-1 flex-col bg-beige-light pb-24">
-        {/* 1. Encabezado principal */}
-        <section className="flex flex-col items-center text-center px-6 pt-20 pb-10 gap-5">
-          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-            Curso virtual · Metodología Poderosa
-            {COURSE_COMING_SOON && " · Próximamente"}
-          </span>
-          <h1 className="font-serif text-4xl sm:text-5xl leading-tight max-w-2xl">
-            Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
-          </h1>
-          <p className="max-w-xl text-foreground/70 text-lg">
-            Un método práctico para comprenderte mejor, descubrir lo que realmente quieres y
-            empezar a avanzar hacia ello.
-          </p>
-          <p className="max-w-xl text-foreground/60 text-sm leading-relaxed">
-            A veces sabes que necesitas un cambio, pero no sabes qué cambiar, por dónde empezar o
-            cómo dejar de postergar lo que es importante para ti. Metodología Poderosa te
-            acompaña a ordenar tus ideas, reconocer tus necesidades y convertir tus deseos en
-            decisiones y acciones concretas.
-          </p>
-          <p className="font-serif text-xl text-foreground max-w-md">
-            No necesitas tener todas las respuestas. Necesitas empezar a hacerte las preguntas
-            correctas.
-          </p>
-          <a
-            href="#tarjeta-compra"
-            className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
-          >
-            {COURSE_COMING_SOON ? "Avísenme cuando esté listo" : "Quiero ser parte de PODEROSAS"}
-          </a>
+        {/* 1. Encabezado principal — layout tipo ficha de producto (imagen +
+            título/precio/CTA a la derecha), como pidió la usuaria a partir
+            de una referencia. El resto de la narrativa de venta sigue
+            debajo, en las secciones 2 en adelante. */}
+        <section className="px-6 pt-16 pb-10">
+          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:items-start">
+            <div className="rounded-2xl overflow-hidden aspect-[4/3] md:aspect-square">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/images/creators/landing-hero.webp"
+                alt="Kat, Shei y Luz Amparo, mentoras de Metodología Poderosa"
+                className="w-full h-full object-cover"
+              />
+            </div>
+
+            <div className="flex flex-col gap-4">
+              <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+                Curso virtual · Metodología Poderosa
+                {COURSE_COMING_SOON && " · Próximamente"}
+              </span>
+              <h1 className="font-serif text-3xl sm:text-4xl leading-tight">
+                Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
+              </h1>
+
+              {COURSE_COMING_SOON ? (
+                <p className="font-serif text-2xl text-foreground">Próximamente</p>
+              ) : (
+                <p className="font-serif text-3xl text-foreground">{priceLabel}</p>
+              )}
+
+              {COURSE_COMING_SOON ? (
+                <WaitlistForm source="metodologia-poderosa" />
+              ) : (
+                <BuyButton
+                  productId={product.id}
+                  slug="cursos/metodologia-poderosa"
+                  accentColor="#bd7d47"
+                  size="large"
+                  label="Compra ahora"
+                />
+              )}
+
+              <div className="border-t border-gold-light/30 pt-4 flex flex-col gap-2.5">
+                <p className="text-xs uppercase tracking-wide text-gold font-medium">
+                  Lo que recibes
+                </p>
+                {coreItems.map((item) => (
+                  <p key={item.title} className="text-sm text-foreground/80">
+                    <span className="font-medium text-foreground">{item.title}.</span>{" "}
+                    {item.desc}
+                  </p>
+                ))}
+              </div>
+            </div>
+          </div>
         </section>
 
         {/* 2. Identificación con el problema */}

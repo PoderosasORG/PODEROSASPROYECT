@@ -77,9 +77,14 @@ const VIVIR_Y_APRENDER = [
 
 const INCLUYE = [
   "Acceso presencial a la Masterclass PODEROSAS 2026 con las tres mentoras.",
-  "Coffee break durante el encuentro.",
+  "Soda italiana de bienvenida.",
+  "Coffee break y snacks.",
   "Materiales de trabajo para realizar ejercicios y llevarte tus reflexiones.",
-  "Acceso al lanzamiento del Curso PODEROSAS (los detalles de este acceso se confirman antes del evento).",
+  "Actividades guiadas.",
+  "Networking con todas las asistentes.",
+  "Sorpresas y regalos especiales.",
+  "Acceso a la comunidad de Telegram.",
+  "Descuento en el lanzamiento del Curso PODEROSAS (los detalles se confirman antes del evento).",
 ];
 
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
@@ -95,7 +100,7 @@ const FAQS = [
   },
   {
     q: "¿Qué incluye?",
-    a: "Masterclass con tres mentoras, coffee break, materiales de trabajo y acceso al lanzamiento del Curso PODEROSAS.",
+    a: "Masterclass con tres mentoras, soda italiana de bienvenida, coffee break y snacks, materiales de trabajo, actividades guiadas, networking con todas las asistentes, sorpresas y regalos especiales, acceso a la comunidad de Telegram, y descuento en el lanzamiento del Curso PODEROSAS.",
   },
   {
     q: "¿Cómo puedo pagar?",
