@@ -93,10 +93,10 @@ export default async function Home() {
           Mis programas
         </a>
         <Link
-          href="/cursos/metodologia-poderosa"
+          href="/evento#entradas"
           className="text-foreground/70 hover:text-gold transition-colors"
         >
-          Quiero iniciar mi proceso
+          Quiero asistir al evento
         </Link>
       </nav>
 
