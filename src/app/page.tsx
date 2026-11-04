@@ -391,7 +391,7 @@ export default async function Home() {
             href="/cursos/metodologia-poderosa"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Regístrate para que te avisen
+            Regístrate en la lista de espera
           </Link>
         </div>
       </section>
