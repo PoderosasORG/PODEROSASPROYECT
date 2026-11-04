@@ -5,6 +5,12 @@ import { CourseViewer } from "@/components/cursos/CourseViewer";
 import { ProfileCard } from "@/components/ProfileCard";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { WaitlistForm } from "@/components/WaitlistForm";
+
+// Lanzamiento próximo: el curso aún no está a la venta. En true, la página
+// muestra el contenido y la lista de espera, pero oculta precio y botón de
+// compra. Cuando el curso esté listo, cambiar a false para activar la venta.
+const COURSE_COMING_SOON = true;
 
 // Mismo patrón que src/app/page.tsx (home) para las 3 creadoras — se
 // duplica aquí porque esta página necesita las mismas tarjetas, con sus
@@ -216,6 +222,7 @@ export default async function MetodologiaPoderosaPage() {
         <section className="flex flex-col items-center text-center px-6 pt-20 pb-10 gap-5">
           <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
             Curso virtual · Metodología Poderosa
+            {COURSE_COMING_SOON && " · Próximamente"}
           </span>
           <h1 className="font-serif text-4xl sm:text-5xl leading-tight max-w-2xl">
             Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
@@ -238,7 +245,7 @@ export default async function MetodologiaPoderosaPage() {
             href="#tarjeta-compra"
             className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Quiero ser parte de Poderosas
+            {COURSE_COMING_SOON ? "Avísenme cuando esté listo" : "Quiero ser parte de Poderosas"}
           </a>
         </section>
 
@@ -437,29 +444,44 @@ export default async function MetodologiaPoderosaPage() {
               </ul>
             </div>
 
-            <div className="text-center border-t border-gold-light/30 pt-8">
-              <p className="text-xs uppercase tracking-wide text-gold font-medium">Tu inversión</p>
-              <p className="font-serif text-5xl text-foreground mt-1">{priceLabel}</p>
-              <p className="text-sm text-foreground/60 mt-2">
-                Un único pago. Acceso de por vida. Sin mensualidades ni suscripciones.
-              </p>
-            </div>
+            {COURSE_COMING_SOON ? (
+              <div className="text-center border-t border-gold-light/30 pt-8 flex flex-col items-center gap-4">
+                <p className="text-xs uppercase tracking-wide text-gold font-medium">
+                  Próximamente
+                </p>
+                <p className="text-sm text-foreground/60 max-w-sm">
+                  Estamos dejando todo listo para abrir las inscripciones. Déjanos tu correo y te
+                  avisamos apenas esté disponible.
+                </p>
+                <WaitlistForm source="metodologia-poderosa" />
+              </div>
+            ) : (
+              <>
+                <div className="text-center border-t border-gold-light/30 pt-8">
+                  <p className="text-xs uppercase tracking-wide text-gold font-medium">Tu inversión</p>
+                  <p className="font-serif text-5xl text-foreground mt-1">{priceLabel}</p>
+                  <p className="text-sm text-foreground/60 mt-2">
+                    Un único pago. Acceso de por vida. Sin mensualidades ni suscripciones.
+                  </p>
+                </div>
 
-            <div className="flex flex-col items-center gap-2 mt-6">
-              <BuyButton
-                productId={product.id}
-                slug="cursos/metodologia-poderosa"
-                accentColor="#bd7d47"
-                size="large"
-                label="Quiero comenzar mi proceso"
-              />
-              <p className="text-xs text-foreground/50 flex items-center gap-1">
-                🔒 Pago seguro a través de Wompi. Aceptamos tarjetas y PSE.
-              </p>
-              <p className="text-xs text-foreground/50">
-                Al comprar, podrás iniciar sesión o crear tu cuenta para acceder al curso.
-              </p>
-            </div>
+                <div className="flex flex-col items-center gap-2 mt-6">
+                  <BuyButton
+                    productId={product.id}
+                    slug="cursos/metodologia-poderosa"
+                    accentColor="#bd7d47"
+                    size="large"
+                    label="Quiero comenzar mi proceso"
+                  />
+                  <p className="text-xs text-foreground/50 flex items-center gap-1">
+                    🔒 Pago seguro a través de Wompi. Aceptamos tarjetas y PSE.
+                  </p>
+                  <p className="text-xs text-foreground/50">
+                    Al comprar, podrás iniciar sesión o crear tu cuenta para acceder al curso.
+                  </p>
+                </div>
+              </>
+            )}
           </div>
         </section>
 
@@ -473,19 +495,37 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
-        {/* Barra de compra fija: precio + botón siempre visibles al hacer scroll */}
+        {/* Barra fija al hacer scroll: compra si ya está a la venta, o
+            próximamente + ancla a la lista de espera mientras no lo esté */}
         <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-gold-light/60 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] px-6 py-3 flex items-center justify-between gap-4 z-10">
-          <div>
-            <p className="font-serif text-lg text-foreground leading-none">{priceLabel}</p>
-            <p className="text-[11px] text-foreground/50">Acceso inmediato</p>
-          </div>
-          <BuyButton
-            productId={product.id}
-            slug="cursos/metodologia-poderosa"
-            accentColor="#bd7d47"
-            size="large"
-            label="Quiero comenzar mi proceso"
-          />
+          {COURSE_COMING_SOON ? (
+            <>
+              <div>
+                <p className="font-serif text-lg text-foreground leading-none">Próximamente</p>
+                <p className="text-[11px] text-foreground/50">Te avisamos cuando abra</p>
+              </div>
+              <a
+                href="#tarjeta-compra"
+                className="rounded-full bg-gold px-6 py-2.5 text-white text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
+              >
+                Avísenme
+              </a>
+            </>
+          ) : (
+            <>
+              <div>
+                <p className="font-serif text-lg text-foreground leading-none">{priceLabel}</p>
+                <p className="text-[11px] text-foreground/50">Acceso inmediato</p>
+              </div>
+              <BuyButton
+                productId={product.id}
+                slug="cursos/metodologia-poderosa"
+                accentColor="#bd7d47"
+                size="large"
+                label="Quiero comenzar mi proceso"
+              />
+            </>
+          )}
         </div>
       </div>
     );
