@@ -101,12 +101,12 @@ export default async function Home() {
             <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
               Evento presencial
             </p>
-            <p className="font-serif text-2xl sm:text-5xl leading-tight text-white mt-1">
+            <p className="font-serif text-2xl sm:text-6xl lg:text-7xl leading-[1.05] text-white mt-1">
               Masterclass
               <br />
               Poderosas
             </p>
-            <p className="text-xs sm:text-base text-white/70 mt-2">21 de noviembre · Bogotá</p>
+            <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
           <Link
             href="/evento#entradas"
