@@ -74,59 +74,43 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col flex-1 bg-beige-light">
-      {/* Hero */}
-      <section className="flex flex-col items-center text-center">
-        <div className="w-full aspect-[8/3] overflow-hidden">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/creators/landing-hero.webp"
-            alt="Luz, Shei y Kat, las Poderosas"
-            className="h-full w-full object-cover"
-          />
-        </div>
-        <div className="flex flex-col items-center gap-6 px-6 pt-10 pb-20 sm:pb-28 max-w-2xl">
-          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-            Comunidad · Metodología · Transformación
-          </span>
-          <h1 className="font-serif text-4xl sm:text-6xl leading-tight">
-            Mentoras de mujeres poderosas
-          </h1>
-          <p className="max-w-xl text-foreground/70 text-lg">
-            Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
-            veces saben que necesitan cambiar algo y no saben por dónde empezar.
-            Creamos un método práctico para ordenar lo que sienten, definir lo
-            que quieren y convertirlo en pasos concretos.
-          </p>
-          <a
-            href="#creadoras"
-            className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
-          >
-            Conoce a las Poderosas
-          </a>
-        </div>
+      {/* Hero — foto a ancho completo con el título encrustado encima (en
+          una sola línea), sin el badge/párrafo/CTA que antes iban debajo:
+          eso se movió a una sección propia después del grid de la
+          masterclass, para que el grid sea lo primero que se vea completo. */}
+      <section className="relative w-full aspect-[8/3] overflow-hidden flex items-center justify-center">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/images/creators/landing-hero.webp"
+          alt="Luz, Shei y Kat, las Poderosas"
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/20" />
+        <h1 className="relative font-serif text-white text-2xl sm:text-5xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_12px_rgba(0,0,0,0.5)]">
+          Mentoras de mujeres poderosas
+        </h1>
       </section>
 
       {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
-          pedido por la usuaria a partir de una referencia visual. Las fotos
-          del evento (top-right y bottom-left) son un placeholder hasta que
-          Shei mande las 2 imágenes reales — ahí solo hay que reemplazar el
-          src de cada <img> por el archivo final en public/images/evento/. */}
+          pedido por la usuaria a partir de una referencia visual. Es lo
+          primero que se ve completo después del hero, antes de cualquier
+          otro contenido del home. */}
       <section className="grid grid-cols-2">
-        <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-start justify-center gap-4 p-5 sm:p-10">
+        <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-center justify-center text-center gap-4 p-5 sm:p-10">
           <div>
             <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
               Evento presencial
             </p>
-            <p className="font-serif text-xl sm:text-4xl leading-tight text-white mt-1">
+            <p className="font-serif text-2xl sm:text-5xl leading-tight text-white mt-1">
               Masterclass
               <br />
               Poderosas
             </p>
-            <p className="text-xs sm:text-sm text-white/70 mt-2">21 de noviembre · Bogotá</p>
+            <p className="text-xs sm:text-base text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
           <Link
             href="/evento#entradas"
-            className="rounded-full bg-gold px-4 py-2 sm:px-6 sm:py-2.5 text-white text-xs sm:text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
+            className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
           >
             Asegura tu cupo
           </Link>
@@ -164,6 +148,27 @@ export default async function Home() {
             <li>— Regalos especiales</li>
           </ul>
         </div>
+      </section>
+
+      {/* Lo que antes iba debajo del título del hero (badge + párrafo +
+          CTA a conocer a las creadoras) — movido aquí para que el grid de
+          la masterclass sea lo primero que se vea completo. */}
+      <section className="flex flex-col items-center text-center gap-6 px-6 pt-14 pb-20 sm:pb-28 max-w-2xl mx-auto">
+        <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
+          Comunidad · Metodología · Transformación
+        </span>
+        <p className="max-w-xl text-foreground/70 text-lg">
+          Poderosas es una comunidad de mujeres que quieren crecer, pero muchas
+          veces saben que necesitan cambiar algo y no saben por dónde empezar.
+          Creamos un método práctico para ordenar lo que sienten, definir lo
+          que quieren y convertirlo en pasos concretos.
+        </p>
+        <a
+          href="#creadoras"
+          className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+        >
+          Conoce a las Poderosas
+        </a>
       </section>
 
       {/* Curso virtual — ya a la venta. Copy final entregado por el
