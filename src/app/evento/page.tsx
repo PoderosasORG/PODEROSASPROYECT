@@ -3,6 +3,7 @@ import { createClient } from "@/lib/supabase/server";
 import { EventTicketForm } from "@/components/EventTicketForm";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
 
 export const dynamic = "force-dynamic";
 
@@ -166,7 +167,7 @@ export default async function EventoPage() {
         (creator?.bio ? stripHtml(creator.bio) : "") ||
         defaults.bio,
       initials: (creator?.display_name || defaults.name).charAt(0).toUpperCase(),
-      avatarUrl: creator?.avatar_url ?? null,
+      avatarUrl: creator?.avatar_url || CREATOR_FALLBACK_PHOTOS[slug] || null,
     };
   });
 
