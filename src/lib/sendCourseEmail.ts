@@ -2,8 +2,8 @@ import "server-only";
 import { Resend } from "resend";
 
 // Misma dirección de origen y correo de soporte que sendTicketEmail.ts —
-// cuando se actualice uno, actualizar el otro (ver el comentario de ahí).
-const FROM_ADDRESS = "PODEROSAS <onboarding@resend.dev>";
+// cuando se actualice uno, actualizar el otro.
+const FROM_ADDRESS = "PODEROSAS <hola@poderosas.org>";
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
 // Separado de sendCourseEmail para poder generar una vista previa del
