@@ -140,7 +140,7 @@ export default async function Home() {
           </div>
         </div>
 
-        <div className="flex items-stretch">
+        <div className="flex items-stretch -mt-px relative">
           <div className="w-1/2 flex flex-col">
             <div className="flex-1 relative overflow-hidden bg-beige-light">
               {hasEventPhoto("foto-2.jpg") && (
