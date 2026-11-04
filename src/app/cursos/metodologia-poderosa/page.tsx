@@ -501,8 +501,10 @@ export default async function MetodologiaPoderosaPage() {
           {COURSE_COMING_SOON ? (
             <>
               <div>
-                <p className="font-serif text-lg text-foreground leading-none">Próximamente</p>
-                <p className="text-[11px] text-foreground/50">Te avisamos cuando abra</p>
+                <p className="font-serif text-lg text-foreground leading-none">
+                  Próximamente lanzamiento oficial
+                </p>
+                <p className="text-[11px] text-foreground/50">de Metodología Poderosa</p>
               </div>
               <a
                 href="#tarjeta-compra"
