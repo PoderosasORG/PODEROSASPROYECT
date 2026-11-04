@@ -91,10 +91,26 @@ export default async function Home() {
         </h1>
       </section>
 
+      {/* Menú de accesos rápidos pedido por la usuaria, entre la foto del
+          hero y el grid de la masterclass: Home / Mis programas / Quiero
+          iniciar mi proceso, con espacio entre cada palabra. */}
+      <nav className="flex items-center justify-center gap-6 sm:gap-10 px-6 py-5 bg-white border-b border-gold-light/30 text-sm sm:text-base">
+        <Link href="/" className="text-foreground/70 hover:text-gold transition-colors">
+          Home
+        </Link>
+        <a href="#programas" className="text-foreground/70 hover:text-gold transition-colors">
+          Mis programas
+        </a>
+        <Link
+          href="/cursos/metodologia-poderosa"
+          className="text-foreground/70 hover:text-gold transition-colors"
+        >
+          Quiero iniciar mi proceso
+        </Link>
+      </nav>
+
       {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
-          pedido por la usuaria a partir de una referencia visual. Es lo
-          primero que se ve completo después del hero, antes de cualquier
-          otro contenido del home. */}
+          pedido por la usuaria a partir de una referencia visual. */}
       <section className="grid grid-cols-2">
         <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-center justify-center text-center gap-4 p-5 sm:p-10">
           <div>
@@ -149,25 +165,6 @@ export default async function Home() {
           </ul>
         </div>
       </section>
-
-      {/* Menú de accesos rápidos pedido por la usuaria, justo debajo del
-          grid de la masterclass: Home / Mis programas / Quiero iniciar mi
-          proceso, con espacio entre cada palabra para que no se vean
-          pegadas. */}
-      <nav className="flex items-center justify-center gap-6 sm:gap-10 px-6 py-5 bg-white border-b border-gold-light/30 text-sm sm:text-base">
-        <Link href="/" className="text-foreground/70 hover:text-gold transition-colors">
-          Home
-        </Link>
-        <a href="#programas" className="text-foreground/70 hover:text-gold transition-colors">
-          Mis programas
-        </a>
-        <Link
-          href="/cursos/metodologia-poderosa"
-          className="text-foreground/70 hover:text-gold transition-colors"
-        >
-          Quiero iniciar mi proceso
-        </Link>
-      </nav>
 
       {/* Lo que antes iba debajo del título del hero (badge + párrafo +
           CTA a conocer a las creadoras) — movido aquí para que el grid de
