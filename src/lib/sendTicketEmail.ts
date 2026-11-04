@@ -5,11 +5,11 @@ import QRCode from "qrcode";
 // Mientras el DNS de poderosas.org no esté configurado en Resend, los
 // correos salen desde su dirección de pruebas (onboarding@resend.dev).
 // Cuando el dominio esté verificado en Resend, cambiar esto a algo como
-// "Poderosas <boletas@poderosas.org>".
-const FROM_ADDRESS = "Poderosas <onboarding@resend.dev>";
+// "PODEROSAS <boletas@poderosas.org>".
+const FROM_ADDRESS = "PODEROSAS <onboarding@resend.dev>";
 
 // Correo de soporte provisional — fácil de reemplazar cuando exista
-// el correo oficial de Poderosas (un solo lugar para cambiarlo).
+// el correo oficial de PODEROSAS (un solo lugar para cambiarlo).
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
 const EVENT_TITLE = "MASTERCLASS PRESENCIAL DE PODEROSAS";
@@ -44,7 +44,7 @@ export function buildTicketEmailHtml(params: {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tu entrada — Poderosas</title>
+    <title>Tu entrada — PODEROSAS</title>
   </head>
   <body style="margin:0; padding:0; background:#fffdf8; font-family: Georgia, 'Times New Roman', serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fffdf8;">
@@ -55,7 +55,7 @@ export function buildTicketEmailHtml(params: {
             <!-- Encabezado -->
             <tr>
               <td align="center" style="background:#f3e9dc; padding: 36px 24px; border-bottom: 1px solid #e6cd8f;">
-                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">Poderosas</p>
+                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">PODEROSAS</p>
                 <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">Confirmación de compra</p>
               </td>
             </tr>
@@ -65,7 +65,7 @@ export function buildTicketEmailHtml(params: {
               <td style="padding: 32px 32px 8px;">
                 <h1 style="margin:0 0 16px; font-family: Georgia, serif; font-size: 24px; color:#3a2e2e; font-weight: normal;">¡Tu entrada está confirmada!</h1>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                  ${greeting} ¡Gracias por ser parte de la Masterclass presencial de Poderosas!
+                  ${greeting} ¡Gracias por ser parte de la Masterclass presencial de PODEROSAS!
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
                   Tu lugar está reservado y nos alegra saber que compartirás este encuentro con nosotras.
@@ -167,10 +167,10 @@ export function buildTicketEmailHtml(params: {
                   Un espacio para ti, una oportunidad para conectar contigo.
                 </p>
                 <p style="margin:0 0 20px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#cdbfae; max-width: 380px;">
-                  Gracias por elegir ser parte de Poderosas. Nos vemos pronto para compartir una experiencia de aprendizaje, reflexión y conexión.
+                  Gracias por elegir ser parte de PODEROSAS. Nos vemos pronto para compartir una experiencia de aprendizaje, reflexión y conexión.
                 </p>
                 <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color:#f3e9dc;">
-                  Con cariño,<br />Equipo Poderosas
+                  Con cariño,<br />Equipo PODEROSAS
                 </p>
               </td>
             </tr>
@@ -202,7 +202,7 @@ export async function sendTicketEmail(params: {
   await resend.emails.send({
     from: FROM_ADDRESS,
     to: params.to,
-    subject: "Tu entrada para la Masterclass presencial de Poderosas está confirmada",
+    subject: "Tu entrada para la Masterclass presencial de PODEROSAS está confirmada",
     html,
     attachments: [
       {

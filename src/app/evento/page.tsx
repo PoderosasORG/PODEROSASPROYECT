@@ -75,10 +75,10 @@ const VIVIR_Y_APRENDER = [
 ];
 
 const INCLUYE = [
-  "Acceso presencial a la Masterclass Poderosas 2026 con las tres mentoras.",
+  "Acceso presencial a la Masterclass PODEROSAS 2026 con las tres mentoras.",
   "Coffee break durante el encuentro.",
   "Materiales de trabajo para realizar ejercicios y llevarte tus reflexiones.",
-  "Acceso al lanzamiento del Curso Poderosas (los detalles de este acceso se confirman antes del evento).",
+  "Acceso al lanzamiento del Curso PODEROSAS (los detalles de este acceso se confirman antes del evento).",
 ];
 
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
@@ -94,7 +94,7 @@ const FAQS = [
   },
   {
     q: "¿Qué incluye?",
-    a: "Masterclass con tres mentoras, coffee break, materiales de trabajo y acceso al lanzamiento del Curso Poderosas.",
+    a: "Masterclass con tres mentoras, coffee break, materiales de trabajo y acceso al lanzamiento del Curso PODEROSAS.",
   },
   {
     q: "¿Cómo puedo pagar?",
@@ -112,7 +112,7 @@ const FAQS = [
   },
   {
     q: "¿La entrada incluye el curso completo?",
-    a: "La entrada incluye acceso al lanzamiento del Curso Poderosas, no el curso completo. Si tienes dudas sobre qué significa exactamente ese acceso, escríbenos a " +
+    a: "La entrada incluye acceso al lanzamiento del Curso PODEROSAS, no el curso completo. Si tienes dudas sobre qué significa exactamente ese acceso, escríbenos a " +
       SUPPORT_EMAIL +
       " antes de comprar.",
   },
@@ -193,7 +193,7 @@ export default async function EventoPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/creators/landing-hero.webp"
-              alt="Kat, Shei y Luz Amparo, mentoras de la Masterclass Poderosas"
+              alt="Kat, Shei y Luz Amparo, mentoras de la Masterclass PODEROSAS"
               className="w-full h-auto object-contain"
             />
           </div>
@@ -252,12 +252,12 @@ export default async function EventoPage() {
         </div>
       </section>
 
-      {/* 3. ¿Qué es Poderosas? */}
+      {/* 3. ¿Qué es PODEROSAS? */}
       <section className="px-6 py-16">
         <div className="max-w-2xl mx-auto flex flex-col gap-5 text-center">
-          <h2 className="font-serif text-2xl sm:text-3xl text-foreground">¿Qué es Poderosas?</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl text-foreground">¿Qué es PODEROSAS?</h2>
           <p className="text-foreground/70 leading-relaxed">
-            Poderosas es un encuentro presencial creado para mujeres que desean reconectar
+            PODEROSAS es un encuentro presencial creado para mujeres que desean reconectar
             consigo mismas, reconocer sus recursos y talentos, encontrar claridad sobre lo que
             quieren construir y aprender herramientas para llevar sus ideas a la acción.
           </p>
@@ -365,7 +365,7 @@ export default async function EventoPage() {
           </div>
 
           <p className="text-sm text-foreground/60">
-            Tu lugar en Poderosas puede ser el primer paso para dejar de postergarte. Reserva tu
+            Tu lugar en PODEROSAS puede ser el primer paso para dejar de postergarte. Reserva tu
             entrada anticipada y vive una mañana creada para ti.
           </p>
 
@@ -403,12 +403,12 @@ export default async function EventoPage() {
           <p className="text-sm uppercase tracking-wide text-gold font-medium">
             21 de noviembre de 2026 · 9:00 a. m. a 1:00 p. m. · Bogotá
           </p>
-          <p className="font-serif text-lg text-foreground">Masterclass Poderosas 2026</p>
+          <p className="font-serif text-lg text-foreground">Masterclass PODEROSAS 2026</p>
           <a
             href="#entradas"
             className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Sí, quiero ser parte de Poderosas
+            Sí, quiero ser parte de PODEROSAS
           </a>
         </div>
       </section>

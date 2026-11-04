@@ -3,7 +3,7 @@ import { Resend } from "resend";
 
 // Misma dirección de origen y correo de soporte que sendTicketEmail.ts —
 // cuando se actualice uno, actualizar el otro (ver el comentario de ahí).
-const FROM_ADDRESS = "Poderosas <onboarding@resend.dev>";
+const FROM_ADDRESS = "PODEROSAS <onboarding@resend.dev>";
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
 // Separado de sendCourseEmail para poder generar una vista previa del
@@ -51,7 +51,7 @@ export function buildCourseEmailHtml(params: {
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tu curso — Poderosas</title>
+    <title>Tu curso — PODEROSAS</title>
   </head>
   <body style="margin:0; padding:0; background:#fffdf8; font-family: Georgia, 'Times New Roman', serif;">
     <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fffdf8;">
@@ -62,7 +62,7 @@ export function buildCourseEmailHtml(params: {
             <!-- Encabezado -->
             <tr>
               <td align="center" style="background:#f3e9dc; padding: 36px 24px; border-bottom: 1px solid #e6cd8f;">
-                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">Poderosas</p>
+                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">PODEROSAS</p>
                 <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">Confirmación de compra</p>
               </td>
             </tr>
@@ -137,10 +137,10 @@ ${accountBlock}
                   Un espacio para ti, una oportunidad para conectar contigo.
                 </p>
                 <p style="margin:0 0 20px; font-family: Arial, Helvetica, sans-serif; font-size: 13px; line-height: 1.7; color:#cdbfae; max-width: 380px;">
-                  Gracias por elegir ser parte de Poderosas. Esperamos que este curso te acompañe en tu propio proceso.
+                  Gracias por elegir ser parte de PODEROSAS. Esperamos que este curso te acompañe en tu propio proceso.
                 </p>
                 <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color:#f3e9dc;">
-                  Con cariño,<br />Equipo Poderosas
+                  Con cariño,<br />Equipo PODEROSAS
                 </p>
               </td>
             </tr>
