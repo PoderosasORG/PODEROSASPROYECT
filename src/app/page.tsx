@@ -1,7 +1,17 @@
+import fs from "node:fs";
+import path from "node:path";
 import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
+
+// Las 2 fotos del evento (grid de la masterclass) todavía no existen —
+// Shei las va a mandar sacadas de ChatGPT/Pinterest. Mientras no estén en
+// public/images/evento/, esas celdas quedan en un fondo neutro en vez de
+// mostrar una imagen rota.
+function hasEventPhoto(filename: string) {
+  return fs.existsSync(path.join(process.cwd(), "public", "images", "evento", filename));
+}
 
 const CREATOR_ORDER = ["luz", "kat", "shei"];
 
@@ -96,50 +106,63 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Masterclass presencial — fondo oscuro, listo para una foto más adelante
-          (hoy es un degradado; para ponerle una imagen basta con agregar un
-          <img> absoluto dentro de este div, igual que en el hero de arriba) */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] px-6 py-20">
-        <div className="relative max-w-2xl mx-auto flex flex-col items-center text-center gap-4">
-          <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
-            Masterclass presencial · Poderosa
-          </span>
-          <h2 className="font-serif text-3xl sm:text-5xl leading-tight text-white text-center">
-            Un espacio para escucharte, descubrirte y conectar.
-          </h2>
-          <p className="max-w-xl text-white/80">
-            Un encuentro para escucharte, descubrir qué quieres y conectar con
-            otras mujeres en una experiencia de reflexión, aprendizaje y conexión.
-          </p>
-          <p className="text-sm uppercase tracking-wide text-gold-light">
-            ¿Quién soy? · ¿Qué quiero? · ¿Cómo lo hago posible?
-          </p>
-          <p className="text-sm text-white/70">
-            Actividades guiadas · Coffee break · Regalos especiales
-          </p>
-          <p className="text-sm text-white/70">
-            Sábado 21 de noviembre · 9:00 a.m. – 1:00 p.m.
-          </p>
-          <p className="text-sm text-white/70">
-            Edificio Emprendu · Calle 85 #12-66, Bogotá
-          </p>
-
-          <div className="mt-4 w-full max-w-sm rounded-2xl bg-beige-light p-6 flex flex-col items-center gap-1">
-            <p className="text-xs uppercase tracking-wide text-gold font-medium">
-              Precio de lanzamiento
+      {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
+          pedido por la usuaria a partir de una referencia visual. Las fotos
+          del evento (top-right y bottom-left) son un placeholder hasta que
+          Shei mande las 2 imágenes reales — ahí solo hay que reemplazar el
+          src de cada <img> por el archivo final en public/images/evento/. */}
+      <section className="grid grid-cols-2">
+        <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-start justify-center gap-4 p-5 sm:p-10">
+          <div>
+            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
+              Evento presencial
             </p>
-            <p className="font-serif text-4xl text-foreground">$60.000 COP</p>
-            <p className="text-sm text-foreground/60 text-center">
-              Precio regular: $120.000 COP · 50% de descuento para los primeros compradores
+            <p className="font-serif text-xl sm:text-4xl leading-tight text-white mt-1">
+              Masterclass
+              <br />
+              Poderosas
             </p>
+            <p className="text-xs sm:text-sm text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
-
           <Link
-            href="/evento"
-            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+            href="/evento#entradas"
+            className="rounded-full bg-gold px-4 py-2 sm:px-6 sm:py-2.5 text-white text-xs sm:text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
           >
-            Comprar mi entrada
+            Asegura tu cupo
           </Link>
+        </div>
+
+        <div className="aspect-square relative overflow-hidden bg-beige-light">
+          {hasEventPhoto("foto-1.jpg") && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/evento/foto-1.jpg"
+              alt="Masterclass presencial Poderosas"
+              className="w-full h-full object-cover"
+            />
+          )}
+        </div>
+
+        <div className="aspect-square relative overflow-hidden bg-beige-light">
+          {hasEventPhoto("foto-2.jpg") && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              src="/images/evento/foto-2.jpg"
+              alt="Masterclass presencial Poderosas"
+              className="w-full h-full object-cover"
+            />
+          )}
+        </div>
+
+        <div className="aspect-square bg-[#211912] flex flex-col items-start justify-center gap-2 sm:gap-3 p-5 sm:p-10">
+          <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold font-medium">
+            Tu entrada incluye
+          </p>
+          <ul className="flex flex-col gap-1.5 sm:gap-2 text-white/80 text-xs sm:text-base">
+            <li>— Actividades guiadas</li>
+            <li>— Coffee break</li>
+            <li>— Regalos especiales</li>
+          </ul>
         </div>
       </section>
 
