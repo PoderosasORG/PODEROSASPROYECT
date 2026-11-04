@@ -2,11 +2,11 @@ import "server-only";
 import { Resend } from "resend";
 import QRCode from "qrcode";
 
-// Mientras el DNS de poderosas.org no esté configurado en Resend, los
-// correos salen desde su dirección de pruebas (onboarding@resend.dev).
-// Cuando el dominio esté verificado en Resend, cambiar esto a algo como
-// "PODEROSAS <boletas@poderosas.org>".
-const FROM_ADDRESS = "PODEROSAS <onboarding@resend.dev>";
+// poderosas.org ya está verificado en Resend (DKIM + SPF), así que los
+// correos salen desde ahí y le llegan a cualquier compradora real — antes
+// salían de la dirección de pruebas de Resend (onboarding@resend.dev),
+// que solo entrega a la cuenta dueña de Resend.
+const FROM_ADDRESS = "PODEROSAS <hola@poderosas.org>";
 
 // Correo de soporte provisional — fácil de reemplazar cuando exista
 // el correo oficial de PODEROSAS (un solo lugar para cambiarlo).
