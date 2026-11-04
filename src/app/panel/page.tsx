@@ -3,6 +3,7 @@ import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/LogoutButton";
 import { AvatarUploadField } from "@/components/AvatarUploadField";
+import { ProductCard } from "@/components/panel/ProductCard";
 
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
@@ -149,6 +150,48 @@ export default async function PanelPage() {
           </Link>
         </div>
       )}
+
+      {/* Productos de Poderosas — visible para cualquiera con cuenta, haya
+          comprado o no, para que pueda ver qué hay disponible (evento,
+          curso) y qué está en camino, además de material gratuito.
+          Miniaturas de prueba hasta que haya fotos/archivos reales. */}
+      <div className="w-full max-w-4xl flex flex-col gap-4">
+        <h2 className="font-serif text-xl">Productos</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <ProductCard
+            href="/evento"
+            image="/images/evento/foto-1.jpg"
+            kicker="Evento presencial"
+            title="Masterclass PODEROSAS 2026"
+            status="21 de noviembre · Bogotá"
+            cta="Ver evento"
+          />
+          <ProductCard
+            href="/cursos/metodologia-poderosa"
+            image="/images/creators/landing-hero.webp"
+            kicker="Curso virtual"
+            title="Metodología Poderosa"
+            status="En proceso · lista de espera"
+            cta="Regístrate"
+          />
+          <ProductCard
+            href="/recursos/ebook-relaciones"
+            image="/images/cartilla-metodologia/cartilla-portada.jpg"
+            kicker="Material gratuito"
+            title="Ebook de relaciones de pareja"
+            status="Próximamente"
+            cta="Avísenme"
+          />
+          <ProductCard
+            href="/recursos/plantillas-bienestar"
+            image="/images/cartilla-metodologia/cartilla-ejercicio-1.jpg"
+            kicker="Material gratuito"
+            title="10 plantillas de bienestar emocional"
+            status="Próximamente"
+            cta="Avísenme"
+          />
+        </div>
+      </div>
 
       {/* Contacto — pequeño y funcional a propósito: en paneles reales de
           plataformas de cursos (Teachable, Heights) el soporte se muestra
