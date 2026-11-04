@@ -86,7 +86,7 @@ const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 const FAQS = [
   {
     q: "¿Cuándo y dónde será?",
-    a: "El 21 de noviembre de 2026, de 9:00 a. m. a 1:00 p. m., en la Calle 85, Bogotá. La dirección exacta te llega por correo junto con la confirmación de tu compra.",
+    a: "El 21 de noviembre de 2026, de 9:00 a. m. a 1:00 p. m., en Bogotá. La dirección exacta te llega por correo junto con la confirmación de tu compra.",
   },
   {
     q: "¿Cuánto cuesta?",
@@ -199,7 +199,7 @@ export default async function EventoPage() {
           </div>
 
           <p className="text-sm text-white/70">21 de noviembre de 2026 · 9:00 a. m. – 1:00 p. m.</p>
-          <p className="text-sm text-white/70">Calle 85, Bogotá</p>
+          <p className="text-sm text-white/70">Ubicación: Bogotá</p>
           <p className="text-xs text-white/50">
             La dirección exacta te llega por correo al confirmar tu compra.
           </p>

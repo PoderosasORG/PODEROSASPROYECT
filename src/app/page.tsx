@@ -125,7 +125,7 @@ export default async function Home() {
             <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
           </div>
           <Link
-            href="/evento#entradas"
+            href="/evento"
             className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
           >
             Asegura tu cupo
