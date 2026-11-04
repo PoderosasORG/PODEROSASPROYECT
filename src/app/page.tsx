@@ -86,7 +86,7 @@ export default async function Home() {
           className="absolute inset-0 h-full w-full object-cover"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
-        <h1 className="relative font-serif text-white text-base sm:text-2xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
+        <h1 className="relative font-serif text-white text-base sm:text-4xl lg:text-5xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
           Mentoras de mujeres PODEROSAS
         </h1>
       </section>
