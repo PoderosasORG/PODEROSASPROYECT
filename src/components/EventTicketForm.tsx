@@ -5,12 +5,19 @@ import { useState } from "react";
 export function EventTicketForm({ productId }: { productId: string }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [emailConfirm, setEmailConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+
+    if (email.trim().toLowerCase() !== emailConfirm.trim().toLowerCase()) {
+      setError("Los correos no coinciden. Revísalos antes de continuar.");
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch("/api/checkout-evento", {
@@ -53,6 +60,17 @@ export function EventTicketForm({ productId }: { productId: string }) {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
+        />
+      </label>
+      <label className="flex flex-col gap-1.5 text-sm text-left">
+        Confirmar correo electrónico
+        <input
+          type="email"
+          required
+          value={emailConfirm}
+          onChange={(e) => setEmailConfirm(e.target.value)}
+          onPaste={(e) => e.preventDefault()}
           className="rounded-xl border border-gold-light/60 bg-white px-3.5 py-2.5 text-foreground focus:outline-none focus:border-gold"
         />
       </label>
