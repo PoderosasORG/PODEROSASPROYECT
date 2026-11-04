@@ -41,7 +41,7 @@ export default async function PersonalizarPage() {
     <FixedPanelEditor
       slug={creator.slug}
       displayName={creator.display_name}
-      role={creator.slug === "kat" ? "Fundadora de Poderosas" : "Poderosa"}
+      role={creator.slug === "kat" ? "Fundadora de Poderosas" : "Poderosas"}
       initial={initial}
     />
   );

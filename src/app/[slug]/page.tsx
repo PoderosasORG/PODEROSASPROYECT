@@ -34,7 +34,7 @@ export default async function CreatorPage({
       creatorId={creator.id}
       slug={creator.slug}
       displayName={creator.display_name}
-      role="Poderosa"
+      role="Poderosas"
       avatar={{
         url: creator.avatar_url ?? "",
         focusX: creator.avatar_focus_x ?? 50,

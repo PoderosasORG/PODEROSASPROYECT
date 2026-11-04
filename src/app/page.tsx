@@ -18,17 +18,17 @@ const CREATOR_ORDER = ["luz", "kat", "shei"];
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
     name: "Kat",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Creadora de la metodología Poderosas: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
   },
   shei: {
     name: "Shei",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Contenido y productos digitales enfocados en crecimiento personal y bienestar.",
   },
   luz: {
     name: "Luz",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Experiencia y sabiduría al servicio de la comunidad, con herramientas propias.",
   },
 };
