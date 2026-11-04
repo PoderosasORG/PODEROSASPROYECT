@@ -152,11 +152,11 @@ export default async function Home() {
             )}
           </div>
 
-          <div className="w-1/2 bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-4 p-6 sm:p-10 py-10 sm:py-16">
-            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-sm text-gold font-medium">
+          <div className="w-1/2 bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-6 p-6 sm:p-10 py-10 sm:py-16">
+            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xl text-gold font-medium">
               Tu entrada incluye
             </p>
-            <ul className="flex flex-col gap-1.5 sm:gap-2.5 text-white/80 text-[11px] leading-snug sm:text-base lg:text-lg">
+            <ul className="flex flex-col gap-1.5 sm:gap-4 text-white/80 text-[11px] leading-snug sm:text-2xl lg:text-3xl">
               <li>Acceso presencial a la Masterclass PODEROSAS 2026</li>
               <li>Soda italiana de bienvenida</li>
               <li>Coffee break y snacks</li>
