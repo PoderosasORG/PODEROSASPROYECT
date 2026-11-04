@@ -141,15 +141,27 @@ export default async function Home() {
         </div>
 
         <div className="flex items-stretch">
-          <div className="w-1/2 relative overflow-hidden bg-beige-light">
-            {hasEventPhoto("foto-2.jpg") && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src="/images/evento/foto-2.jpg"
-                alt="Masterclass presencial PODEROSAS"
-                className="block w-full h-full object-cover"
-              />
-            )}
+          <div className="w-1/2 flex flex-col">
+            <div className="flex-1 relative overflow-hidden bg-beige-light">
+              {hasEventPhoto("foto-2.jpg") && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src="/images/evento/foto-2.jpg"
+                  alt="Masterclass presencial PODEROSAS"
+                  className="block w-full h-full object-cover"
+                />
+              )}
+            </div>
+            <div className="flex-1 relative overflow-hidden bg-beige-light">
+              {hasEventPhoto("foto-3.jpg") && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src="/images/evento/foto-3.jpg"
+                  alt="Masterclass presencial PODEROSAS"
+                  className="block w-full h-full object-cover"
+                />
+              )}
+            </div>
           </div>
 
           <div className="w-1/2 bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-6 p-6 sm:p-10 py-10 sm:py-16">
