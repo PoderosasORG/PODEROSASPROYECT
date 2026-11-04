@@ -7,6 +7,10 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import type { CategoryModule } from "@/lib/metodologiaPoderosa";
 import { ModuleForm } from "./ModuleForm";
+import { BulkModuleUpload } from "./BulkModuleUpload";
+import { BulkModuleReview } from "./BulkModuleReview";
+
+type Mode = { kind: "list" } | { kind: "edit"; module: CategoryModule | "new" } | { kind: "bulk-upload" } | { kind: "bulk-review"; modules: CategoryModule[] };
 
 export function ModuleList({
   categoryId,
@@ -17,7 +21,7 @@ export function ModuleList({
 }) {
   const router = useRouter();
   const [modules, setModules] = useState(initialModules);
-  const [editing, setEditing] = useState<CategoryModule | "new" | null>(null);
+  const [mode, setMode] = useState<Mode>({ kind: "list" });
   const [busyId, setBusyId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -54,20 +58,51 @@ export function ModuleList({
     setBusyId(null);
   }
 
-  if (editing) {
+  const nextOrderIndex = modules.length ? Math.max(...modules.map((m) => m.order_index)) + 1 : 0;
+
+  if (mode.kind === "edit") {
     return (
       <ModuleForm
         categoryId={categoryId}
-        existing={editing === "new" ? null : editing}
-        nextOrderIndex={modules.length ? Math.max(...modules.map((m) => m.order_index)) + 1 : 0}
+        existing={mode.module === "new" ? null : mode.module}
+        nextOrderIndex={nextOrderIndex}
         onDone={(saved) => {
           setModules((prev) => {
             const withoutSaved = prev.filter((m) => m.id !== saved.id);
             return [...withoutSaved, saved];
           });
-          setEditing(null);
+          setMode({ kind: "list" });
         }}
-        onCancel={() => setEditing(null)}
+        onCancel={() => setMode({ kind: "list" })}
+      />
+    );
+  }
+
+  if (mode.kind === "bulk-upload") {
+    return (
+      <BulkModuleUpload
+        categoryId={categoryId}
+        nextOrderIndex={nextOrderIndex}
+        onCancel={() => setMode({ kind: "list" })}
+        onDone={(saved) => {
+          setModules((prev) => [...prev, ...saved]);
+          setMode({ kind: "bulk-review", modules: saved });
+        }}
+      />
+    );
+  }
+
+  if (mode.kind === "bulk-review") {
+    return (
+      <BulkModuleReview
+        modules={mode.modules}
+        onDone={(updated) => {
+          setModules((prev) => {
+            const updatedIds = new Set(updated.map((m) => m.id));
+            return [...prev.filter((m) => !updatedIds.has(m.id)), ...updated];
+          });
+          setMode({ kind: "list" });
+        }}
       />
     );
   }
@@ -117,7 +152,7 @@ export function ModuleList({
               </Link>
             )}
             <button
-              onClick={() => setEditing(module)}
+              onClick={() => setMode({ kind: "edit", module })}
               disabled={busyId === module.id}
               className="text-xs text-gold hover:underline disabled:opacity-50"
             >
@@ -134,12 +169,20 @@ export function ModuleList({
         ))}
       </div>
 
-      <button
-        onClick={() => setEditing("new")}
-        className="self-start rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
-      >
-        Cargar material
-      </button>
+      <div className="flex gap-3">
+        <button
+          onClick={() => setMode({ kind: "edit", module: "new" })}
+          className="self-start rounded-full bg-gold px-6 py-2.5 text-white text-sm hover:bg-gold-light hover:text-foreground transition-colors"
+        >
+          Cargar material
+        </button>
+        <button
+          onClick={() => setMode({ kind: "bulk-upload" })}
+          className="self-start rounded-full border border-gold px-6 py-2.5 text-gold text-sm hover:bg-gold hover:text-white transition-colors"
+        >
+          Carga masiva
+        </button>
+      </div>
     </div>
   );
 }
