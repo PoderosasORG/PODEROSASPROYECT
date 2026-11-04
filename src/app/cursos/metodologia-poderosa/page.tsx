@@ -20,17 +20,17 @@ const CREATOR_ORDER = ["luz", "kat", "shei"];
 const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
   kat: {
     name: "Kat",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Creadora de la metodología Poderosas: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
   },
   shei: {
     name: "Shei",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Psicóloga | Estratega digital y creadora de contenido",
   },
   luz: {
     name: "Luz",
-    role: "Poderosa",
+    role: "Poderosas",
     bio: "Experiencia y sabiduría al servicio de la comunidad, con herramientas propias.",
   },
 };
@@ -406,7 +406,7 @@ export default async function MetodologiaPoderosaPage() {
         <section id="tarjeta-compra" className="px-6 py-14 scroll-mt-10">
           <div className="max-w-xl mx-auto rounded-3xl bg-white border border-gold-light/50 p-8 sm:p-10">
             <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">
-              Tu experiencia Poderosa incluye
+              Tu experiencia Poderosas incluye
             </p>
             <p className="font-serif text-2xl text-foreground text-center mt-2">Metodología Poderosa</p>
             <p className="text-sm text-foreground/60 text-center mt-1 mb-8">
