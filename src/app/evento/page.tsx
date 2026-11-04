@@ -186,12 +186,15 @@ export default async function EventoPage() {
             acciones concretas para construir la vida que deseas.
           </p>
 
-          <div className="w-full aspect-[16/9] max-w-md rounded-2xl overflow-hidden mt-2">
+          {/* object-contain a propósito: esta foto es un banner panorámico
+              (recortada con object-cover se cortaba la cara de los extremos).
+              Así se ve completa, sin cortar a ninguna de las tres. */}
+          <div className="w-full max-w-md rounded-2xl overflow-hidden mt-2 bg-[#3a1f30]">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/creators/landing-hero.webp"
               alt="Kat, Shei y Luz Amparo, mentoras de la Masterclass Poderosas"
-              className="h-full w-full object-cover"
+              className="w-full h-auto object-contain"
             />
           </div>
 
