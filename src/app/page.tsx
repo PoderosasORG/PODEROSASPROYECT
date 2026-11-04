@@ -43,15 +43,6 @@ export default async function Home() {
     .select("slug, display_name, bio, short_bio, avatar_url")
     .eq("is_active", true)
     .in("slug", CREATOR_ORDER);
-  const { data: courseProduct } = await supabase
-    .from("products")
-    .select("price_cents")
-    .eq("title", "Metodología Poderosa")
-    .eq("is_published", true)
-    .maybeSingle();
-  const coursePriceLabel = courseProduct
-    ? `$${Math.round(courseProduct.price_cents / 100).toLocaleString("es-CO")} COP`
-    : null;
 
   const profiles = CREATOR_ORDER.map((slug) => {
     const defaults = CREATOR_DEFAULTS[slug];
@@ -110,65 +101,73 @@ export default async function Home() {
       </nav>
 
       {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
-          pedido por la usuaria a partir de una referencia visual. */}
-      <section className="grid grid-cols-2">
-        <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-center justify-center text-center gap-4 p-5 sm:p-10">
-          <div>
-            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
-              Evento presencial
-            </p>
-            <p className="font-serif text-2xl sm:text-6xl lg:text-7xl leading-[1.05] text-white mt-1">
-              Masterclass
-              <br />
-              PODEROSAS
-            </p>
-            <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
+          pedido por la usuaria a partir de una referencia visual. La
+          segunda fila va con flex (no grid) porque Safari/iOS no estira de
+          forma confiable un hijo con aspect-square dentro de un grid para
+          igualar la altura de su hermano con contenido más alto (el cuadro
+          de beneficios) — con flex sí se estira bien en todos los navegadores. */}
+      <section>
+        <div className="grid grid-cols-2">
+          <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-center justify-center text-center gap-4 p-5 sm:p-10">
+            <div>
+              <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
+                Evento presencial
+              </p>
+              <p className="font-serif text-2xl sm:text-6xl lg:text-7xl leading-[1.05] text-white mt-1">
+                Masterclass
+                <br />
+                PODEROSAS
+              </p>
+              <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
+            </div>
+            <Link
+              href="/evento"
+              className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
+            >
+              Asegura tu cupo
+            </Link>
           </div>
-          <Link
-            href="/evento"
-            className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
-          >
-            Asegura tu cupo
-          </Link>
+
+          <div className="aspect-square relative overflow-hidden bg-beige-light">
+            {hasEventPhoto("foto-1.jpg") && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/images/evento/foto-1.jpg"
+                alt="Masterclass presencial PODEROSAS"
+                className="block w-full h-full object-cover"
+              />
+            )}
+          </div>
         </div>
 
-        <div className="aspect-square relative overflow-hidden bg-beige-light">
-          {hasEventPhoto("foto-1.jpg") && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src="/images/evento/foto-1.jpg"
-              alt="Masterclass presencial PODEROSAS"
-              className="block w-full h-full object-cover"
-            />
-          )}
-        </div>
+        <div className="flex items-stretch">
+          <div className="w-1/2 relative overflow-hidden bg-beige-light">
+            {hasEventPhoto("foto-2.jpg") && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src="/images/evento/foto-2.jpg"
+                alt="Masterclass presencial PODEROSAS"
+                className="block w-full h-full object-cover"
+              />
+            )}
+          </div>
 
-        <div className="aspect-square relative overflow-hidden bg-beige-light">
-          {hasEventPhoto("foto-2.jpg") && (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              src="/images/evento/foto-2.jpg"
-              alt="Masterclass presencial PODEROSAS"
-              className="block w-full h-full object-cover"
-            />
-          )}
-        </div>
-
-        <div className="bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-4 p-6 sm:p-10 py-10 sm:py-16">
-          <p className="uppercase tracking-[0.25em] text-[10px] sm:text-sm text-gold font-medium">
-            Tu entrada incluye
-          </p>
-          <ul className="flex flex-col gap-1.5 sm:gap-2.5 text-white/80 text-[11px] leading-snug sm:text-base lg:text-lg">
-            <li>Acceso presencial a la Masterclass PODEROSAS 2026</li>
-            <li>Soda italiana de bienvenida</li>
-            <li>Coffee break y snacks</li>
-            <li>Materiales de trabajo para realizar ejercicios</li>
-            <li>Actividades guiadas</li>
-            <li>Networking con todas las asistentes</li>
-            <li>Sorpresas y regalos especiales</li>
-            <li>Acceso a la comunidad de Telegram</li>
-            <li>Descuento en el lanzamiento del Curso PODEROSAS</li>
-          </ul>
+          <div className="w-1/2 bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-4 p-6 sm:p-10 py-10 sm:py-16">
+            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-sm text-gold font-medium">
+              Tu entrada incluye
+            </p>
+            <ul className="flex flex-col gap-1.5 sm:gap-2.5 text-white/80 text-[11px] leading-snug sm:text-base lg:text-lg">
+              <li>Acceso presencial a la Masterclass PODEROSAS 2026</li>
+              <li>Soda italiana de bienvenida</li>
+              <li>Coffee break y snacks</li>
+              <li>Materiales de trabajo para realizar ejercicios</li>
+              <li>Actividades guiadas</li>
+              <li>Networking con todas las asistentes</li>
+              <li>Sorpresas y regalos especiales</li>
+              <li>Acceso a la comunidad de Telegram</li>
+              <li>Descuento en el lanzamiento del Curso PODEROSAS</li>
+            </ul>
+          </div>
         </div>
       </section>
 
@@ -365,20 +364,22 @@ export default async function Home() {
         </div>
 
         <div className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-3 px-6 text-center">
-          {coursePriceLabel && (
-            <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col items-center gap-1">
-              <p className="text-xs uppercase tracking-wide text-gold font-medium">
-                Metodología Poderosa
-              </p>
-              <p className="font-serif text-4xl text-foreground">{coursePriceLabel}</p>
-              <p className="text-sm text-foreground/60">Acceso de por vida a las 3 categorías</p>
-            </div>
-          )}
+          {/* El curso todavía no está a la venta (ver COURSE_COMING_SOON en
+              /cursos/metodologia-poderosa) — acá no se muestra precio ni se
+              invita a comprar, solo a registrarse para que avisen cuando
+              esté listo el lanzamiento 2026. */}
+          <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col items-center gap-1">
+            <p className="text-xs uppercase tracking-wide text-gold font-medium">
+              Metodología Poderosa 2026
+            </p>
+            <p className="font-serif text-2xl text-foreground">Próximamente</p>
+            <p className="text-sm text-foreground/60">Lanzamiento del curso virtual</p>
+          </div>
           <Link
             href="/cursos/metodologia-poderosa"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Comprar el curso
+            Regístrate para que te avisen
           </Link>
         </div>
       </section>
