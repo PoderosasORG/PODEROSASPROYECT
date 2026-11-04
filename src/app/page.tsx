@@ -196,12 +196,12 @@ export default async function Home() {
           Creamos un método práctico para ordenar lo que sienten, definir lo
           que quieren y convertirlo en pasos concretos.
         </p>
-        <a
-          href="#creadoras"
-          className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+        <Link
+          href="/evento#entradas"
+          className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
         >
-          Conoce a las PODEROSAS
-        </a>
+          Adquiere tu boleta con 50% de descuento
+        </Link>
       </section>
 
       {/* Curso virtual — ya a la venta. Copy final entregado por el
@@ -233,10 +233,10 @@ export default async function Home() {
             a elegir tu propio camino.
           </p>
           <Link
-            href="/cursos/metodologia-poderosa"
-            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+            href="/evento#entradas"
+            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
           >
-            Quiero ser parte de PODEROSAS
+            Quiero ir a la Masterclass PODEROSAS 2026
           </Link>
         </div>
 
