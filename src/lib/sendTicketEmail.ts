@@ -206,6 +206,13 @@ export async function sendTicketEmail(params: {
     html,
     attachments: [
       {
+        // Mismo QR dos veces: uno embebido (contentId) para que se vea
+        // dentro del correo, y este otro sin contentId para que además
+        // aparezca como adjunto descargable de verdad.
+        filename: "boleta-qr.png",
+        content: qrPng.toString("base64"),
+      },
+      {
         filename: "boleta.png",
         content: qrPng.toString("base64"),
         contentId: "boleta-qr",
