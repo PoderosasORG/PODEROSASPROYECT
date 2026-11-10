@@ -27,10 +27,31 @@ const cormorant = Cormorant_Garamond({ variable: "--font-cormorant", subsets: ["
 const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "700"] });
 const italiana = Italiana({ variable: "--font-italiana", subsets: ["latin"], weight: "400" });
 
+const SITE_DESCRIPTION =
+  "PODEROSAS es una comunidad de mujeres que quieren crecer. Herramientas, cursos y acompañamiento para pasar de la confusión a la acción.";
+
+// Imagen de las tres mentoras (Kat, Shei y Luz) — es la que debe salir en
+// la vista previa cuando se comparte cualquier link del sitio por
+// WhatsApp/Instagram, para que no salga la cara de una sola de ellas.
+const SITE_OG_IMAGE = "/images/creators/landing-hero.webp";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://poderosas.org"),
   title: "PODEROSAS | Comunidad y metodología de transformación personal",
-  description:
-    "PODEROSAS es una comunidad de mujeres que quieren crecer. Herramientas, cursos y acompañamiento para pasar de la confusión a la acción.",
+  description: SITE_DESCRIPTION,
+  openGraph: {
+    title: "PODEROSAS | Comunidad y metodología de transformación personal",
+    description: SITE_DESCRIPTION,
+    siteName: "PODEROSAS",
+    images: [{ url: SITE_OG_IMAGE }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PODEROSAS | Comunidad y metodología de transformación personal",
+    description: SITE_DESCRIPTION,
+    images: [SITE_OG_IMAGE],
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

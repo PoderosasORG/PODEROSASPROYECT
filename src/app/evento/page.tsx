@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
 import { EventTicketForm } from "@/components/EventTicketForm";
@@ -6,6 +7,33 @@ import { stripHtml } from "@/lib/panel/sanitize";
 import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
 
 export const dynamic = "force-dynamic";
+
+// Metadata propia para que el link de /evento (el que más se comparte por
+// WhatsApp/Instagram) muestre la foto de las tres mentoras, no una foto
+// personal de quien lo envía — antes no tenía metadata propia y heredaba
+// un resultado inconsistente según el cliente que generara la vista previa.
+const EVENT_TITLE = "Masterclass PODEROSAS 2026 — 21 de noviembre, Bogotá";
+const EVENT_DESCRIPTION =
+  "Reconecta contigo, encuentra dirección y aprende a convertir tus sueños e ideas en acciones concretas. Una mañana presencial con Kat, Shei y Luz Amparo.";
+const EVENT_OG_IMAGE = "/images/creators/landing-hero.webp";
+
+export const metadata: Metadata = {
+  title: EVENT_TITLE,
+  description: EVENT_DESCRIPTION,
+  openGraph: {
+    title: EVENT_TITLE,
+    description: EVENT_DESCRIPTION,
+    siteName: "PODEROSAS",
+    images: [{ url: EVENT_OG_IMAGE }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: EVENT_TITLE,
+    description: EVENT_DESCRIPTION,
+    images: [EVENT_OG_IMAGE],
+  },
+};
 
 // Landing según el brief "Brief_Landing_Masterclass_PODEROSAS_2026_para_Claude.pdf"
 // que trajo la usuaria. Textos y estructura tomados tal cual del documento;
