@@ -1,16 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-
-// Navegadores embebidos (Instagram, Facebook, TikTok) suelen bloquear o
-// romper el checkout de Wompi — el pago nunca carga bien ahí. Se detecta
-// por el user agent para avisarle a la compradora antes de que intente
-// pagar y se quede atascada sin saber por qué.
-function isInAppBrowser() {
-  if (typeof navigator === "undefined") return false;
-  const ua = navigator.userAgent || "";
-  return /Instagram|FBAN|FBAV|FB_IAB|TikTok|Twitter|Line\//i.test(ua);
-}
+import { useState } from "react";
 
 export function EventTicketForm({ productId }: { productId: string }) {
   const [name, setName] = useState("");
@@ -18,12 +8,7 @@ export function EventTicketForm({ productId }: { productId: string }) {
   const [emailConfirm, setEmailConfirm] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [inApp, setInApp] = useState(false);
   const [fallbackUrl, setFallbackUrl] = useState<string | null>(null);
-
-  useEffect(() => {
-    setInApp(isInAppBrowser());
-  }, []);
 
   const emailsTyped = email.length > 0 && emailConfirm.length > 0;
   const emailsMatch = email.trim().toLowerCase() === emailConfirm.trim().toLowerCase();
@@ -37,6 +22,15 @@ export function EventTicketForm({ productId }: { productId: string }) {
       setError("Los correos no coinciden. Revísalos antes de continuar.");
       return;
     }
+
+    // Se abre la ventana de pago YA, dentro del mismo clic — antes de
+    // esperar la respuesta del servidor. Navegadores embebidos (Instagram,
+    // TikTok, Facebook) solo permiten abrir/redirigir ventanas en el
+    // instante exacto del gesto del usuario; si se espera a que el fetch
+    // termine para recién ahí navegar, el gesto ya "expiró" y bloquean la
+    // redirección en silencio (así quedaban las compras atascadas). Se
+    // guarda la referencia y se le asigna el link real en cuanto llega.
+    const payWindow = window.open("about:blank", "_blank");
 
     setLoading(true);
     try {
@@ -52,30 +46,29 @@ export function EventTicketForm({ productId }: { productId: string }) {
       if (!res.ok || !data.checkoutUrl) {
         setError(data.error ?? "No se pudo iniciar el pago, intenta de nuevo.");
         setLoading(false);
+        payWindow?.close();
         return;
       }
 
-      // Algunos navegadores (sobre todo embebidos dentro de apps) a veces
-      // no redirigen de inmediato o bloquean la navegación. Dejamos un
-      // enlace visible de respaldo para que nunca quede sin salida.
       setFallbackUrl(data.checkoutUrl);
-      window.location.href = data.checkoutUrl;
+
+      if (payWindow && !payWindow.closed) {
+        payWindow.location.href = data.checkoutUrl;
+      } else {
+        // El navegador bloqueó la ventana nueva (pasa en algunos navegadores
+        // de escritorio con bloqueador de pop-ups) — se redirige la misma
+        // pestaña, como antes.
+        window.location.href = data.checkoutUrl;
+      }
     } catch {
       setError("No se pudo conectar con Wompi, intenta de nuevo.");
       setLoading(false);
+      payWindow?.close();
     }
   }
 
   return (
     <div className="max-w-sm mx-auto flex flex-col gap-3">
-      {inApp && (
-        <div className="rounded-xl border border-gold bg-gold/10 px-4 py-3 text-xs text-foreground/80 text-left leading-relaxed">
-          <strong>Estás viendo esto dentro de Instagram/TikTok/Facebook.</strong> El pago puede
-          fallar o no cargar bien aquí. Toca los tres puntos (⋮) arriba a la derecha y elige
-          &quot;Abrir en el navegador&quot; (Chrome o Safari) antes de comprar.
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-3">
         <label className="flex flex-col gap-1.5 text-sm text-left">
           Nombre completo
@@ -131,11 +124,8 @@ export function EventTicketForm({ productId }: { productId: string }) {
           {loading ? "Un momento..." : "Comprar mi entrada"}
         </button>
         {fallbackUrl && (
-          <a
-            href={fallbackUrl}
-            className="text-xs text-center text-gold underline"
-          >
-            ¿No te llevó a la página de pago? Haz clic aquí.
+          <a href={fallbackUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-center text-gold underline">
+            ¿No se abrió la página de pago? Haz clic aquí.
           </a>
         )}
       </form>
