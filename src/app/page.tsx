@@ -2,8 +2,19 @@ import fs from "node:fs";
 import path from "node:path";
 import Link from "next/link";
 import { ProfileCard } from "@/components/ProfileCard";
+import { IntroVideoCard } from "@/components/IntroVideoCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
+
+// Video de presentación de las tres, pedido por la usuaria para que salga
+// debajo del menú de accesos rápidos — subido a Supabase Storage (bucket
+// "covers") porque pesa demasiado para ir en el repo. La miniatura es un
+// fotograma del cierre del propio video mientras la usuaria no suba una
+// foto de las tres para reemplazarla.
+const INTRO_VIDEO_URL =
+  "https://asiftmeeaopqqtwgacee.supabase.co/storage/v1/object/public/covers/site/intro-video.mp4";
+const INTRO_VIDEO_POSTER =
+  "https://asiftmeeaopqqtwgacee.supabase.co/storage/v1/object/public/covers/site/intro-video-poster.jpg";
 
 // Las 2 fotos del evento (grid de la masterclass) todavía no existen —
 // Shei las va a mandar sacadas de ChatGPT/Pinterest. Mientras no estén en
@@ -99,6 +110,8 @@ export default async function Home() {
           Quiero asistir al evento
         </Link>
       </nav>
+
+      <IntroVideoCard videoUrl={INTRO_VIDEO_URL} posterUrl={INTRO_VIDEO_POSTER} />
 
       {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
           pedido por la usuaria a partir de una referencia visual. La
