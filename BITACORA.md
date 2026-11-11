@@ -2,6 +2,28 @@
 
 Registro de decisiones, lo hecho y lo pendiente. Actualizar antes de cada `/clear`.
 
+## 2026-11-10 — Checkout del evento: diagnóstico de abandono + arreglos en producción
+
+**Para qué fue esta sesión:** Shei pidió un panel de ventas/Analytics (como la ruta al 21 nov) y luego, al ver 57 órdenes abandonadas vs. 9 ventas reales, pidió analizar por qué y arreglarlo.
+
+**Hallazgos y arreglos, todos ya en `main` y desplegados a producción:**
+- El campo "Confirmar correo" bloqueaba pegar (`onPaste` preventDefault) — quitado, con indicador en vivo "✓ coinciden". (PR #102)
+- Causa real de las 57 abandonadas: el clic hacía `fetch` primero y solo después `window.location.href` — navegadores embebidos (Instagram/TikTok/FB) exigen que la redirección ocurra en el mismo instante del gesto del usuario, si no la bloquean en silencio. Arreglo: se abre la ventana de pago (`window.open`) ANTES del fetch, se le asigna el link de Wompi cuando llega. Probado en vivo contra `checkout.wompi.co`. (PR #105)
+- Link corto `poderosas.org/comprar` → redirige a `/evento#entradas` (salta directo al precio+formulario), vía `redirects()` en `next.config.ts`. (PR #104)
+- `og:image`/`twitter:image` del sitio y de `/evento` ahora son la foto grupal de las tres (`landing-hero.webp`), antes no había metadata propia y la vista previa de WhatsApp/Instagram salía inconsistente. (PR #103)
+
+**Regla de proceso nueva (importante):** la cuenta de GitHub "ELMETACHO" ya NO tiene permiso de push al repo `PoderosasORG/PODEROSASPROYECT` (403). Usar `gh auth switch --user oscarmetacho-art` antes de `git push` — sí funciona. Pendiente: revisar accesos del repo en GitHub.
+
+**Estado de ventas al cierre de la sesión (Supabase):** 9 ventas reales ($540.000), 5 pagos rechazados por banco ($300.000 perdidos, no es un bug nuestro), 57 abandonadas (causa ya corregida arriba). Cupos 9/30. Panel de ventas vivo en Claude Artifacts (privado de Shei, no versionado en el repo): "Panel de ventas" — se actualiza a mano, no en vivo.
+
+**Pendiente:**
+- Verificar en producción, con una compradora real nueva (o Shei probando desde el Instagram real), que el redirect a Wompi efectivamente ya no se traba en el navegador embebido.
+- Dani Hernández tiene 2 órdenes `pending` sin `wompi_transaction_id` (ver tabla `orders` en Supabase) — nunca llegó a pagar, probablemente afectada por el bug ya corregido. Avisarle que reintente.
+- Seguía en curso (sin cerrar en esta sesión): armar el Canva de la charla de Shei (duplicar diapositivas 12-21 y llenarlas con el guion ya acordado en el chat) y terminar el esqueleto de las tres charlas antes del evento del 21 de noviembre.
+- Meta Pixel sigue sin crear (bloqueado por verificación de cuenta de Meta) — explícitamente pospuesto por la usuaria ("después, si quieres, hacemos eso").
+
+**Archivos clave tocados:** `src/components/EventTicketForm.tsx`, `src/app/layout.tsx`, `src/app/evento/page.tsx`, `next.config.ts`.
+
 ## 2026-11-03 — Identidad DEFINITIVA, versión final: fondos con textura (no planos)
 
 Último ajuste sobre la identidad rosa+dorado de más abajo, decidido en
