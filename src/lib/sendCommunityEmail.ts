@@ -144,3 +144,125 @@ export async function sendCommunityEmail(params: { to: string; buyerName: string
     html,
   });
 }
+
+// Segunda versión del mismo pedido (unirse a la comunidad de WhatsApp),
+// con texto definido por la usuaria — se reenvía el 20 de noviembre a
+// quienes todavía no hayan respondido con su número.
+export function buildCommunityReminderEmailHtml() {
+  return `
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Grupo de WhatsApp — PODEROSAS</title>
+  </head>
+  <body style="margin:0; padding:0; background:#fffdf8; font-family: Georgia, 'Times New Roman', serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#fffdf8;">
+      <tr>
+        <td align="center" style="padding: 24px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%; max-width: 520px; background:#ffffff;">
+
+            <tr>
+              <td align="center" style="background:#f3e9dc; padding: 36px 24px; border-bottom: 1px solid #e6cd8f;">
+                <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">PODEROSAS</p>
+                <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">Únete a nuestra comunidad de WhatsApp</p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 32px 32px 8px;">
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  ¡Hola, futura PODEROSA! ✨
+                </p>
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  ¡Estamos muy felices de que hagas parte de esta experiencia!
+                </p>
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  Se acerca nuestra PODEROSAS MASTERCLASS 2026 y queremos que estés conectada con nosotras para que no te pierdas ningún detalle de este encuentro tan especial.
+                </p>
+                <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
+                  Por eso, hemos creado una comunidad exclusiva de WhatsApp donde estaremos compartiendo información de primera mano, recomendaciones, indicaciones importantes y los últimos detalles para que estés preparada para vivir esta experiencia al máximo. 💗
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 0 32px 8px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #e6cd8f; background:#faf5ec;">
+                  <tr>
+                    <td style="padding: 22px 20px;">
+                      <p style="margin:0 0 10px; font-family: Georgia, serif; font-size: 16px; color:#3a2e2e;">¿Qué necesitamos de ti?</p>
+                      <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                        Por favor, responde a este correo compartiéndonos tu número de celular con WhatsApp, incluyendo el indicativo de tu país (si estás en Colombia, <strong>+57</strong>).
+                      </p>
+                      <p style="margin:14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                        Así podremos agregarte a nuestra comunidad y mantenerte al tanto de todo lo que estamos preparando para ti.
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 20px 32px 8px;">
+                <p style="margin:0 0 6px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.8; color:#3a2e2e;">
+                  📅 <strong>Fecha:</strong> 21 de noviembre de 2026<br />
+                  🕘 <strong>Hora:</strong> 9:00 a. m. a 1:00 p. m.<br />
+                  📍 <strong>Lugar:</strong> El lugar que te compartimos en la confirmación de tu compra.
+                </p>
+                <p style="margin:14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                  Recuerda llegar 15 minutos antes y traer tu outfit más poderoso, ese con el que te sientas bonita, segura y auténtica. ✨
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td style="padding: 20px 32px 32px;">
+                <p style="margin:0 0 4px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                  ¡Estamos preparando algo increíble para ti!
+                </p>
+                <p style="margin:14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                  Con mucho cariño,<br />
+                  <strong>Equipo PODEROSAS</strong>
+                </p>
+                <p style="margin:10px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12.5px; font-style: italic; line-height: 1.6; color:#6b5e52;">
+                  Descubre tu poder interior y construye tu propio camino. 💗
+                </p>
+              </td>
+            </tr>
+
+            <tr>
+              <td align="center" style="background:#3a2e2e; padding: 28px 24px;">
+                <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 13px; color:#f3e9dc;">
+                  Con cariño,<br />Equipo PODEROSAS
+                </p>
+              </td>
+            </tr>
+
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
+    `;
+}
+
+export async function sendCommunityReminderEmail(params: { to: string }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("Falta RESEND_API_KEY");
+  }
+
+  const resend = new Resend(apiKey);
+  const html = buildCommunityReminderEmailHtml();
+
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.to,
+    subject: "💗 Únete a nuestra comunidad de WhatsApp — PODEROSAS",
+    html,
+  });
+}
