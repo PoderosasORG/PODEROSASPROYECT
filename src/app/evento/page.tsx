@@ -124,7 +124,7 @@ const FAQS = [
   },
   {
     q: "¿Todavía puedo comprar una entrada?",
-    a: "No — nuestra primera edición ya alcanzó su aforo máximo de 30 personas y las inscripciones están cerradas. Puedes registrarte en la lista de espera para enterarte primero de la próxima edición.",
+    a: "No — nuestra primera edición ya alcanzó su aforo máximo y las inscripciones están cerradas. Puedes registrarte en la lista de espera para enterarte primero de la próxima edición.",
   },
   {
     q: "¿Qué incluía la entrada?",
@@ -238,7 +238,7 @@ export default async function EventoPage() {
               Cupos agotados
             </p>
             <p className="text-sm text-foreground/60 text-center">
-              Nuestra primera edición ya alcanzó su aforo máximo de 30 personas.
+              Nuestra primera edición ya alcanzó su aforo máximo.
             </p>
           </div>
 
@@ -372,7 +372,7 @@ export default async function EventoPage() {
       </section>
 
       {/* 7. SOLD OUT + lista de espera (antes era precio + compra).
-          Aforo máximo de 30 personas alcanzado — cerrado por decisión de
+          Aforo máximo alcanzado — cerrado por decisión de
           las mentoras, no por falta de interés, así que en vez de quitar
           la sección se reemplaza por una lista de espera para la próxima
           edición, igual de protagónica visualmente. */}
