@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTicketReminderEmail } from "@/lib/sendTicketEmail";
+import { sendCommunityReminderEmail } from "@/lib/sendCommunityEmail";
 
 // Disparado por un Vercel Cron Job (ver vercel.json) el 20 de noviembre a
 // mediodía Bogotá — el día antes del evento. Corre en el servidor de
@@ -70,6 +71,17 @@ export async function GET(req: NextRequest) {
         ticketId,
         siteUrl: req.nextUrl.origin,
       });
+
+      // Segundo correo, pedido aparte: recordarles unirse a la comunidad
+      // de WhatsApp (para quienes todavía no hayan respondido con su
+      // número). Un fallo acá no cuenta como fallo del envío de la
+      // boleta — se registra aparte.
+      try {
+        await sendCommunityReminderEmail({ to: email });
+      } catch (err) {
+        failed.push({ email: `${email} (recordatorio de WhatsApp)`, error: String(err) });
+      }
+
       sent++;
     } catch (err) {
       failed.push({ email, error: String(err) });
