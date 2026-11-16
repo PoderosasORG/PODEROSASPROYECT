@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { createClient } from "@/lib/supabase/server";
-import { EventTicketForm } from "@/components/EventTicketForm";
+import { EventWaitlistForm } from "@/components/EventWaitlistForm";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
@@ -123,18 +123,16 @@ const FAQS = [
     a: "El 21 de noviembre de 2026, de 9:00 a. m. a 1:00 p. m., en Bogotá. La dirección exacta te llega por correo junto con la confirmación de tu compra.",
   },
   {
-    q: "¿Cuánto cuesta?",
-    a: "El precio regular es $120.000 COP. Durante la preventa, las primeras compradoras pueden adquirirla por $60.000 COP, con 50% de descuento.",
+    q: "¿Todavía puedo comprar una entrada?",
+    a: "No — nuestra primera edición ya alcanzó su aforo máximo de 30 personas y las inscripciones están cerradas. Puedes registrarte en la lista de espera para enterarte primero de la próxima edición.",
   },
   {
-    q: "¿Qué incluye?",
+    q: "¿Qué incluía la entrada?",
     a: "Masterclass con tres mentoras, soda italiana de bienvenida, coffee break y snacks, materiales de trabajo, actividades guiadas, networking con todas las asistentes, sorpresas y regalos especiales, acceso a la comunidad de Telegram, y descuento en el lanzamiento del Curso PODEROSAS.",
   },
   {
-    q: "¿Cómo puedo pagar?",
-    a: "Por ahora, por la pasarela de pago en línea (tarjeta o PSE). Si necesitas pagar por transferencia bancaria, escríbenos a " +
-      SUPPORT_EMAIL +
-      " y te ayudamos.",
+    q: "¿Habrá una próxima edición?",
+    a: "Sí. Si te registras en la lista de espera, serás de las primeras en enterarte de la fecha y la apertura de cupos.",
   },
   {
     q: "¿Puedo asistir si no conozco a nadie?",
@@ -175,12 +173,6 @@ export default async function EventoPage() {
       </div>
     );
   }
-
-  const price = (product.price_cents / 100).toLocaleString("es-CO", {
-    style: "currency",
-    currency: product.currency,
-    maximumFractionDigits: 0,
-  });
 
   const { data: creatorsData } = await supabase
     .from("creators")
@@ -239,12 +231,14 @@ export default async function EventoPage() {
           </p>
 
           <div className="mt-2 w-full max-w-sm rounded-2xl bg-white p-6 flex flex-col items-center gap-1 border border-gold-light/50">
-            <p className="text-xs uppercase tracking-wide text-gold font-medium">
-              Precio de preventa
+            <p className="text-xs uppercase tracking-wide text-[#b2472f] font-bold">
+              SOLD OUT
             </p>
-            <p className="font-serif text-4xl text-foreground">{price}</p>
+            <p className="font-serif text-2xl text-foreground text-center">
+              Cupos agotados
+            </p>
             <p className="text-sm text-foreground/60 text-center">
-              Antes $120.000 COP · 50% de descuento para las primeras compradoras
+              Nuestra primera edición ya alcanzó su aforo máximo de 30 personas.
             </p>
           </div>
 
@@ -252,7 +246,7 @@ export default async function EventoPage() {
             href="#entradas"
             className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
           >
-            Quiero mi entrada con 50% de descuento
+            Quiero enterarme de la próxima edición
           </a>
           <p className="text-sm text-white/60">
             Una mañana para ti: claridad, conexión, herramientas prácticas y comunidad.
@@ -284,7 +278,7 @@ export default async function EventoPage() {
             href="#entradas"
             className="self-center mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Quiero mi entrada con 50% de descuento
+            Quiero enterarme de la próxima edición
           </a>
         </div>
       </section>
@@ -377,41 +371,34 @@ export default async function EventoPage() {
         </div>
       </section>
 
-      {/* 7. Precio y compra */}
+      {/* 7. SOLD OUT + lista de espera (antes era precio + compra).
+          Aforo máximo de 30 personas alcanzado — cerrado por decisión de
+          las mentoras, no por falta de interés, así que en vez de quitar
+          la sección se reemplaza por una lista de espera para la próxima
+          edición, igual de protagónica visualmente. */}
       <section id="entradas" className="px-6 py-16 scroll-mt-10">
-        <div className="max-w-sm mx-auto flex flex-col items-center text-center gap-4">
-          <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
-            Tu lugar en esta experiencia te está esperando.
-          </h2>
-
-          <div className="w-full rounded-2xl border border-gold-light/60 overflow-hidden grid grid-cols-2">
-            <div className="bg-[#542B45] p-4 flex flex-col items-center gap-1">
-              <p className="text-[11px] uppercase tracking-wide text-white/70 font-medium">
-                Precio regular
-              </p>
-              <p className="font-serif text-2xl text-white/60 line-through">$120.000</p>
-              <p className="text-[11px] text-white/50">Precio habitual</p>
-            </div>
-            <div className="bg-gold p-4 flex flex-col items-center gap-1">
-              <p className="text-[11px] uppercase tracking-wide text-white/90 font-medium">
-                Preventa · 50% off
-              </p>
-              <p className="font-serif text-3xl text-white">{price}</p>
-              <p className="text-[11px] text-white/80">Para las primeras compradoras</p>
-            </div>
+        <div className="max-w-sm mx-auto flex flex-col items-center text-center gap-5">
+          <div className="w-full rounded-2xl bg-[#542B45] px-6 py-8 flex flex-col items-center gap-2">
+            <p className="font-serif text-4xl sm:text-5xl text-white tracking-wide">
+              SOLD OUT
+            </p>
+            <p className="text-sm text-white/80 max-w-xs">
+              Nuestra primera edición de la Masterclass PODEROSAS 2026 tiene sus cupos
+              agotados.
+            </p>
           </div>
 
+          <p className="font-serif text-lg text-foreground">
+            ¡Pero esto apenas comienza!
+          </p>
           <p className="text-sm text-foreground/60">
-            Tu lugar en PODEROSAS puede ser el primer paso para dejar de postergarte. Reserva tu
-            entrada anticipada y vive una mañana creada para ti.
+            Si no alcanzaste a conseguir tu entrada, queremos que seas de las primeras en
+            enterarte de nuestra próxima edición.
           </p>
 
           <div className="mt-2 w-full">
-            <EventTicketForm productId={product.id} />
+            <EventWaitlistForm />
           </div>
-          <p className="text-xs text-foreground/50">
-            Pago por pasarela segura. La compra queda confirmada cuando el pago sea verificado.
-          </p>
         </div>
       </section>
 
@@ -445,23 +432,24 @@ export default async function EventoPage() {
             href="#entradas"
             className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
           >
-            Sí, quiero ser parte de PODEROSAS
+            Quiero enterarme de la próxima edición
           </a>
         </div>
       </section>
 
-      {/* Barra fija en móvil: precio + botón siempre visibles al hacer scroll,
-          sin tapar contenido (solo padding-bottom del contenedor general). */}
+      {/* Barra fija en móvil: antes mostraba precio + "Reservar entrada",
+          ahora el SOLD OUT + la lista de espera, sin tapar contenido (solo
+          padding-bottom del contenedor general). */}
       <div className="sm:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gold-light/60 shadow-[0_-4px_12px_rgba(0,0,0,0.06)] px-5 py-3 flex items-center justify-between gap-3 z-10">
         <div>
-          <p className="font-serif text-base text-foreground leading-none">{price}</p>
+          <p className="font-serif text-base text-[#b2472f] font-bold leading-none">SOLD OUT</p>
           <p className="text-[10px] text-foreground/50">21 de noviembre · Bogotá</p>
         </div>
         <a
           href="#entradas"
           className="rounded-full bg-gold px-5 py-2.5 text-white text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
         >
-          Reservar entrada
+          Lista de espera
         </a>
       </div>
     </div>
