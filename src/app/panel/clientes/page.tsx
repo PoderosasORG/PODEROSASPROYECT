@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { ResendTicketButton } from "@/components/panel/ResendTicketButton";
 
 function formatPrice(cents: number, currency: string) {
   return new Intl.NumberFormat("es-CO", {
@@ -29,7 +30,7 @@ export default async function ClientesPage() {
   // Individual: solo las ventas de ESTA creadora — nadie más las ve.
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, products(title)")
+    .select("id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, products(title, type)")
     .eq("creator_id", creator.id)
     .eq("status", "approved")
     .order("created_at", { ascending: false });
@@ -57,6 +58,27 @@ export default async function ClientesPage() {
 
   const totalRevenue = (orders ?? []).reduce((sum, o) => sum + o.amount_cents, 0);
   const uniqueCustomers = new Set((orders ?? []).map((o) => o.buyer_email ?? o.buyer_id)).size;
+
+  // Boletas del evento — lista aparte, pedida para ver de un vistazo a
+  // quién ya se le generó/envió la boleta, sin esperar a que alguien
+  // reclame que nunca le llegó el QR.
+  const eventOrderList = (orders ?? []).filter((o) => {
+    const product = Array.isArray(o.products) ? o.products[0] : o.products;
+    return product?.type === "event";
+  });
+  const eventOrderIds = eventOrderList.map((o) => o.id);
+  const { data: tickets } = eventOrderIds.length
+    ? await admin.from("event_tickets").select("id, order_id").in("order_id", eventOrderIds)
+    : { data: [] };
+  const ticketByOrder = new Map((tickets ?? []).map((t) => [t.order_id, t.id]));
+
+  const eventRows = eventOrderList.map((o) => ({
+    id: o.id,
+    name: o.buyer_name ?? (o.buyer_id ? profileNames.get(o.buyer_id) : null) ?? "—",
+    email: o.buyer_email ?? "—",
+    date: formatDate(o.created_at),
+    hasTicket: ticketByOrder.has(o.id),
+  }));
 
   // Colectivo: números generales de TODA la plataforma, sin desglosar
   // cuánto vendió cada una (eso es privado de cada quien).
@@ -123,6 +145,49 @@ export default async function ClientesPage() {
           </table>
         )}
       </div>
+
+      {eventRows.length > 0 && (
+        <div className="w-full max-w-3xl bg-white rounded-2xl border border-gold-light/60 overflow-hidden">
+          <div className="p-4 border-b border-gold-light/30">
+            <h2 className="font-serif text-xl">Boletas del evento</h2>
+            <p className="text-xs text-foreground/50 mt-1">
+              Quién ya pagó su entrada y si su boleta (QR) está generada. Si alguien dice que no le
+              llegó el correo, reenvíasela aquí mismo sin tener que escribirme a mí.
+            </p>
+          </div>
+          <table className="w-full text-sm">
+            <thead className="bg-beige-light text-left text-xs uppercase tracking-wide text-foreground/50">
+              <tr>
+                <th className="p-3">Cliente</th>
+                <th className="p-3">Fecha</th>
+                <th className="p-3">Boleta</th>
+                <th className="p-3"></th>
+              </tr>
+            </thead>
+            <tbody>
+              {eventRows.map((r) => (
+                <tr key={r.id} className="border-t border-gold-light/30">
+                  <td className="p-3">
+                    <div>{r.name}</div>
+                    <div className="text-xs text-foreground/50">{r.email}</div>
+                  </td>
+                  <td className="p-3">{r.date}</td>
+                  <td className="p-3">
+                    {r.hasTicket ? (
+                      <span className="text-xs text-green-700">✓ Generada</span>
+                    ) : (
+                      <span className="text-xs text-red-600">⚠ Sin generar</span>
+                    )}
+                  </td>
+                  <td className="p-3">
+                    <ResendTicketButton orderId={r.id} />
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
 
       <div className="w-full max-w-3xl">
         <h2 className="font-serif text-xl mb-3">Poderosas en conjunto</h2>
