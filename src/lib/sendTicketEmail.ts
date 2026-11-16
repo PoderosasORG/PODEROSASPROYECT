@@ -32,11 +32,34 @@ export function buildTicketEmailHtml(params: {
   ticketId: string;
   siteUrl: string;
   qrSrc: string;
+  // Si viene, es el correo recordatorio del día antes (mismo diseño,
+  // misma boleta) en vez de la confirmación de compra original.
+  reminder?: boolean;
 }) {
   const trimmedName = params.buyerName.trim();
   const firstName = trimmedName ? trimmedName.split(/\s+/)[0] : "";
   const greeting = firstName ? `Hola, ${firstName}.` : "Hola.";
   const pdfUrl = `${params.siteUrl}/api/boleta/${params.ticketId}/pdf`;
+
+  const reminderBlock = params.reminder
+    ? `
+            <tr>
+              <td style="padding: 0 32px 8px;">
+                <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#faf5ec; border: 1px solid #e6cd8f;">
+                  <tr>
+                    <td style="padding: 18px 20px;">
+                      <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                        ⏰ <strong>Este es un recordatorio</strong> — mañana es el gran día. Te reenviamos tu entrada con el código QR, por si no la tenías a la mano o no viste el primer correo.
+                      </p>
+                      <p style="margin:12px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
+                        👗 Ve con tu outfit más poderoso — ese con el que te sientas más tú y lista para brillar. ✨
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>`
+    : "";
 
   return `
 <!DOCTYPE html>
@@ -56,9 +79,10 @@ export function buildTicketEmailHtml(params: {
             <tr>
               <td align="center" style="background:#f3e9dc; padding: 36px 24px; border-bottom: 1px solid #e6cd8f;">
                 <p style="margin:0; font-family: Georgia, serif; font-size: 24px; letter-spacing: 3px; color:#9a7b2e; text-transform: uppercase;">PODEROSAS</p>
-                <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">Confirmación de compra</p>
+                <p style="margin: 14px 0 0; font-family: Arial, Helvetica, sans-serif; font-size: 12px; letter-spacing: 2px; text-transform: uppercase; color:#3a2e2e;">${params.reminder ? "Recordatorio de tu entrada" : "Confirmación de compra"}</p>
               </td>
             </tr>
+${reminderBlock}
 
             <!-- Mensaje de bienvenida -->
             <tr>
@@ -209,6 +233,44 @@ export async function sendTicketEmail(params: {
         // Mismo QR dos veces: uno embebido (contentId) para que se vea
         // dentro del correo, y este otro sin contentId para que además
         // aparezca como adjunto descargable de verdad.
+        filename: "boleta-qr.png",
+        content: qrPng.toString("base64"),
+      },
+      {
+        filename: "boleta.png",
+        content: qrPng.toString("base64"),
+        contentId: "boleta-qr",
+      },
+    ],
+  });
+}
+
+// Recordatorio del día antes del evento — mismo diseño y misma boleta
+// (QR) que el correo de confirmación, pedido explícitamente para pescar
+// a cualquiera a quien el primer correo no le haya llegado (spam, fallo
+// de envío silencioso, etc.) antes de que sea demasiado tarde.
+export async function sendTicketReminderEmail(params: {
+  to: string;
+  buyerName: string;
+  ticketId: string;
+  siteUrl: string;
+}) {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("Falta RESEND_API_KEY");
+  }
+
+  const resend = new Resend(apiKey);
+  const qrPng = await QRCode.toBuffer(params.ticketId, { width: 500, margin: 2 });
+  const html = buildTicketEmailHtml({ ...params, qrSrc: "cid:boleta-qr", reminder: true });
+
+  await resend.emails.send({
+    from: FROM_ADDRESS,
+    to: params.to,
+    subject: "⏰ Recordatorio: ¡Mañana es el evento! Aquí está tu entrada",
+    html,
+    attachments: [
+      {
         filename: "boleta-qr.png",
         content: qrPng.toString("base64"),
       },
