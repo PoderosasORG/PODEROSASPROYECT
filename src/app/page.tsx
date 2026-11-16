@@ -132,12 +132,19 @@ export default async function Home() {
                 PODEROSAS
               </p>
               <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
+              <p className="font-serif text-xl sm:text-3xl text-gold-light tracking-wide mt-3">
+                SOLD OUT
+              </p>
+              <p className="text-[11px] sm:text-sm text-white/70 mt-2 max-w-[220px] sm:max-w-xs mx-auto">
+                Nuestra primera edición tiene sus cupos agotados. ¡Pero esto apenas comienza!
+                Sé de las primeras en enterarte de la próxima.
+              </p>
             </div>
             <Link
               href="/evento#entradas"
               className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
             >
-              Asegura tu cupo
+              Quiero ser de las primeras
             </Link>
           </div>
 
@@ -213,7 +220,7 @@ export default async function Home() {
           href="/evento#entradas"
           className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
         >
-          Adquiere tu boleta con 50% de descuento
+          Quiero ser de las primeras en la próxima edición
         </Link>
       </section>
 
