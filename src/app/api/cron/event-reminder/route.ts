@@ -76,5 +76,20 @@ export async function GET(req: NextRequest) {
     }
   }
 
+  // Copia de confirmación para Shei, para que ella misma sepa que el
+  // envío masivo sí se disparó — no es una boleta real (no corresponde a
+  // ninguna compra), solo usa un código de muestra para que la plantilla
+  // se vea igual a la que recibieron las compradoras.
+  try {
+    await sendTicketReminderEmail({
+      to: "katysheicomunicacion@gmail.com",
+      buyerName: "Shei",
+      ticketId: `confirmacion-envio-${Date.now()}`,
+      siteUrl: req.nextUrl.origin,
+    });
+  } catch (err) {
+    failed.push({ email: "katysheicomunicacion@gmail.com (copia de confirmación)", error: String(err) });
+  }
+
   return NextResponse.json({ ok: true, sent, failed });
 }
