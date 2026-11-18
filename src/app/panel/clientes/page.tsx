@@ -65,6 +65,9 @@ export default async function ClientesPage() {
   const totalRevenue = (orders ?? [])
     .filter((o) => o.payment_method !== "nequi_directo")
     .reduce((sum, o) => sum + o.amount_cents, 0);
+  const totalDirectNequi = (orders ?? [])
+    .filter((o) => o.payment_method === "nequi_directo")
+    .reduce((sum, o) => sum + o.amount_cents, 0);
   const uniqueCustomers = new Set((orders ?? []).map((o) => o.buyer_email ?? o.buyer_id)).size;
 
   // Boletas del evento — lista aparte, pedida para ver de un vistazo a
@@ -110,11 +113,16 @@ export default async function ClientesPage() {
         </Link>
       </div>
 
-      <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="w-full max-w-3xl grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="bg-white rounded-2xl border border-gold-light/60 p-5">
-          <p className="text-xs text-foreground/50 uppercase tracking-wide">Ingresos totales</p>
+          <p className="text-xs text-foreground/50 uppercase tracking-wide">Ingresos totales (Wompi)</p>
           <p className="font-serif text-2xl mt-1">{formatPrice(totalRevenue, "COP")}</p>
-          <p className="text-[11px] text-foreground/40 mt-1">No incluye pagos directos a Nequi</p>
+          <p className="text-[11px] text-foreground/40 mt-1">Dinero que pasó por la pasarela de pago</p>
+        </div>
+        <div className="bg-amber-50 rounded-2xl border border-amber-200 p-5">
+          <p className="text-xs text-amber-700/70 uppercase tracking-wide">Pagos directos a Nequi</p>
+          <p className="font-serif text-2xl mt-1 text-amber-800">{formatPrice(totalDirectNequi, "COP")}</p>
+          <p className="text-[11px] text-amber-700/60 mt-1">Ya está en tu Nequi, no llega por la web</p>
         </div>
         <div className="bg-white rounded-2xl border border-gold-light/60 p-5">
           <p className="text-xs text-foreground/50 uppercase tracking-wide">Clientes únicos</p>
