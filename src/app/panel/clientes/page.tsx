@@ -30,7 +30,9 @@ export default async function ClientesPage() {
   // Individual: solo las ventas de ESTA creadora — nadie más las ve.
   const { data: orders } = await supabase
     .from("orders")
-    .select("id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, products(title, type)")
+    .select(
+      "id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, payment_method, products(title, type)",
+    )
     .eq("creator_id", creator.id)
     .eq("status", "approved")
     .order("created_at", { ascending: false });
@@ -53,10 +55,16 @@ export default async function ClientesPage() {
       product: product?.title ?? "—",
       amount: formatPrice(o.amount_cents, o.currency),
       date: formatDate(o.created_at),
+      isDirectPayment: o.payment_method === "nequi_directo",
     };
   });
 
-  const totalRevenue = (orders ?? []).reduce((sum, o) => sum + o.amount_cents, 0);
+  // Dinero que SÍ pasó por la pasarela (Wompi) — lo que te pagaron directo
+  // a tu Nequi (payment_method = "nequi_directo") no entra en este total,
+  // porque ese dinero ya lo tienes aparte y no pasó por la plataforma.
+  const totalRevenue = (orders ?? [])
+    .filter((o) => o.payment_method !== "nequi_directo")
+    .reduce((sum, o) => sum + o.amount_cents, 0);
   const uniqueCustomers = new Set((orders ?? []).map((o) => o.buyer_email ?? o.buyer_id)).size;
 
   // Boletas del evento — lista aparte, pedida para ver de un vistazo a
@@ -78,6 +86,7 @@ export default async function ClientesPage() {
     email: o.buyer_email ?? "—",
     date: formatDate(o.created_at),
     hasTicket: ticketByOrder.has(o.id),
+    isDirectPayment: o.payment_method === "nequi_directo",
   }));
 
   // Colectivo: números generales de TODA la plataforma, sin desglosar
@@ -105,6 +114,7 @@ export default async function ClientesPage() {
         <div className="bg-white rounded-2xl border border-gold-light/60 p-5">
           <p className="text-xs text-foreground/50 uppercase tracking-wide">Ingresos totales</p>
           <p className="font-serif text-2xl mt-1">{formatPrice(totalRevenue, "COP")}</p>
+          <p className="text-[11px] text-foreground/40 mt-1">No incluye pagos directos a Nequi</p>
         </div>
         <div className="bg-white rounded-2xl border border-gold-light/60 p-5">
           <p className="text-xs text-foreground/50 uppercase tracking-wide">Clientes únicos</p>
@@ -133,7 +143,14 @@ export default async function ClientesPage() {
               {rows.map((r) => (
                 <tr key={r.id} className="border-t border-gold-light/30">
                   <td className="p-3">
-                    <div>{r.name}</div>
+                    <div>
+                      {r.name}
+                      {r.isDirectPayment && (
+                        <span className="ml-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] uppercase tracking-wide text-amber-700">
+                          Pago directo a Nequi
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-foreground/50">{r.email}</div>
                   </td>
                   <td className="p-3">{r.product}</td>
@@ -168,7 +185,14 @@ export default async function ClientesPage() {
               {eventRows.map((r) => (
                 <tr key={r.id} className="border-t border-gold-light/30">
                   <td className="p-3">
-                    <div>{r.name}</div>
+                    <div>
+                      {r.name}
+                      {r.isDirectPayment && (
+                        <span className="ml-2 inline-block rounded-full bg-amber-100 px-2 py-0.5 text-[10px] uppercase tracking-wide text-amber-700">
+                          Pago directo a Nequi
+                        </span>
+                      )}
+                    </div>
                     <div className="text-xs text-foreground/50">{r.email}</div>
                   </td>
                   <td className="p-3">{r.date}</td>
