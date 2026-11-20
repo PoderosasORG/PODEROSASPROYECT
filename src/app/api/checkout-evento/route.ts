@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
+import { originFromCookie } from "@/lib/origin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -91,6 +92,7 @@ export async function POST(req: NextRequest) {
     amount_cents: product.price_cents,
     currency: product.currency,
     status: "pending",
+    origin: originFromCookie(req),
     image_consent: imageConsent,
   });
 
@@ -108,6 +110,9 @@ export async function POST(req: NextRequest) {
     "amount-in-cents": String(product.price_cents),
     reference,
     "signature:integrity": signature,
+    // Wompi pide dirección, ciudad y teléfono (para el CRM de /admin);
+    // llegan en transaction.shipping_address al webhook.
+    "collect-shipping": "true",
   });
 
   const origin = req.nextUrl.origin;
