@@ -189,10 +189,25 @@ export default async function MetodologiaPoderosaPage() {
     ];
 
     const bonusItems = [
-      { title: "BONUS 1 · Ebook de relaciones de pareja", desc: "Un recurso adicional para profundizar en el mundo de las relaciones." },
       {
-        title: "BONUS 2 · 10 plantillas prácticas de bienestar emocional",
-        desc: "Herramientas descargables para acompañar tus procesos de reflexión y autoconocimiento.",
+        title: "BONO 1 · Masterclass: crea tu marca personal y construye una comunidad PODEROSA",
+        desc: "Aprende a construir tu marca personal, comunicar lo que te hace diferente y desarrollar una comunidad alrededor de tu propuesta de valor.",
+      },
+      {
+        title: "BONO 2 · Siete fuentes de ingresos para monetizar en redes sociales",
+        desc: "Conoce distintas alternativas de monetización y maneras de convertir una comunidad en oportunidades comerciales.",
+      },
+      {
+        title: "BONO 3 · Ebook: 50 acuerdos de pareja para tener una relación sana y duradera",
+        desc: "Un recurso práctico para reflexionar sobre acuerdos, comunicación, respeto y construcción de relaciones saludables.",
+      },
+      {
+        title: "BONO 4 · Reto de 7 días para enfocarte en ti y fortalecer tu amor propio",
+        desc: "Una experiencia de 7 días con actividades para dedicarte tiempo, reconectar contigo misma y fortalecer tu autoestima.",
+      },
+      {
+        title: "BONO 5 · Masterclass: cómo atraer a tu pareja ideal y construir la relación de tus sueños",
+        desc: "Reconoce tus estándares, fortalece tu autoestima y desarrolla herramientas para crear vínculos conscientes y saludables.",
       },
     ];
 
@@ -219,7 +234,7 @@ export default async function MetodologiaPoderosaPage() {
       },
       {
         q: "¿Qué materiales recibiré?",
-        a: "Los 3 módulos en video, una cartilla descargable con ejercicios por cada uno, y los dos bonus de regalo (el ebook y las plantillas).",
+        a: "Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada, y los 5 bonos de regalo si compras antes del cierre de la promoción.",
       },
       {
         q: "¿Puedo realizar las actividades desde mi celular o computador?",
@@ -431,8 +446,10 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
-        {/* 5.5. Qué incluye tu acceso — PENDIENTE: Shei va a ajustar esta
-            lista. Contenido provisional mientras lo confirma. */}
+        {/* 5.5. Qué incluye tu acceso — alineado con la definición oficial
+            de la oferta (doc. "Proyecto PODEROSAS 2026"). Las 6 clases en
+            vivo agrupan los 8 temas del brief en 6 encuentros — PENDIENTE
+            de que Shei confirme esta agrupación específica. */}
         <section className="px-6 py-14 bg-white">
           <div className="max-w-xl mx-auto text-center flex flex-col gap-6">
             <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
@@ -440,12 +457,14 @@ export default async function MetodologiaPoderosaPage() {
             </h2>
             <ul className="flex flex-col gap-3 text-left mx-auto max-w-md">
               {[
-                "Acceso por 6 meses a los 3 módulos de la Metodología (y a lo que se vaya actualizando durante ese tiempo).",
-                "2 encuentros en vivo al mes con Kat, Shei y Luz.",
-                "Comunidad privada de WhatsApp.",
-                "3 masterclasses especiales de regalo: marca personal y redes, amor propio y relaciones conscientes, seguridad y liderazgo.",
-                "Reto PODEROSA de 30 días.",
-                "Ebook \"50 acuerdos para fortalecer la relación de pareja\".",
+                "Acceso por 6 meses a la Metodología PODEROSAS (y a lo que se vaya actualizando durante ese tiempo).",
+                "6 clases en vivo: autoestima y seguridad personal, marca personal, relaciones de pareja, productividad y organización del tiempo, hábitos y energía, y liderazgo.",
+                "Acceso a las grabaciones de las 6 clases, disponibles en la plataforma durante tus 6 meses de acceso.",
+                "Comunidad privada de WhatsApp — Amigas PODEROSAS.",
+                "Acompañamiento y soporte durante todo tu proceso.",
+                "Certificado de finalización al completar todos los módulos.",
+                "Meditación guiada para activar tu versión más poderosa.",
+                "Acceso preferencial y preventa a futuros eventos PODEROSAS.",
                 "Cartillas y ejercicios descargables de cada módulo.",
               ].map((item) => (
                 <li key={item} className="flex gap-3 text-sm text-foreground/80 leading-relaxed">
