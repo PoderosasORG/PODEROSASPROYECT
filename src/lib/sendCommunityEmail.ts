@@ -1,5 +1,6 @@
 import "server-only";
 import { Resend } from "resend";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 const FROM_ADDRESS = "PODEROSAS <hola@poderosas.org>";
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
@@ -36,7 +37,7 @@ export function buildCommunityEmailHtml(params: { buyerName: string }) {
                   ${greeting}
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                  Vamos a crear un grupo de WhatsApp solo para quienes ya tienen su entrada confirmada a la Masterclass del 21 de noviembre — ahí compartiremos información importante, recomendaciones y sorpresas antes del evento.
+                  Vamos a crear un grupo de WhatsApp solo para quienes ya tienen su entrada confirmada al ${EVENTO_PRESENCIAL_NOMBRE} (21 de noviembre) — ahí compartiremos información importante, recomendaciones y sorpresas antes del evento.
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
                   Se nos pasó pedirte el número de teléfono al momento de la compra, así que abajo te dejamos exactamente lo que recibirás en ese grupo — y al final te contamos cómo unirte.
@@ -50,7 +51,7 @@ export function buildCommunityEmailHtml(params: { buyerName: string }) {
                   <tr>
                     <td style="padding: 24px 22px;">
                       <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                        💗✨ <strong>¡BIENVENIDAS A PODEROSAS MASTERCLASS 2026!</strong>
+                        💗✨ <strong>¡BIENVENIDAS AL ${EVENTO_PRESENCIAL_NOMBRE.toUpperCase()}!</strong>
                       </p>
                       <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.7; color:#3a2e2e;">
                         ¡Qué alegría tenerlas por aquí! Primero queremos agradecerles por tomar la decisión de regalarse este espacio y elegir invertir en ustedes mismas.
@@ -140,7 +141,7 @@ export async function sendCommunityEmail(params: { to: string; buyerName: string
   await resend.emails.send({
     from: FROM_ADDRESS,
     to: params.to,
-    subject: "💗 Únete al grupo de WhatsApp de PODEROSAS Masterclass 2026",
+    subject: `💗 Únete al grupo de WhatsApp del ${EVENTO_PRESENCIAL_NOMBRE}`,
     html,
   });
 }
@@ -179,7 +180,7 @@ export function buildCommunityReminderEmailHtml() {
                   ¡Estamos muy felices de que hagas parte de esta experiencia!
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                  Se acerca nuestra PODEROSAS MASTERCLASS 2026 y queremos que estés conectada con nosotras para que no te pierdas ningún detalle de este encuentro tan especial.
+                  Se acerca nuestro ${EVENTO_PRESENCIAL_NOMBRE} y queremos que estés conectada con nosotras para que no te pierdas ningún detalle de este encuentro tan especial.
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
                   Por eso, hemos creado una comunidad exclusiva de WhatsApp donde estaremos compartiendo información de primera mano, recomendaciones, indicaciones importantes y los últimos detalles para que estés preparada para vivir esta experiencia al máximo. 💗

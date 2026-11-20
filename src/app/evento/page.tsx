@@ -5,6 +5,7 @@ import { EventWaitlistForm } from "@/components/EventWaitlistForm";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +13,7 @@ export const dynamic = "force-dynamic";
 // WhatsApp/Instagram) muestre la foto de las tres mentoras, no una foto
 // personal de quien lo envía — antes no tenía metadata propia y heredaba
 // un resultado inconsistente según el cliente que generara la vista previa.
-const EVENT_TITLE = "Masterclass PODEROSAS 2026 — 21 de noviembre, Bogotá";
+const EVENT_TITLE = `${EVENTO_PRESENCIAL_NOMBRE} — 21 de noviembre, Bogotá`;
 const EVENT_DESCRIPTION =
   "Reconecta contigo, encuentra dirección y aprende a convertir tus sueños e ideas en acciones concretas. Una mañana presencial con Kat, Shei y Luz Amparo.";
 const EVENT_OG_IMAGE = "/images/creators/landing-hero.webp";
@@ -104,7 +105,7 @@ const VIVIR_Y_APRENDER = [
 ];
 
 const INCLUYE = [
-  "Acceso presencial a la Masterclass PODEROSAS 2026 con las tres mentoras.",
+  `Acceso presencial al ${EVENTO_PRESENCIAL_NOMBRE}, con las tres mentoras.`,
   "Soda italiana de bienvenida.",
   "Coffee break y snacks.",
   "Materiales de trabajo para realizar ejercicios y llevarte tus reflexiones.",
@@ -219,7 +220,7 @@ export default async function EventoPage() {
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/images/creators/landing-hero.webp"
-              alt="Kat, Shei y Luz Amparo, mentoras de la Masterclass PODEROSAS"
+              alt={`Kat, Shei y Luz Amparo, mentoras del ${EVENTO_PRESENCIAL_NOMBRE}`}
               className="w-full h-auto object-contain"
             />
           </div>
@@ -383,8 +384,7 @@ export default async function EventoPage() {
               SOLD OUT
             </p>
             <p className="text-sm text-white/80 max-w-xs">
-              Nuestra primera edición de la Masterclass PODEROSAS 2026 tiene sus cupos
-              agotados.
+              El {EVENTO_PRESENCIAL_NOMBRE} tiene sus cupos agotados.
             </p>
           </div>
 
@@ -427,7 +427,7 @@ export default async function EventoPage() {
           <p className="text-sm uppercase tracking-wide text-gold font-medium">
             21 de noviembre de 2026 · 9:00 a. m. a 1:00 p. m. · Bogotá
           </p>
-          <p className="font-serif text-lg text-foreground">Masterclass PODEROSAS 2026</p>
+          <p className="font-serif text-lg text-foreground">{EVENTO_PRESENCIAL_NOMBRE}</p>
           <a
             href="#entradas"
             className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"

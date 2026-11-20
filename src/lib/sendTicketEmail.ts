@@ -1,6 +1,7 @@
 import "server-only";
 import { Resend } from "resend";
 import QRCode from "qrcode";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 // poderosas.org ya está verificado en Resend (DKIM + SPF), así que los
 // correos salen desde ahí y le llegan a cualquier compradora real — antes
@@ -12,7 +13,7 @@ const FROM_ADDRESS = "PODEROSAS <hola@poderosas.org>";
 // el correo oficial de PODEROSAS (un solo lugar para cambiarlo).
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
-const EVENT_TITLE = "MASTERCLASS PRESENCIAL DE PODEROSAS";
+const EVENT_TITLE = EVENTO_PRESENCIAL_NOMBRE.toUpperCase();
 const EVENT_DATE = "Sábado, 21 de noviembre de 2026";
 const EVENT_TIME = "9:00 a. m. a 1:00 p. m.";
 const EVENT_PLACE = "Edificio Emprendu";
@@ -89,7 +90,7 @@ ${reminderBlock}
               <td style="padding: 32px 32px 8px;">
                 <h1 style="margin:0 0 16px; font-family: Georgia, serif; font-size: 24px; color:#3a2e2e; font-weight: normal;">¡Tu entrada está confirmada!</h1>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                  ${greeting} ¡Gracias por ser parte de la Masterclass presencial de PODEROSAS!
+                  ${greeting} ¡Gracias por ser parte del ${EVENTO_PRESENCIAL_NOMBRE}!
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
                   Tu lugar está reservado y nos alegra saber que compartirás este encuentro con nosotras.
@@ -226,7 +227,7 @@ export async function sendTicketEmail(params: {
   await resend.emails.send({
     from: FROM_ADDRESS,
     to: params.to,
-    subject: "Tu entrada para la Masterclass presencial de PODEROSAS está confirmada",
+    subject: `Tu entrada para el ${EVENTO_PRESENCIAL_NOMBRE} está confirmada`,
     html,
     attachments: [
       {
