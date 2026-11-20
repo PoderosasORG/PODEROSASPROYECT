@@ -93,21 +93,25 @@ export default async function Home() {
         </h1>
       </section>
 
-      {/* Menú de accesos rápidos pedido por la usuaria, entre la foto del
-          hero y el grid de la masterclass: Home / Mis programas / Quiero
-          iniciar mi proceso, con espacio entre cada palabra. */}
+      {/* Menú de accesos rápidos — el foco del sitio es vender la
+          Metodología PODEROSAS (es lo que queda después del evento, no la
+          masterclass puntual), así que ese es el segundo link, apuntando
+          directo al curso; el evento presencial queda como tercer link. */}
       <nav className="flex items-center justify-center gap-6 sm:gap-10 px-6 py-5 bg-white border-b border-gold-light/30 text-sm sm:text-base">
         <Link href="/" className="text-foreground/70 hover:text-gold transition-colors">
           Home
         </Link>
-        <a href="#programas" className="text-foreground/70 hover:text-gold transition-colors">
-          Mis programas
-        </a>
+        <Link
+          href="/cursos/metodologia-poderosa"
+          className="text-foreground/70 hover:text-gold transition-colors"
+        >
+          Quiero ser parte de PODEROSAS
+        </Link>
         <Link
           href="/evento#entradas"
           className="text-foreground/70 hover:text-gold transition-colors"
         >
-          Quiero asistir al evento
+          Eventos presenciales
         </Link>
       </nav>
 
