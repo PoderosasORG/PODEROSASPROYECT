@@ -520,6 +520,78 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
+        {/* 5.6. Grid de resultados — inspirado en el grid de íconos de
+            referencia (Academia MAV): íconos simples + frase corta, sin
+            fotos, solo para darle ritmo visual a los resultados que
+            promete la metodología. */}
+        <section className="px-6 py-14">
+          <div className="max-w-4xl mx-auto">
+            <p className="text-center text-sm uppercase tracking-wide text-gold font-medium mb-10">
+              Esta metodología te acompaña a
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-8">
+              {[
+                {
+                  icon: (
+                    <path d="M12 21s-7.5-4.5-9.5-9C1 8.5 2.5 5 6 5c2 0 3.5 1.2 4 2.5.5-1.3 2-2.5 4-2.5 3.5 0 5 3.5 3.5 7-2 4.5-9.5 9-9.5 9z" />
+                  ),
+                  text: "Fortalecer tu autoestima y la seguridad en ti misma",
+                },
+                {
+                  icon: <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 5v5l3 3" />,
+                  text: "Organizar tu tiempo y tus prioridades",
+                },
+                {
+                  icon: (
+                    <path d="M12 2l2.5 6.5L21 9l-5 4.5L17.5 21 12 17l-5.5 4L8 13.5 3 9l6.5-.5z" />
+                  ),
+                  text: "Desarrollar tu marca personal y tu potencial",
+                },
+                {
+                  icon: <path d="M20.8 4.6a5 5 0 00-7.1 0L12 6.3l-1.7-1.7a5 5 0 10-7.1 7.1L12 20l8.8-8.3a5 5 0 000-7.1z" />,
+                  text: "Construir relaciones de pareja más sanas",
+                },
+                {
+                  icon: (
+                    <path d="M12 3v3m0 12v3m9-9h-3M6 12H3m14.5-6.5l-2 2M9.5 14.5l-2 2m9 0l-2-2M9.5 9.5l-2-2" />
+                  ),
+                  text: "Trabajar en tus hábitos y tu bienestar",
+                },
+                {
+                  icon: <path d="M3 17l5-5 4 4 8-8M15 7h5v5" />,
+                  text: "Pasar de tener ideas a construir un plan de acción",
+                },
+              ].map((item) => (
+                <div key={item.text} className="flex flex-col items-center text-center gap-3 px-4">
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth={1.5}
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    className="w-8 h-8 text-gold"
+                  >
+                    {item.icon}
+                  </svg>
+                  <p className="text-sm text-foreground/80 max-w-[220px]">{item.text}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 5.7. Banda de frase fuerte — inspirada en la banda de color
+            sólido de referencia (Academia MAV), adaptada a nuestra propia
+            paleta e identidad, sin fotos. */}
+        <section className="bg-foreground px-6 py-16 text-center">
+          <p className="font-serif text-2xl sm:text-4xl text-white max-w-2xl mx-auto leading-snug">
+            No tienes que convertirte en otra mujer.
+            <br />
+            Necesitas aprender a construir desde la mujer que eres.
+          </p>
+        </section>
+
         {/* 6. Nuestras PODEROSAS — las cifras de seguidores son las reales
             de cada cuenta de Instagram (verificadas directamente en
             Instagram, no inventadas), pedidas explícitamente por Shei como
