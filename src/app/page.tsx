@@ -5,6 +5,7 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { IntroVideoCard } from "@/components/IntroVideoCard";
 import { createClient } from "@/lib/supabase/server";
 import { stripHtml } from "@/lib/panel/sanitize";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 // Video de presentación de las tres, pedido por la usuaria para que salga
 // debajo del menú de accesos rápidos — subido a Supabase Storage (bucket
@@ -332,7 +333,8 @@ export default async function Home() {
                 <br />
                 PODEROSAS
               </p>
-              <p className="text-xs sm:text-lg text-white/70 mt-2">21 de noviembre · Bogotá</p>
+              <p className="text-xs sm:text-lg text-white/80 mt-2">2026-2027 · primera generación</p>
+              <p className="text-xs sm:text-lg text-white/70 mt-1">21 de noviembre · Bogotá</p>
               <p className="font-serif text-xl sm:text-3xl text-gold-light tracking-wide mt-3">
                 SOLD OUT
               </p>
@@ -354,7 +356,7 @@ export default async function Home() {
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src="/images/evento/foto-1.jpg"
-                alt="Masterclass presencial PODEROSAS"
+                alt={EVENTO_PRESENCIAL_NOMBRE}
                 className="block w-full h-full object-cover"
               />
             )}
@@ -368,7 +370,7 @@ export default async function Home() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src="/images/evento/foto-2.jpg"
-                  alt="Masterclass presencial PODEROSAS"
+                  alt={EVENTO_PRESENCIAL_NOMBRE}
                   className="block w-full h-full object-cover"
                 />
               )}
@@ -378,7 +380,7 @@ export default async function Home() {
                 // eslint-disable-next-line @next/next/no-img-element
                 <img
                   src="/images/evento/foto-3.jpg"
-                  alt="Masterclass presencial PODEROSAS"
+                  alt={EVENTO_PRESENCIAL_NOMBRE}
                   className="block w-full h-full object-cover"
                 />
               )}
@@ -390,7 +392,7 @@ export default async function Home() {
               Tu entrada incluye
             </p>
             <ul className="flex flex-col gap-1.5 sm:gap-4 text-white/80 text-[11px] leading-snug sm:text-2xl lg:text-3xl">
-              <li>Acceso presencial a la Masterclass PODEROSAS 2026</li>
+              <li>Acceso presencial al {EVENTO_PRESENCIAL_NOMBRE}</li>
               <li>Soda italiana de bienvenida</li>
               <li>Coffee break y snacks</li>
               <li>Materiales de trabajo para realizar ejercicios</li>

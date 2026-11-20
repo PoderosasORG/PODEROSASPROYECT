@@ -1,9 +1,10 @@
 import "server-only";
 import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
 import QRCode from "qrcode";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 const EVENT_LINES = {
-  title: "MASTERCLASS PRESENCIAL DE PODEROSAS",
+  title: EVENTO_PRESENCIAL_NOMBRE.toUpperCase(),
   date: "Sábado, 21 de noviembre de 2026",
   time: "9:00 a. m. a 1:00 p. m.",
   place: "Edificio Emprendu",
@@ -38,8 +39,22 @@ export async function generateTicketPdf(params: { buyerName: string; ticketId: s
   page.drawText(`Entrada de ${buyerName}`, { x: 24, y, size: 13, font: sans, color: dark });
   y -= 28;
 
-  page.drawText(EVENT_LINES.title, { x: 24, y, size: 11, font: serif, color: gold });
-  y -= 20;
+  // El nombre oficial del evento es largo: se parte en varias líneas
+  // para que no se salga del ancho de la boleta (360 − 2×24 px).
+  const titleLines: string[] = [];
+  for (const word of EVENT_LINES.title.split(" ")) {
+    const last = titleLines[titleLines.length - 1];
+    if (last && serif.widthOfTextAtSize(`${last} ${word}`, 11) <= 312) {
+      titleLines[titleLines.length - 1] = `${last} ${word}`;
+    } else {
+      titleLines.push(word);
+    }
+  }
+  for (const line of titleLines) {
+    page.drawText(line, { x: 24, y, size: 11, font: serif, color: gold });
+    y -= 14;
+  }
+  y -= 6;
   for (const line of [
     EVENT_LINES.date,
     EVENT_LINES.time,

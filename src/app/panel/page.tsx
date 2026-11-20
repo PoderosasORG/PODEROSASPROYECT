@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { LogoutButton } from "@/components/LogoutButton";
 import { AvatarUploadField } from "@/components/AvatarUploadField";
 import { ProductCard } from "@/components/panel/ProductCard";
+import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 
 const SUPPORT_EMAIL = "katysheicomunicacion@gmail.com";
 
@@ -170,7 +171,7 @@ export default async function PanelPage() {
             href="/evento"
             image="/images/evento/foto-1.jpg"
             kicker="Evento presencial"
-            title="Masterclass PODEROSAS 2026"
+            title={EVENTO_PRESENCIAL_NOMBRE}
             status="21 de noviembre · Bogotá"
             cta="Ver evento"
           />
