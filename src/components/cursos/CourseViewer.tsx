@@ -73,6 +73,22 @@ export function CourseViewer({
         {/* Columna derecha: esquema completo del curso, con check de lo ya
             visto y Ver/Iniciar para entrar a cada clase. */}
         <aside className="w-full lg:w-80 shrink-0 flex flex-col gap-4">
+          {!nextModule && orderedModules.length > 0 && (
+            <div className="rounded-xl border border-gold bg-gold/10 p-4 flex flex-col gap-2 text-center">
+              <p className="text-sm font-medium text-foreground">
+                ¡Completaste todos los módulos! 🎉
+              </p>
+              <a
+                href={`/api/certificado/${productId}/pdf`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="self-center rounded-full bg-gold px-4 py-1.5 text-white text-xs font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+              >
+                Descargar mi certificado
+              </a>
+            </div>
+          )}
+
           {nextModule && (
             <div className="rounded-xl border border-gold-light/60 bg-gold-light/15 p-3 flex flex-col gap-2">
               <p className="text-[11px] uppercase tracking-wide text-foreground/50 font-medium">
