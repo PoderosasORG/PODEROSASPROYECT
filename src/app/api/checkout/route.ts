@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
+import { effectivePriceCents } from "@/lib/metodologiaPoderosasLanzamiento";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -78,6 +79,13 @@ export async function POST(req: NextRequest) {
     );
   }
 
+  // Metodología PODEROSAS tiene precio de lanzamiento por tiempo limitado
+  // (ver metodologiaPoderosasLanzamiento.ts) — para cualquier otro producto,
+  // esto devuelve product.price_cents sin cambios. Se calcula en el
+  // servidor, con la hora del servidor: el contador que ve la compradora
+  // es solo visual, nunca la fuente de verdad del precio.
+  const priceCents = effectivePriceCents(product.id, product.price_cents);
+
   const orderId = crypto.randomUUID();
   // Logueado: inserta con el cliente del usuario (RLS exige
   // auth.uid() = buyer_id). Invitado: sin sesión no hay auth.uid(), así
@@ -90,7 +98,7 @@ export async function POST(req: NextRequest) {
     buyer_email: user ? (user.email ?? null) : buyerEmail,
     product_id: product.id,
     creator_id: creator.id,
-    amount_cents: product.price_cents,
+    amount_cents: priceCents,
     currency: product.currency,
     status: "pending",
   });
@@ -100,13 +108,13 @@ export async function POST(req: NextRequest) {
   }
 
   const reference = orderId;
-  const signatureString = `${reference}${product.price_cents}${product.currency}${secretRow.wompi_integrity_secret}`;
+  const signatureString = `${reference}${priceCents}${product.currency}${secretRow.wompi_integrity_secret}`;
   const signature = crypto.createHash("sha256").update(signatureString).digest("hex");
 
   const params = new URLSearchParams({
     "public-key": creator.wompi_public_key,
     currency: product.currency,
-    "amount-in-cents": String(product.price_cents),
+    "amount-in-cents": String(priceCents),
     reference,
     "signature:integrity": signature,
   });

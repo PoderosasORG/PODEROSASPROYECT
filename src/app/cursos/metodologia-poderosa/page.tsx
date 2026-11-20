@@ -6,6 +6,13 @@ import { ProfileCard } from "@/components/ProfileCard";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { WaitlistForm } from "@/components/WaitlistForm";
+import { LaunchCountdown } from "@/components/cursos/LaunchCountdown";
+import {
+  LAUNCH_DEADLINE,
+  METODOLOGIA_PODEROSAS_PRODUCT_ID,
+  effectivePriceCents,
+  isLaunchPriceActive,
+} from "@/lib/metodologiaPoderosasLanzamiento";
 
 // Lanzamiento próximo: el curso aún no está a la venta. En true, la página
 // muestra el contenido y la lista de espera, pero oculta precio y botón de
@@ -99,7 +106,11 @@ export default async function MetodologiaPoderosaPage() {
       };
     });
 
-    const priceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
+    const isMetodologiaPoderosas = product.id === METODOLOGIA_PODEROSAS_PRODUCT_ID;
+    const launchActive = isMetodologiaPoderosas && isLaunchPriceActive();
+    const priceCents = effectivePriceCents(product.id, product.price_cents);
+    const priceLabel = `$${Math.round(priceCents / 100).toLocaleString("es-CO")} COP`;
+    const regularPriceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
 
     const problemas = [
       "Sientes que necesitas un cambio, pero no logras identificar qué es lo que realmente quieres.",
@@ -200,7 +211,11 @@ export default async function MetodologiaPoderosaPage() {
       },
       {
         q: "¿Cuánto tiempo tengo acceso al contenido?",
-        a: "El acceso es de por vida. Pagas una sola vez y el curso queda asociado a tu cuenta para siempre.",
+        a: "Tu acceso dura 6 meses desde el día en que se aprueba tu pago. Cuando esté por vencerse, te avisamos para que renueves y sigas teniendo acceso a la metodología, los encuentros y la comunidad.",
+      },
+      {
+        q: "¿Por qué el precio cambia después del sábado?",
+        a: "$397.000 es el precio especial de lanzamiento, válido solo hasta el sábado 21 de noviembre a las 11:59 p.m. Después de esa fecha, el precio regular es de $497.000.",
       },
       {
         q: "¿Qué materiales recibiré?",
@@ -235,7 +250,7 @@ export default async function MetodologiaPoderosaPage() {
 
             <div className="flex flex-col gap-4">
               <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-                Curso virtual · Metodología Poderosa
+                Metodología PODEROSAS 2026–2027
                 {COURSE_COMING_SOON && " · Próximamente"}
               </span>
               <h1 className="font-serif text-3xl sm:text-4xl leading-tight">
@@ -245,7 +260,22 @@ export default async function MetodologiaPoderosaPage() {
               {COURSE_COMING_SOON ? (
                 <p className="font-serif text-2xl text-foreground">Próximamente</p>
               ) : (
-                <p className="font-serif text-3xl text-foreground">{priceLabel}</p>
+                <div className="flex flex-col gap-1">
+                  {launchActive && (
+                    <span className="text-sm text-foreground/40 line-through">{regularPriceLabel}</span>
+                  )}
+                  <p className="font-serif text-3xl text-foreground">{priceLabel}</p>
+                  {launchActive ? (
+                    <>
+                      <p className="text-xs text-gold font-medium">
+                        Precio de lanzamiento — válido hasta el sábado 21 de nov., 11:59 p.m.
+                      </p>
+                      <LaunchCountdown deadlineIso={LAUNCH_DEADLINE.toISOString()} />
+                    </>
+                  ) : isMetodologiaPoderosas ? (
+                    <p className="text-xs text-foreground/50">Precio regular</p>
+                  ) : null}
+                </div>
               )}
 
               {COURSE_COMING_SOON ? (
@@ -401,6 +431,32 @@ export default async function MetodologiaPoderosaPage() {
           </div>
         </section>
 
+        {/* 5.5. Qué incluye tu acceso — PENDIENTE: Shei va a ajustar esta
+            lista. Contenido provisional mientras lo confirma. */}
+        <section className="px-6 py-14 bg-white">
+          <div className="max-w-xl mx-auto text-center flex flex-col gap-6">
+            <h2 className="font-serif text-2xl sm:text-3xl text-foreground">
+              Seis meses de acompañamiento, no solo un curso
+            </h2>
+            <ul className="flex flex-col gap-3 text-left mx-auto max-w-md">
+              {[
+                "Acceso por 6 meses a los 3 módulos de la Metodología (y a lo que se vaya actualizando durante ese tiempo).",
+                "2 encuentros en vivo al mes con Kat, Shei y Luz.",
+                "Comunidad privada de WhatsApp.",
+                "3 masterclasses especiales de regalo: marca personal y redes, amor propio y relaciones conscientes, seguridad y liderazgo.",
+                "Reto PODEROSA de 30 días.",
+                "Ebook \"50 acuerdos para fortalecer la relación de pareja\".",
+                "Cartillas y ejercicios descargables de cada módulo.",
+              ].map((item) => (
+                <li key={item} className="flex gap-3 text-sm text-foreground/80 leading-relaxed">
+                  <span className="text-gold shrink-0">—</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </section>
+
         {/* 6. Nuestras PODEROSAS */}
         <section className="px-6 py-14 bg-white">
           <div className="max-w-4xl mx-auto flex flex-col gap-10">
@@ -485,9 +541,23 @@ export default async function MetodologiaPoderosaPage() {
               <>
                 <div className="text-center border-t border-gold-light/30 pt-8">
                   <p className="text-xs uppercase tracking-wide text-gold font-medium">Tu inversión</p>
+                  {launchActive && (
+                    <p className="text-sm text-foreground/40 line-through mt-1">{regularPriceLabel}</p>
+                  )}
                   <p className="font-serif text-5xl text-foreground mt-1">{priceLabel}</p>
+                  {launchActive ? (
+                    <>
+                      <p className="text-sm text-gold font-medium mt-2">
+                        Precio válido hasta el sábado 21 de nov., 11:59 p.m.
+                      </p>
+                      <div className="mt-1">
+                        <LaunchCountdown deadlineIso={LAUNCH_DEADLINE.toISOString()} />
+                      </div>
+                    </>
+                  ) : null}
                   <p className="text-sm text-foreground/60 mt-2">
-                    Un único pago. Acceso de por vida. Sin mensualidades ni suscripciones.
+                    Acceso por 6 meses. Un solo pago — no es una suscripción que se cobre sola; al
+                    vencerse, te avisamos para renovar.
                   </p>
                 </div>
 
@@ -543,7 +613,9 @@ export default async function MetodologiaPoderosaPage() {
             <>
               <div>
                 <p className="font-serif text-lg text-foreground leading-none">{priceLabel}</p>
-                <p className="text-[11px] text-foreground/50">Acceso inmediato</p>
+                <p className="text-[11px] text-foreground/50">
+                  {launchActive ? "Precio de lanzamiento · hasta el sábado 11:59 p.m." : "Acceso por 6 meses"}
+                </p>
               </div>
               <BuyButton
                 productId={product.id}
