@@ -4,6 +4,7 @@ import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { effectivePriceCents } from "@/lib/metodologiaPoderosasLanzamiento";
+import { originFromCookie } from "@/lib/origin";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -101,6 +102,7 @@ export async function POST(req: NextRequest) {
     amount_cents: priceCents,
     currency: product.currency,
     status: "pending",
+    origin: originFromCookie(req),
   });
 
   if (orderError) {
@@ -117,6 +119,9 @@ export async function POST(req: NextRequest) {
     "amount-in-cents": String(priceCents),
     reference,
     "signature:integrity": signature,
+    // Wompi pide dirección, ciudad y teléfono (para el CRM de /admin);
+    // llegan en transaction.shipping_address al webhook.
+    "collect-shipping": "true",
   });
 
   // El CDN de Wompi rechaza (403) checkouts cuyo redirect-url apunta a

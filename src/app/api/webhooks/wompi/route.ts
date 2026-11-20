@@ -4,6 +4,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTicketEmail } from "@/lib/sendTicketEmail";
 import { sendCourseEmail } from "@/lib/sendCourseEmail";
 import { sendReceiptEmail } from "@/lib/sendReceiptEmail";
+import { wompiCrmFields } from "@/lib/admin/wompiCrm";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -111,6 +112,14 @@ export async function POST(req: NextRequest) {
       ...(accessExpiresAt ? { access_expires_at: accessExpiresAt } : {}),
     })
     .eq("id", order.id);
+
+  // Datos de CRM/finanzas para /admin. Va en un update aparte para que,
+  // si algo falla aquí, no afecte la aprobación del pago de arriba.
+  if (justApproved) {
+    const crm = wompiCrmFields(transaction, order.amount_cents);
+    const { error: crmError } = await admin.from("orders").update(crm).eq("id", order.id);
+    if (crmError) console.error("[webhook] no se guardaron los datos de CRM:", crmError.message);
+  }
 
   // Solo generamos la boleta la primera vez que la orden queda aprobada
   // (Wompi puede reenviar el mismo evento más de una vez).

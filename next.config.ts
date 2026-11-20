@@ -19,6 +19,11 @@ const nextConfig: NextConfig = {
     staleTimes: {
       dynamic: 0,
     },
+    // Facturas que se suben en /admin/gastos (PDF o foto). Vercel corta
+    // los cuerpos de más de 4,5 MB, así que 4 MB deja margen.
+    serverActions: {
+      bodySizeLimit: "4mb",
+    },
   },
 };
 

@@ -41,8 +41,16 @@ export default async function PanelPage() {
     .eq("buyer_id", user.id)
     .eq("status", "approved");
 
+  // Admins de Poderosas (tabla admin_members): acceso al panel interno.
+  const { data: adminMember } = await supabase
+    .from("admin_members")
+    .select("user_id")
+    .eq("user_id", user.id)
+    .maybeSingle();
+
   const actions = creator
     ? [
+        ...(adminMember ? [{ href: "/admin", label: "Panel interno (finanzas)", primary: false }] : []),
         { href: "/panel/subir", label: "Subir contenido", primary: true },
         { href: "/panel/contenido", label: "Ver mi contenido", primary: false },
         { href: "/panel/personalizar", label: "Personalizar mi panel", primary: false },
