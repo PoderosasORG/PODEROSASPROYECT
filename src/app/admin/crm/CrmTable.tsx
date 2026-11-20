@@ -23,20 +23,15 @@ export type Customer = {
   isTest: boolean;
 };
 
-type TextKey = "name" | "email" | "phone" | "address" | "place" | "origin" | "products";
-type SortKey = "name" | "email" | "lastDate" | "count" | "total" | "place" | "origin" | "payment";
+type TextKey = "name" | "email" | "phone" | "address" | "city" | "origin" | "products";
+type SortKey = "name" | "email" | "lastDate" | "count" | "total" | "city" | "country" | "origin" | "payment";
 
 /** Minúsculas y sin tildes: "Peréz" encuentra "perez". */
 function norm(v: string) {
-  return v.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
-}
-
-function place(c: Customer) {
-  return [c.city, c.country].filter(Boolean).join(", ");
+  return v.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 }
 
 function textValue(c: Customer, k: TextKey) {
-  if (k === "place") return place(c);
   if (k === "products") return `${c.products.join(" ")} ${c.accounts.join(" ")}`;
   return c[k];
 }
@@ -51,7 +46,7 @@ const EMPTY_TEXT: Record<TextKey, string> = {
   email: "",
   phone: "",
   address: "",
-  place: "",
+  city: "",
   origin: "",
   products: "",
 };
@@ -63,6 +58,7 @@ const filterInput =
 export function CrmTable({ customers }: { customers: Customer[] }) {
   const [text, setText] = useState(EMPTY_TEXT);
   const [payment, setPayment] = useState("");
+  const [country, setCountry] = useState("");
   const [coupon, setCoupon] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -71,6 +67,10 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
   const [sort, setSort] = useState<{ key: SortKey; dir: 1 | -1 }>({ key: "lastDate", dir: -1 });
 
   const payments = useMemo(() => [...new Set(customers.map((c) => c.payment))].sort(), [customers]);
+  const countries = useMemo(
+    () => [...new Set(customers.map((c) => c.country).filter(Boolean))].sort((a, b) => a.localeCompare(b, "es")),
+    [customers],
+  );
 
   const rows = useMemo(() => {
     const min = Number(minCount) || 0;
@@ -81,6 +81,8 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
         if (q && !norm(textValue(c, k)).includes(q)) return false;
       }
       if (payment && c.payment !== payment) return false;
+      if (country === "__none" && c.country) return false;
+      if (country && country !== "__none" && c.country !== country) return false;
       if (coupon === "si" && !c.coupon) return false;
       if (coupon === "no" && c.coupon) return false;
       const day = dayBogota(c.lastDate);
@@ -97,21 +99,20 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
           return c.count;
         case "total":
           return c.total;
-        case "place":
-          return norm(place(c));
         default:
           return norm(c[sort.key]);
       }
     };
     return [...filtered].sort((a, b) => (val(a) > val(b) ? sort.dir : val(a) < val(b) ? -sort.dir : 0));
-  }, [customers, text, payment, coupon, from, to, minCount, hideTests, sort]);
+  }, [customers, text, payment, country, coupon, from, to, minCount, hideTests, sort]);
 
   const active =
-    Object.values(text).some(Boolean) || payment || coupon || from || to || minCount ? true : false;
+    Object.values(text).some(Boolean) || payment || country || coupon || from || to || minCount ? true : false;
 
   function clearAll() {
     setText(EMPTY_TEXT);
     setPayment("");
+    setCountry("");
     setCoupon("");
     setFrom("");
     setTo("");
@@ -181,14 +182,15 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
       </div>
 
       <div className="rounded-2xl border border-gold-light/60 bg-white overflow-x-auto">
-        <table className="w-full text-sm min-w-[1250px]">
+        <table className="w-full text-sm min-w-[1350px]">
           <thead className="text-left text-xs text-foreground/50 align-top">
             <tr>
               <th className={`${cell} pl-4`}>{header("Nombre completo", "name")}</th>
               <th className={cell}>{header("Correo", "email")}</th>
               <th className={cell}>{header("Teléfono")}</th>
               <th className={cell}>{header("Dirección")}</th>
-              <th className={cell}>{header("Ciudad / País", "place")}</th>
+              <th className={cell}>{header("Ciudad", "city")}</th>
+              <th className={cell}>{header("País", "country")}</th>
               <th className={cell}>{header("Origen", "origin")}</th>
               <th className={cell}>{header("Método de pago", "payment")}</th>
               <th className={cell}>{header("Cupón")}</th>
@@ -202,7 +204,18 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
               <th className={cell}>{textFilter("email", "Correo")}</th>
               <th className={cell}>{textFilter("phone", "Teléfono")}</th>
               <th className={cell}>{textFilter("address", "Dirección")}</th>
-              <th className={cell}>{textFilter("place", "Ciudad o país")}</th>
+              <th className={cell}>{textFilter("city", "Ciudad")}</th>
+              <th className={cell}>
+                <select value={country} onChange={(e) => setCountry(e.target.value)} className={filterInput}>
+                  <option value="">Todos</option>
+                  {countries.map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
+                  <option value="__none">Sin país</option>
+                </select>
+              </th>
               <th className={cell}>{textFilter("origin", "Origen")}</th>
               <th className={cell}>
                 <select value={payment} onChange={(e) => setPayment(e.target.value)} className={filterInput}>
@@ -251,7 +264,8 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
                 <td className={cell}>{c.email || "—"}</td>
                 <td className={`${cell} whitespace-nowrap`}>{c.phone || "—"}</td>
                 <td className={cell}>{c.address || "—"}</td>
-                <td className={cell}>{place(c) || "—"}</td>
+                <td className={cell}>{c.city || "—"}</td>
+                <td className={cell}>{c.country || "—"}</td>
                 <td className={cell}>{c.origin || "—"}</td>
                 <td className={cell}>{c.payment}</td>
                 <td className={cell}>{c.coupon || "No"}</td>
