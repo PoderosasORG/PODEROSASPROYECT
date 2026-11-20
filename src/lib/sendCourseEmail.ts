@@ -13,10 +13,14 @@ export function buildCourseEmailHtml(params: {
   courseTitle: string;
   courseUrl: string;
   setPasswordUrl?: string;
+  accessDurationMonths?: number;
 }) {
   const trimmedName = params.buyerName.trim();
   const firstName = trimmedName ? trimmedName.split(/\s+/)[0] : "";
   const greeting = firstName ? `Hola, ${firstName}.` : "Hola.";
+  const accessLine = params.accessDurationMonths
+    ? `Tu pago quedó confirmado y ya tienes acceso completo por ${params.accessDurationMonths} meses a todo el contenido. Antes de que se venza, te avisaremos para que renueves.`
+    : "Tu pago quedó confirmado y ya tienes acceso completo, de por vida, a todo el contenido.";
 
   const accountBlock = params.setPasswordUrl
     ? `
@@ -75,7 +79,7 @@ export function buildCourseEmailHtml(params: {
                   ${greeting} ¡Gracias por confiar en ${params.courseTitle}!
                 </p>
                 <p style="margin:0 0 14px; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
-                  Tu pago quedó confirmado y ya tienes acceso completo, de por vida, a todo el contenido.
+                  ${accessLine}
                 </p>
                 <p style="margin:0; font-family: Arial, Helvetica, sans-serif; font-size: 15px; line-height: 1.7; color:#3a2e2e;">
                   Nos alegra mucho acompañarte en este proceso.
@@ -160,6 +164,7 @@ export async function sendCourseEmail(params: {
   courseTitle: string;
   courseUrl: string;
   setPasswordUrl?: string;
+  accessDurationMonths?: number;
 }) {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) {

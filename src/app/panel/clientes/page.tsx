@@ -31,7 +31,7 @@ export default async function ClientesPage() {
   const { data: orders } = await supabase
     .from("orders")
     .select(
-      "id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, payment_method, products(title, type)",
+      "id, buyer_name, buyer_email, buyer_id, amount_cents, currency, status, created_at, payment_method, products(title, type, access_duration_months)",
     )
     .eq("creator_id", creator.id)
     .eq("status", "approved")
@@ -56,6 +56,7 @@ export default async function ClientesPage() {
       amount: formatPrice(o.amount_cents, o.currency),
       date: formatDate(o.created_at),
       isDirectPayment: o.payment_method === "nequi_directo",
+      hasReceipt: !!product?.access_duration_months,
     };
   });
 
@@ -145,6 +146,7 @@ export default async function ClientesPage() {
                 <th className="p-3">Producto</th>
                 <th className="p-3">Monto</th>
                 <th className="p-3">Fecha</th>
+                <th className="p-3"></th>
               </tr>
             </thead>
             <tbody>
@@ -164,6 +166,18 @@ export default async function ClientesPage() {
                   <td className="p-3">{r.product}</td>
                   <td className="p-3">{r.amount}</td>
                   <td className="p-3">{r.date}</td>
+                  <td className="p-3">
+                    {r.hasReceipt && (
+                      <a
+                        href={`/api/comprobante/${r.id}/pdf`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs text-gold hover:underline whitespace-nowrap"
+                      >
+                        Ver comprobante
+                      </a>
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>

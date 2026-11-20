@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendTicketEmail } from "@/lib/sendTicketEmail";
 import { sendCourseEmail } from "@/lib/sendCourseEmail";
+import { sendReceiptEmail } from "@/lib/sendReceiptEmail";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -41,7 +42,7 @@ export async function POST(req: NextRequest) {
   const { data: order } = await admin
     .from("orders")
     .select(
-      "id, creator_id, product_id, buyer_id, buyer_name, buyer_email, status, amount_cents, products(id, type, title, billing_interval)",
+      "id, creator_id, product_id, buyer_id, buyer_name, buyer_email, status, amount_cents, currency, products(id, type, title, billing_interval, access_duration_months)",
     )
     .eq("id", reference)
     .maybeSingle();
@@ -88,16 +89,28 @@ export async function POST(req: NextRequest) {
     newStatus = "error";
   }
 
+  const product = Array.isArray(order.products) ? order.products[0] : order.products;
+  const justApproved = newStatus === "approved" && !wasAlreadyApproved;
+
+  // Productos con acceso por tiempo limitado (ej. Metodología PODEROSAS,
+  // 6 meses): la fecha de vencimiento se fija una sola vez, la primera
+  // vez que ESTA orden queda aprobada — no se recalcula si Wompi
+  // reenvía el mismo evento después.
+  let accessExpiresAt: string | undefined;
+  if (justApproved && product?.access_duration_months) {
+    const expiry = new Date();
+    expiry.setUTCMonth(expiry.getUTCMonth() + product.access_duration_months);
+    accessExpiresAt = expiry.toISOString();
+  }
+
   await admin
     .from("orders")
     .update({
       status: newStatus,
       wompi_transaction_id: transaction.id,
+      ...(accessExpiresAt ? { access_expires_at: accessExpiresAt } : {}),
     })
     .eq("id", order.id);
-
-  const product = Array.isArray(order.products) ? order.products[0] : order.products;
-  const justApproved = newStatus === "approved" && !wasAlreadyApproved;
 
   // Solo generamos la boleta la primera vez que la orden queda aprobada
   // (Wompi puede reenviar el mismo evento más de una vez).
@@ -187,10 +200,30 @@ export async function POST(req: NextRequest) {
           courseTitle: product.title,
           courseUrl: `${req.nextUrl.origin}/cursos/metodologia-poderosa`,
           setPasswordUrl,
+          accessDurationMonths: product.access_duration_months ?? undefined,
         });
       } catch (err) {
         console.error("No se pudo enviar el correo de confirmación del curso:", err);
       }
+    }
+  }
+
+  // Comprobante de venta para Shei — solo para productos con acceso por
+  // tiempo limitado (ej. Metodología PODEROSAS), no para cada venta del
+  // sitio: es lo que pidió para organizar esos ingresos con su contadora.
+  if (justApproved && product?.access_duration_months) {
+    try {
+      await sendReceiptEmail({
+        orderId: order.id,
+        buyerName: order.buyer_name ?? "",
+        buyerEmail: order.buyer_email ?? "",
+        productTitle: product.title,
+        amountCents: order.amount_cents,
+        currency: order.currency,
+        paidAt: new Date(),
+      });
+    } catch (err) {
+      console.error("No se pudo enviar el comprobante de venta a Shei:", err);
     }
   }
 
