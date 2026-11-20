@@ -583,9 +583,19 @@ export default async function MetodologiaPoderosaPage() {
 
         {/* 5.7. Banda de frase fuerte — inspirada en la banda de color
             sólido de referencia (Academia MAV), adaptada a nuestra propia
-            paleta e identidad, sin fotos. */}
-        <section className="bg-foreground px-6 py-16 text-center">
-          <p className="font-serif text-2xl sm:text-4xl text-white max-w-2xl mx-auto leading-snug">
+            paleta e identidad. Fondo: imagen generada por IA (ambientación
+            genérica, no se presenta como foto real de las creadoras ni de
+            compradoras — por eso no hace falta crédito de banco de fotos). */}
+        <section className="relative px-6 py-20 text-center overflow-hidden">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/cursos/banda-frase-fondo.webp"
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-foreground/80" />
+          <p className="relative font-serif text-2xl sm:text-4xl text-white max-w-2xl mx-auto leading-snug">
             No tienes que convertirte en otra mujer.
             <br />
             Necesitas aprender a construir desde la mujer que eres.
