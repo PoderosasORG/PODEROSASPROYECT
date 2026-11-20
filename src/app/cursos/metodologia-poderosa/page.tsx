@@ -281,12 +281,16 @@ export default async function MetodologiaPoderosaPage() {
             de una referencia. El resto de la narrativa de venta sigue
             debajo, en las secciones 2 en adelante. */}
         <section className="px-6 pt-16 pb-10">
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:items-start">
+          {/* Layout centrado (no en columnas lado a lado): la foto de las
+              tres arriba, centrada, y todo lo demás debajo centrado —
+              pedido explícito de Shei para que se vea equilibrado en
+              computador, no repartido a los extremos. */}
+          <div className="max-w-2xl mx-auto flex flex-col items-center gap-8 text-center">
             {/* La foto real es panorámica (Luz, Shei y Kat una al lado de
                 la otra) — se respeta su proporción real (no se recorta a
                 cuadrado) para que las tres queden visibles siempre, tanto
                 en celular como en computador. */}
-            <div className="rounded-2xl overflow-hidden aspect-[8/3]">
+            <div className="w-full rounded-2xl overflow-hidden aspect-[8/3]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/creators/landing-hero.webp"
@@ -295,7 +299,7 @@ export default async function MetodologiaPoderosaPage() {
               />
             </div>
 
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center gap-4">
               <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
                 Metodología PODEROSAS 2026–2027
                 {COURSE_COMING_SOON && " · Próximamente"}
@@ -337,8 +341,8 @@ export default async function MetodologiaPoderosaPage() {
                 />
               )}
 
-              <div className="border-t border-gold-light/30 pt-4 flex flex-col gap-2.5">
-                <p className="text-xs uppercase tracking-wide text-gold font-medium">
+              <div className="w-full max-w-md border-t border-gold-light/30 pt-4 flex flex-col gap-2.5 text-left">
+                <p className="text-xs uppercase tracking-wide text-gold font-medium text-center">
                   Lo que recibes
                 </p>
                 {coreItems.map((item) => (
