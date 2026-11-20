@@ -458,7 +458,7 @@ export default async function MetodologiaPoderosaPage() {
             <ul className="flex flex-col gap-3 text-left mx-auto max-w-md">
               {[
                 "Acceso por 6 meses a la Metodología PODEROSAS (y a lo que se vaya actualizando durante ese tiempo).",
-                "6 clases en vivo: autoestima y seguridad personal, marca personal, relaciones de pareja, productividad y organización del tiempo, hábitos y energía, y liderazgo.",
+                "6 clases en vivo que cubren: marca personal, relaciones de pareja, productividad, organización del tiempo, energía y magnetismo, hábitos, autoestima y liderazgo.",
                 "Acceso a las grabaciones de las 6 clases, disponibles en la plataforma durante tus 6 meses de acceso.",
                 "Comunidad privada de WhatsApp — Amigas PODEROSAS.",
                 "Acompañamiento y soporte durante todo tu proceso.",
