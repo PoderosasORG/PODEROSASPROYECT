@@ -17,7 +17,7 @@ import {
 // Lanzamiento próximo: el curso aún no está a la venta. En true, la página
 // muestra el contenido y la lista de espera, pero oculta precio y botón de
 // compra. Cuando el curso esté listo, cambiar a false para activar la venta.
-const COURSE_COMING_SOON = true;
+const COURSE_COMING_SOON = false;
 
 // Mismo patrón que src/app/page.tsx (home) para las 3 creadoras — se
 // duplica aquí porque esta página necesita las mismas tarjetas, con sus
