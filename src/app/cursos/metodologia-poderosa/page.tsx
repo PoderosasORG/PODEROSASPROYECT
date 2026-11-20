@@ -2,6 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BuyButton } from "@/components/BuyButton";
 import { CourseViewer } from "@/components/cursos/CourseViewer";
+import { AccessOverview } from "@/components/cursos/AccessOverview";
 import { ProfileCard } from "@/components/ProfileCard";
 import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
@@ -18,6 +19,12 @@ import {
 // muestra el contenido y la lista de espera, pero oculta precio y botón de
 // compra. Cuando el curso esté listo, cambiar a false para activar la venta.
 const COURSE_COMING_SOON = false;
+
+// Link de invitación a la comunidad de WhatsApp "Amigas PODEROSAS" — Shei
+// no es administradora del grupo, así que todavía no lo tiene. En cuanto
+// lo consiga, se pega aquí (ej: "https://chat.whatsapp.com/XXXXXXXX") y
+// el botón de unirse aparece solo, sin tocar nada más.
+const WHATSAPP_COMMUNITY_URL: string | null = null;
 
 // Mismo patrón que src/app/page.tsx (home) para las 3 creadoras — se
 // duplica aquí porque esta página necesita las mismas tarjetas, con sus
@@ -838,12 +845,38 @@ export default async function MetodologiaPoderosaPage() {
       ? await supabase.from("module_progress").select("module_id").in("module_id", moduleIds)
       : { data: [] as { module_id: string }[] };
 
+  // Quien compró antes del cierre del lanzamiento recibe 8 clases en vivo
+  // (una por tema); después del cierre, el beneficio son 6. Se toma la
+  // fecha de compra real de esta compradora, no la hora actual.
+  const { data: order } = await supabase
+    .from("orders")
+    .select("created_at")
+    .eq("product_id", product.id)
+    .eq("buyer_id", user!.id)
+    .eq("status", "approved")
+    .order("created_at", { ascending: true })
+    .limit(1)
+    .maybeSingle();
+  const isLaunchBuyer = order ? new Date(order.created_at) < LAUNCH_DEADLINE : false;
+
+  const { data: productFiles } = await supabase
+    .from("product_files")
+    .select("id, file_name, display_name")
+    .eq("product_id", product.id);
+
   return (
-    <CourseViewer
-      categories={categories}
-      modules={modules ?? []}
-      productId={product.id}
-      completedModuleIds={(progressRows ?? []).map((r) => r.module_id)}
-    />
+    <>
+      <AccessOverview
+        isLaunchBuyer={isLaunchBuyer}
+        bonusFiles={(productFiles ?? []).map((f) => ({ id: f.id, name: f.display_name || f.file_name }))}
+        whatsappInviteUrl={WHATSAPP_COMMUNITY_URL}
+      />
+      <CourseViewer
+        categories={categories}
+        modules={modules ?? []}
+        productId={product.id}
+        completedModuleIds={(progressRows ?? []).map((r) => r.module_id)}
+      />
+    </>
   );
 }
