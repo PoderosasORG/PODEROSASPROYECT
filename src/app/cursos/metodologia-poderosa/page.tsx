@@ -175,8 +175,36 @@ export default async function MetodologiaPoderosaPage() {
     // comprarlo, no el atractivo principal — se separan visualmente abajo.
     const coreItems = [
       {
-        title: "Los 3 módulos de la Metodología Poderosa",
-        desc: "Explora las tres etapas del proceso: quién soy, qué quiero y cómo lo logro.",
+        title: "6 meses de acceso a la Metodología PODEROSAS",
+        desc: "Los 3 módulos: quién soy, qué quiero y cómo lo logro — y lo que se vaya actualizando durante ese tiempo.",
+      },
+      {
+        title: "6 clases en vivo",
+        desc: "Marca personal, relaciones de pareja, productividad, organización del tiempo, energía y magnetismo, hábitos, autoestima y liderazgo.",
+      },
+      {
+        title: "Grabaciones de las 6 clases",
+        desc: "Disponibles en la plataforma durante tus 6 meses de acceso, para verlas cuando quieras.",
+      },
+      {
+        title: "Comunidad privada de WhatsApp",
+        desc: "Amigas PODEROSAS: un espacio para acompañarte y acompañar a otras mujeres en el proceso.",
+      },
+      {
+        title: "Acompañamiento y soporte",
+        desc: "No estás sola en tu proceso durante los 6 meses.",
+      },
+      {
+        title: "Certificado de finalización",
+        desc: "Lo obtienes al completar todos los módulos de la metodología.",
+      },
+      {
+        title: "Meditación guiada",
+        desc: "Para activar tu versión más poderosa.",
+      },
+      {
+        title: "Acceso preferencial y preventa a eventos PODEROSAS",
+        desc: "Entras antes que el público general a nuestros próximos eventos presenciales.",
       },
       {
         title: "Clases en video a tu propio ritmo",
@@ -254,7 +282,11 @@ export default async function MetodologiaPoderosaPage() {
             debajo, en las secciones 2 en adelante. */}
         <section className="px-6 pt-16 pb-10">
           <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 md:items-start">
-            <div className="rounded-2xl overflow-hidden aspect-[4/3] md:aspect-square">
+            {/* La foto real es panorámica (Luz, Shei y Kat una al lado de
+                la otra) — se respeta su proporción real (no se recorta a
+                cuadrado) para que las tres queden visibles siempre, tanto
+                en celular como en computador. */}
+            <div className="rounded-2xl overflow-hidden aspect-[8/3]">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src="/images/creators/landing-hero.webp"
@@ -473,10 +505,26 @@ export default async function MetodologiaPoderosaPage() {
                 </li>
               ))}
             </ul>
+            <div className="flex flex-col items-center gap-3 mt-4">
+              {launchActive && (
+                <p className="text-sm text-foreground/40 line-through">{regularPriceLabel}</p>
+              )}
+              <p className="font-serif text-3xl text-foreground">{priceLabel}</p>
+              <a
+                href="#tarjeta-compra"
+                className="rounded-full bg-gold px-8 py-3 text-white text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+              >
+                Quiero ser parte de PODEROSAS
+              </a>
+            </div>
           </div>
         </section>
 
-        {/* 6. Nuestras PODEROSAS */}
+        {/* 6. Nuestras PODEROSAS — las cifras de seguidores son las reales
+            de cada cuenta de Instagram (verificadas directamente en
+            Instagram, no inventadas), pedidas explícitamente por Shei como
+            prueba social de alcance/impacto, no como "alumnas" ni
+            resultados del curso. */}
         <section className="px-6 py-14 bg-white">
           <div className="max-w-4xl mx-auto flex flex-col gap-10">
             <div className="text-center flex flex-col gap-3">
@@ -491,13 +539,43 @@ export default async function MetodologiaPoderosaPage() {
                 experiencias y conocimientos para dar vida a una metodología que integra
                 distintas perspectivas sobre el ser humano.
               </p>
+              <p className="font-serif text-lg text-gold mt-2">
+                Juntas, más de 550.000 mujeres siguen nuestro contenido en Instagram.
+              </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-              {profiles.map((profile) => (
-                <ProfileCard key={profile.slug} {...profile} />
-              ))}
+              {profiles.map((profile) => {
+                const followers: Record<string, string> = { shei: "345K", kat: "184K", luz: "27K" };
+                return (
+                  <div key={profile.slug} className="flex flex-col gap-2">
+                    <ProfileCard {...profile} />
+                    {followers[profile.slug] && (
+                      <p className="text-center text-xs text-foreground/50">
+                        {followers[profile.slug]} en Instagram
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
             </div>
           </div>
+        </section>
+
+        {/* CTA intermedio — repetir precio y botón de compra varias veces a
+            lo largo de la página (pedido explícito de Shei, viendo que
+            páginas de venta de alto rendimiento lo hacen cada 2-3 secciones
+            en vez de solo arriba y en la tarjeta de compra). */}
+        <section className="px-6 py-10 bg-beige-light text-center flex flex-col items-center gap-3">
+          {launchActive && (
+            <p className="text-sm text-foreground/40 line-through">{regularPriceLabel}</p>
+          )}
+          <p className="font-serif text-3xl text-foreground">{priceLabel}</p>
+          <a
+            href="#tarjeta-compra"
+            className="rounded-full bg-gold px-8 py-3 text-white text-sm font-medium hover:bg-gold-light hover:text-foreground transition-colors"
+          >
+            Quiero ser parte de PODEROSAS
+          </a>
         </section>
 
         {/* 7. Tarjeta de compra: presentación editorial de producto premium,
