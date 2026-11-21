@@ -6,6 +6,8 @@ export type InventoryItem = {
   item_category: string | null;
   item: string;
   quantity: number | null;
+  /** Unidades utilizadas en el evento (vacío = por registrar). */
+  quantity_used: number | null;
   unit_cost_cents: number | null;
   total_cents: number | null;
   store: string | null;
@@ -62,4 +64,46 @@ export function resolvePrices(quantity: number | null, unitCents: number | null,
   if (total == null && quantity != null && unit != null) total = Math.round(quantity * unit);
   if (unit == null && quantity && total != null) unit = Math.round(total / quantity);
   return { unit, total };
+}
+
+/** Sobrantes = compradas − utilizadas (null si falta alguno de los dos). */
+export function leftover(i: InventoryItem): number | null {
+  if (i.quantity == null || i.quantity_used == null) return null;
+  return Math.max(0, Number(i.quantity) - Number(i.quantity_used));
+}
+
+export type InventoryChange = {
+  id: number;
+  item_id: string;
+  action: "editado" | "eliminado";
+  changes: Record<string, { antes: unknown; despues: unknown }>;
+  changed_by: string | null;
+  changed_at: string;
+};
+
+export const FIELD_LABELS: Record<string, string> = {
+  item: "Producto",
+  item_category: "Categoría",
+  quantity: "Cantidad",
+  quantity_used: "Utilizadas",
+  unit_cost_cents: "Valor unitario",
+  total_cents: "Valor total",
+  store: "Tienda",
+  status: "Estado",
+  paid: "Pago",
+  is_estimated: "Estimado",
+  purchase_date: "Fecha",
+  bought_by: "Quién lo compró",
+  notes: "Notas",
+};
+
+/** Valor legible para el historial. */
+export function displayValue(field: string, v: unknown): string {
+  if (v == null || v === "") return "vacío";
+  if (field.endsWith("_cents")) {
+    return new Intl.NumberFormat("es-CO", { style: "currency", currency: "COP", maximumFractionDigits: 0 }).format(Number(v) / 100);
+  }
+  if (field === "paid") return v === true ? "pagado" : v === false ? "falta pagar" : "por confirmar";
+  if (field === "is_estimated") return v ? "sí" : "no";
+  return String(v);
 }

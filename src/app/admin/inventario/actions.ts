@@ -56,7 +56,9 @@ function itemFields(form: FormData) {
   const quantityRaw = toNumber(text(form, "quantity"));
   const quantity = quantityRaw && quantityRaw > 0 ? quantityRaw : null;
   const { unit, total } = resolvePrices(quantity, cents(text(form, "unit_cost")), cents(text(form, "total")));
+  const usedRaw = toNumber(text(form, "quantity_used"));
   return {
+    quantity_used: usedRaw,
     item: text(form, "item"),
     item_category: text(form, "item_category"),
     quantity,
@@ -117,15 +119,16 @@ export async function toggleItem(form: FormData) {
             status: "comprado",
             purchase_date: row.purchase_date ?? todayBogota(),
             bought_by: row.bought_by ?? (await adminName(user.id)),
+            updated_by: user.id,
           }
-        : { status: "pendiente" },
+        : { status: "pendiente", updated_by: user.id },
     )
     .eq("id", id);
   back(row.event_name);
 }
 
 export async function updateItem(form: FormData) {
-  await requireAdmin();
+  const { user } = await requireAdmin();
   const id = text(form, "id");
   if (!id) return;
   const admin = createAdminClient();
@@ -135,18 +138,20 @@ export async function updateItem(form: FormData) {
   const { item, ...rest } = itemFields(form);
   await admin
     .from("admin_inventory_items")
-    .update({ ...(item ? { item } : {}), ...rest })
+    .update({ ...(item ? { item } : {}), ...rest, updated_by: user.id })
     .eq("id", id);
   back(row.event_name);
 }
 
 export async function deleteItem(form: FormData) {
-  await requireAdmin();
+  const { user } = await requireAdmin();
   const id = text(form, "id");
   if (!id) return;
   const admin = createAdminClient();
   const { data: row } = await admin.from("admin_inventory_items").select("event_name").eq("id", id).maybeSingle();
   if (!row) return;
+  // Primero se marca quién elimina, para que el historial lo registre.
+  await admin.from("admin_inventory_items").update({ updated_by: user.id }).eq("id", id);
   await admin.from("admin_inventory_items").delete().eq("id", id);
   back(row.event_name);
 }

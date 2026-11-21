@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { csvResponse, isAdminRequest, pesos } from "@/lib/admin/csv";
-import { missingFields, unitCents, type InventoryItem } from "@/lib/admin/inventory";
+import { leftover, missingFields, unitCents, type InventoryItem } from "@/lib/admin/inventory";
 
 export async function GET(req: Request) {
   if (!(await isAdminRequest())) return NextResponse.json({ error: "No autorizado" }, { status: 403 });
@@ -16,6 +16,8 @@ export async function GET(req: Request) {
     i.item_category,
     i.item,
     i.quantity,
+    i.quantity_used,
+    leftover(i),
     pesos(unitCents(i)),
     pesos(i.total_cents),
     i.is_estimated ? "Sí" : "No",
@@ -30,7 +32,7 @@ export async function GET(req: Request) {
 
   return csvResponse(
     `inventario-poderosas-${new Date().toISOString().slice(0, 10)}.csv`,
-    ["Evento", "Categoría", "Producto", "Cantidad", "Valor unitario COP", "Valor total COP", "Estimado", "Tienda", "Estado", "Pago", "Fecha de compra", "Quién lo compró", "Falta", "Notas"],
+    ["Evento", "Categoría", "Producto", "Cantidad comprada", "Utilizadas", "Sobrantes", "Valor unitario COP", "Valor total COP", "Estimado", "Tienda", "Estado", "Pago", "Fecha de compra", "Quién lo compró", "Falta", "Notas"],
     rows,
   );
 }

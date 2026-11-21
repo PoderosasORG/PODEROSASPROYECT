@@ -5,8 +5,12 @@ import { formatCop, formatDate, todayBogota } from "@/lib/admin/format";
 import {
   DEFAULT_ITEM_CATEGORIES,
   EVENT_CATEGORY_LABELS,
+  FIELD_LABELS,
+  displayValue,
+  leftover,
   missingFields,
   unitCents,
+  type InventoryChange,
   type InventoryItem,
 } from "@/lib/admin/inventory";
 import { addItem, copyList, deleteItem, toggleItem, updateItem } from "./actions";
@@ -55,6 +59,7 @@ function ItemFields({ i, buyers }: { i?: Partial<InventoryItem>; buyers: string[
       </label>
       <label className={label}>Tienda / proveedor<input name="store" defaultValue={i?.store ?? ""} list="inv-stores" className={input} placeholder="Dollarcity" /></label>
       <label className={label}>Cantidad<input name="quantity" defaultValue={i?.quantity != null ? String(i.quantity) : ""} inputMode="decimal" className={input} placeholder="Vacío = por confirmar" /></label>
+      <label className={label}>Unidades utilizadas<input name="quantity_used" defaultValue={i?.quantity_used != null ? String(i.quantity_used) : ""} inputMode="decimal" className={input} placeholder="Vacío = por registrar" /></label>
       <label className={label}>Valor unitario (COP)<input name="unit_cost" defaultValue={i?.unit_cost_cents != null ? String(Number(i.unit_cost_cents) / 100) : ""} inputMode="decimal" className={input} placeholder="6.000" /></label>
       <label className={label}>Valor total (COP)<input name="total" defaultValue={i?.total_cents != null ? String(Number(i.total_cents) / 100) : ""} inputMode="decimal" className={input} placeholder="198.000" /></label>
       <label className={label}>Fecha de compra<input type="date" name="purchase_date" defaultValue={i?.purchase_date ?? (i ? "" : todayBogota())} className={input} /></label>
@@ -92,8 +97,9 @@ export default async function AdminInventarioPage({
 
   const memberIds = (members ?? []).map((m) => m.user_id);
   const { data: creators } = memberIds.length
-    ? await admin.from("creators").select("display_name").in("id", memberIds)
-    : { data: [] as { display_name: string }[] };
+    ? await admin.from("creators").select("id, display_name").in("id", memberIds)
+    : { data: [] as { id: string; display_name: string }[] };
+  const adminNames = new Map((creators ?? []).map((c) => [c.id as string, c.display_name as string]));
   const buyers = (creators ?? []).map((c) => c.display_name as string).filter(Boolean);
 
   const all = (items ?? []) as InventoryItem[];
@@ -120,6 +126,19 @@ export default async function AdminInventarioPage({
   for (const e of eventList) byEventCategory.set(e.category, [...(byEventCategory.get(e.category) ?? []), e]);
 
   const rows = current ? all.filter((i) => i.event_name === current.name) : [];
+
+  const { data: historyRows } = current
+    ? await admin
+        .from("admin_inventory_history")
+        .select("id, item_id, action, changes, changed_by, changed_at")
+        .eq("event_name", current.name)
+        .order("changed_at", { ascending: false })
+    : { data: [] };
+  const history = (historyRows ?? []) as InventoryChange[];
+  const historyByItem = new Map<string, InventoryChange[]>();
+  for (const h of history) historyByItem.set(h.item_id, [...(historyByItem.get(h.item_id) ?? []), h]);
+  const deleted = history.filter((h) => h.action === "eliminado");
+  const usageMissing = rows.filter((i) => i.status === "comprado" && i.quantity_used == null).length;
   const bought = rows.filter((i) => i.status === "comprado");
   const pendingPurchase = rows.filter((i) => i.status === "pendiente");
   const confirmed = bought.filter((i) => !i.is_estimated && i.total_cents != null).reduce((s, i) => s + Number(i.total_cents), 0);
@@ -205,7 +224,7 @@ export default async function AdminInventarioPage({
             <div className="rounded-2xl border border-gold-light/60 bg-white p-4">
               <p className="text-xs uppercase tracking-wide text-foreground/50">Productos</p>
               <p className="font-serif text-2xl mt-1">{products}</p>
-              <p className="text-[11px] text-foreground/45">{rows.length} compras registradas · {qty(units)} unidades</p>
+              <p className="text-[11px] text-foreground/45">{rows.length} compras registradas · {qty(units)} unidades compradas · {usageMissing} sin uso registrado</p>
             </div>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
               <p className="text-xs uppercase tracking-wide text-foreground/50">Invertido confirmado</p>
@@ -285,6 +304,7 @@ export default async function AdminInventarioPage({
                       <th className="px-4 py-2 w-10">✓</th>
                       <th className="px-3 py-2">Producto</th>
                       <th className="px-3 py-2 text-right">Cantidad</th>
+                      <th className="px-3 py-2 text-right">Usadas / Sobran</th>
                       <th className="px-3 py-2 text-right">Valor unitario</th>
                       <th className="px-3 py-2 text-right">Valor total</th>
                       <th className="px-3 py-2">Tienda</th>
@@ -322,6 +342,15 @@ export default async function AdminInventarioPage({
                             {i.notes ? <p className="text-xs text-foreground/50 mt-0.5">{i.notes}</p> : null}
                           </td>
                           <td className="px-3 py-2 text-right">{qty(i.quantity) ?? <span className="text-amber-700 text-xs font-medium">Pendiente</span>}</td>
+                          <td className="px-3 py-2 text-right text-xs whitespace-nowrap">
+                            {i.quantity_used == null ? (
+                              <span className="text-foreground/40">Por registrar</span>
+                            ) : (
+                              <>
+                                {qty(i.quantity_used)} / <span className="font-medium">{qty(leftover(i)) ?? "—"}</span>
+                              </>
+                            )}
+                          </td>
                           <td className="px-3 py-2 text-right whitespace-nowrap">{money(unitCents(i), i.is_estimated)}</td>
                           <td className="px-3 py-2 text-right whitespace-nowrap font-medium">{money(i.total_cents, i.is_estimated)}</td>
                           <td className="px-3 py-2">{i.store ?? <span className="text-amber-700 text-xs">Por confirmar</span>}</td>
@@ -350,6 +379,26 @@ export default async function AdminInventarioPage({
                                   <input type="date" name="purchase_date" defaultValue={todayBogota()} className={`${input} w-36`} />
                                   <button className="rounded-full bg-foreground text-white px-3 py-1.5 text-xs">Registrar compra</button>
                                 </form>
+                                {historyByItem.get(i.id)?.length ? (
+                                  <div className="mt-3 border-t border-gold-light/50 pt-2">
+                                    <p className="text-xs font-medium">Historial de cambios</p>
+                                    <ul className="mt-1 max-h-40 overflow-y-auto text-[11px] text-foreground/70 space-y-1">
+                                      {historyByItem.get(i.id)!.map((h) => (
+                                        <li key={h.id}>
+                                          <span className="text-foreground/45">
+                                            {new Date(h.changed_at).toLocaleString("es-CO", { timeZone: "America/Bogota", dateStyle: "medium", timeStyle: "short" })}
+                                            {" · "}
+                                            {h.changed_by ? (adminNames.get(h.changed_by) ?? "Administradora") : "Actualización por SQL"}:
+                                          </span>{" "}
+                                          {Object.entries(h.changes)
+                                            .filter(([f]) => FIELD_LABELS[f])
+                                            .map(([f, c]) => `${FIELD_LABELS[f]}: ${displayValue(f, c.antes)} → ${displayValue(f, c.despues)}`)
+                                            .join(" · ")}
+                                        </li>
+                                      ))}
+                                    </ul>
+                                  </div>
+                                ) : null}
                                 <form action={deleteItem} className="mt-3">
                                   <input type="hidden" name="id" value={i.id} />
                                   <button className="text-xs text-rose-700 hover:underline">Eliminar esta compra</button>
@@ -411,6 +460,25 @@ export default async function AdminInventarioPage({
                     </li>
                   ))}
               </ul>
+            </details>
+          ) : null}
+
+          {deleted.length > 0 ? (
+            <details className="rounded-2xl border border-gold-light/60 bg-white p-5">
+              <summary className="cursor-pointer font-medium">Compras eliminadas ({deleted.length})</summary>
+              <ul className="mt-3 text-sm divide-y divide-gold-light/40">
+                {deleted.map((h) => (
+                  <li key={h.id} className="py-1.5">
+                    {String((h.changes as unknown as { item?: string }).item ?? "—")}
+                    <span className="text-foreground/50">
+                      {" · eliminada el "}
+                      {new Date(h.changed_at).toLocaleDateString("es-CO", { timeZone: "America/Bogota", dateStyle: "medium" })}
+                      {h.changed_by ? ` por ${adminNames.get(h.changed_by) ?? "una administradora"}` : ""}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+              <p className="mt-2 text-[11px] text-foreground/45">Los datos completos de cada compra eliminada quedan guardados en el historial.</p>
             </details>
           ) : null}
 
