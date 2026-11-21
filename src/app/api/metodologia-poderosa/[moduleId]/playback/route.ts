@@ -24,5 +24,10 @@ export async function GET(
   // así que si la fila se pudo leer, el acceso es válido. Si no se pudo leer, el select
   // anterior devuelve null por la política, y ya respondimos 404 arriba.
 
-  return NextResponse.json({ url: getSignedPlaybackUrl(module.bunny_video_id) });
+  // no-store: el enlace firmado es personal y de corta duración; ningún
+  // navegador ni proxy debe guardarlo para reutilizarlo.
+  return NextResponse.json(
+    { url: getSignedPlaybackUrl(module.bunny_video_id) },
+    { headers: { "Cache-Control": "private, no-store" } },
+  );
 }

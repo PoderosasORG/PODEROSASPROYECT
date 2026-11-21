@@ -41,7 +41,11 @@ export function createTusUploadAuth(videoId: string) {
 export function getSignedPlaybackUrl(videoId: string): string {
   const libraryId = requireEnv("BUNNY_STREAM_LIBRARY_ID");
   const tokenKey = requireEnv("BUNNY_STREAM_TOKEN_KEY");
-  const expires = Math.floor(Date.now() / 1000) + 60 * 10; // 10 minutos
+  // Enlace de un solo uso práctico: vence a los 3 minutos. El reproductor
+  // solo lo necesita para cargar; si alguien lo copia y lo comparte, deja
+  // de funcionar enseguida. (Bunny además exige token en cada segmento del
+  // video — "CDN token authentication" — y solo permite poderosas.org.)
+  const expires = Math.floor(Date.now() / 1000) + 60 * 3; // 3 minutos
 
   const token = crypto
     .createHash("sha256")
