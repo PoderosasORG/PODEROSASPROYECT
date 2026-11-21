@@ -103,6 +103,8 @@ export async function POST(req: NextRequest) {
     currency: product.currency,
     status: "pending",
     origin: originFromCookie(req),
+    // Solo se escribe si lo marcó (consentimiento explícito, nunca por defecto).
+    ...(body?.marketingOptIn === true ? { marketing_opt_in: true } : {}),
   });
 
   if (orderError) {

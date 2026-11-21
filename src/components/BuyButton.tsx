@@ -19,9 +19,11 @@ export function BuyButton({
   const [showGuestForm, setShowGuestForm] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [guestEmail, setGuestEmail] = useState("");
+  // Consentimiento para novedades y lanzamientos: opcional y desmarcado.
+  const [marketingOptIn, setMarketingOptIn] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  async function startCheckout(guest?: { buyerName: string; buyerEmail: string }) {
+  async function startCheckout(guest?: { buyerName: string; buyerEmail: string; marketingOptIn?: boolean }) {
     setLoading(true);
     setError(null);
     try {
@@ -53,7 +55,7 @@ export function BuyButton({
 
   function handleGuestSubmit(e: React.FormEvent) {
     e.preventDefault();
-    startCheckout({ buyerName: guestName.trim(), buyerEmail: guestEmail.trim() });
+    startCheckout({ buyerName: guestName.trim(), buyerEmail: guestEmail.trim(), marketingOptIn });
   }
 
   return (
@@ -109,6 +111,16 @@ export function BuyButton({
                 onChange={(e) => setGuestEmail(e.target.value)}
                 className="rounded-lg border border-gold-light/60 px-3 py-2 outline-none focus:border-gold"
               />
+            </label>
+
+            <label className="flex items-start gap-2 text-xs text-foreground/60">
+              <input
+                type="checkbox"
+                checked={marketingOptIn}
+                onChange={(e) => setMarketingOptIn(e.target.checked)}
+                className="mt-0.5"
+              />
+              Quiero recibir novedades, lanzamientos y promociones de PODEROSAS por correo (opcional).
             </label>
 
             {error && <p className="text-sm text-red-600">{error}</p>}

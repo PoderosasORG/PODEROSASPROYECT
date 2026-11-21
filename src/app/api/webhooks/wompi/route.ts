@@ -5,6 +5,10 @@ import { sendTicketEmail } from "@/lib/sendTicketEmail";
 import { sendCourseEmail } from "@/lib/sendCourseEmail";
 import { sendReceiptEmail } from "@/lib/sendReceiptEmail";
 import { wompiCrmFields } from "@/lib/admin/wompiCrm";
+import { registerStudent } from "@/lib/welcome/journey";
+import { claimEmail, ensurePreferences, finishEmail } from "@/lib/welcome/comms";
+import { loadCourseInfo } from "@/lib/welcome/courseInfo";
+import { sendWelcomeEmail } from "@/lib/welcome/welcomeEmail";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -156,6 +160,10 @@ export async function POST(req: NextRequest) {
     // pero sin dar acceso a nada. Se crea (o se encuentra, si ya existía)
     // la cuenta con ese correo y se vincula a la orden.
     let setPasswordUrl: string | undefined;
+    // ¿La alumna ya tiene una cuenta usable? (compró con sesión iniciada,
+    // o ya existía una cuenta suya en la que alguna vez entró).
+    let accountActive = !!order.buyer_id;
+    let studentUserId: string | null = order.buyer_id ?? null;
     if (!order.buyer_id) {
       try {
         const { data: created, error: createError } = await admin.auth.admin.createUser({
@@ -172,10 +180,13 @@ export async function POST(req: NextRequest) {
           // fallar. listUsers no filtra por email en todas las versiones
           // del SDK, así que se recorre la lista corta de resultados.
           const { data: list } = await admin.auth.admin.listUsers({ perPage: 200 });
-          accountUserId = list?.users.find(
+          const found = list?.users.find(
             (u) => u.email?.toLowerCase() === order.buyer_email!.toLowerCase(),
-          )?.id;
+          );
+          accountUserId = found?.id;
+          accountActive = !!found?.last_sign_in_at;
         }
+        studentUserId = accountUserId ?? null;
 
         if (accountUserId) {
           await admin.from("orders").update({ buyer_id: accountUserId }).eq("id", order.id);
@@ -202,6 +213,54 @@ export async function POST(req: NextRequest) {
       .eq("product_id", order.product_id);
 
     if (categorizedCount && categorizedCount > 0) {
+      // Flujo de bienvenida (Metodología): registrar a la alumna, sus
+      // preferencias de comunicación y enviar la bienvenida UNA sola vez
+      // por compra, aunque Wompi repita el aviso o lleguen dos a la vez.
+      try {
+        await registerStudent({
+          productId: order.product_id,
+          email: order.buyer_email,
+          userId: studentUserId,
+          fullName: order.buyer_name ?? null,
+          orderId: order.id,
+          accountActive,
+        });
+      } catch (err) {
+        console.error("[bienvenida] no se pudo registrar a la alumna:", err);
+      }
+
+      let manageToken: string | null = null;
+      try {
+        // Consulta aparte y tolerante: si la columna no existiera, el pago
+        // igual se aprueba (nunca depende de esto).
+        const { data: optRow } = await admin.from("orders").select("marketing_opt_in").eq("id", order.id).maybeSingle();
+        manageToken = await ensurePreferences(order.buyer_email, optRow?.marketing_opt_in === true, "checkout");
+      } catch (err) {
+        console.error("[bienvenida] no se pudieron guardar las preferencias:", err);
+      }
+
+      const dedupeKey = `bienvenida:${order.id}`;
+      if (await claimEmail({ dedupeKey, email: order.buyer_email, kind: "bienvenida_metodologia", category: "operativo" })) {
+        try {
+          const origin = req.nextUrl.origin;
+          await sendWelcomeEmail({
+            to: order.buyer_email,
+            buyerName: order.buyer_name ?? "",
+            courseUrl: `${origin}/cursos/metodologia-poderosa`,
+            loginUrl: `${origin}/login?next=/cursos/metodologia-poderosa`,
+            setPasswordUrl,
+            accessUntil: accessExpiresAt ?? null,
+            whatsappUrl: process.env.WHATSAPP_COMMUNITY_URL || null,
+            preferencesUrl: manageToken ? `${origin}/preferencias?t=${manageToken}` : null,
+            info: await loadCourseInfo(order.product_id),
+          });
+          await finishEmail(dedupeKey, true);
+        } catch (err) {
+          await finishEmail(dedupeKey, false);
+          console.error("[bienvenida] no se pudo enviar el correo de bienvenida:", err);
+        }
+      }
+    } else {
       try {
         await sendCourseEmail({
           to: order.buyer_email,

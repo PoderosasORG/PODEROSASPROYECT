@@ -28,6 +28,8 @@ export default function ActualizarContrasenaPage() {
     }
 
     setDone(true);
+    // Estado "cuenta activada" del flujo de bienvenida (no bloquea nada).
+    fetch("/api/cuenta/activada", { method: "POST" }).catch(() => {});
     setTimeout(() => {
       router.push("/panel");
       router.refresh();
