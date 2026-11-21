@@ -3,6 +3,13 @@ import { createClient } from "@/lib/supabase/server";
 import { BuyButton } from "@/components/BuyButton";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { CREATOR_FALLBACK_PHOTOS } from "@/lib/creatorPhotos";
+import { UPCOMING_BY_CREATOR } from "@/lib/creatorUpcoming";
+import {
+  METODOLOGIA_PODEROSAS_PRODUCT_ID,
+  REGULAR_PRICE_CENTS,
+  effectivePriceCents,
+  isLaunchPriceActive,
+} from "@/lib/metodologiaPoderosasLanzamiento";
 
 function formatPrice(p: { price_cents: number; currency: string }) {
   return new Intl.NumberFormat("es-CO", {
@@ -27,13 +34,68 @@ export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { 
     .order("order_index", { ascending: true })
     .order("created_at", { ascending: true });
 
-  if (!products || products.length === 0) return null;
+  // La Metodología es de las tres: se muestra en el perfil de cada mentora
+  // aunque en la base de datos esté a nombre de una sola.
+  const list = [...(products ?? [])];
+  if (!list.some((p) => p.id === METODOLOGIA_PODEROSAS_PRODUCT_ID)) {
+    const { data: metodologia } = await supabase
+      .from("products")
+      .select("id, title, description, price_cents, currency, cover_image_url, type, access_tier")
+      .eq("id", METODOLOGIA_PODEROSAS_PRODUCT_ID)
+      .eq("is_published", true)
+      .maybeSingle();
+    if (metodologia) list.unshift(metodologia);
+  }
+  const upcoming = UPCOMING_BY_CREATOR[slug] ?? [];
+
+  if (list.length === 0 && upcoming.length === 0) return null;
 
   return (
     <section id="cursos" className="px-6 py-12 max-w-5xl mx-auto w-full scroll-mt-16">
-      <h2 className="font-serif text-2xl mb-6">Cursos y productos</h2>
+      <h2 className="font-serif text-2xl mb-6">Conoce sus cursos y productos</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-        {products.map((p) => {
+        {list.map((p) => {
+          // Metodología: tarjeta con el precio vigente que lleva a su página.
+          if (p.id === METODOLOGIA_PODEROSAS_PRODUCT_ID) {
+            const price = effectivePriceCents(p.id, p.price_cents);
+            return (
+              <Link
+                key={p.id}
+                href="/cursos/metodologia-poderosa"
+                className="group rounded-xl border border-black/10 bg-white overflow-hidden flex flex-col transition-shadow hover:shadow-lg"
+              >
+                <div className="w-full aspect-[16/10] bg-[#fbe4ec] overflow-hidden flex items-center justify-center">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={p.cover_image_url || "/images/cartilla-metodologia/cartilla-portada.jpg"}
+                    alt=""
+                    className={`h-full ${p.cover_image_url ? "w-full object-cover" : "object-contain py-3"} transition-transform duration-300 group-hover:scale-105`}
+                  />
+                </div>
+                <div className="flex flex-col gap-1.5 p-4 flex-1">
+                  <h3 className="font-medium leading-snug line-clamp-2">{p.title}</h3>
+                  <p className="text-sm text-foreground/60 line-clamp-2">Un curso construido entre las 3: quién soy, qué quiero y cómo lo logro.</p>
+                  <div className="flex items-center justify-between mt-auto pt-3">
+                    <span className="flex items-center gap-1.5">
+                      {isLaunchPriceActive() ? (
+                        <span className="text-[11px] text-foreground/40 line-through">{formatPrice({ price_cents: REGULAR_PRICE_CENTS, currency: p.currency })}</span>
+                      ) : null}
+                      <span
+                        className="text-xs font-medium rounded-full px-2.5 py-1"
+                        style={{ backgroundColor: `${accentColor}1a`, color: accentColor }}
+                      >
+                        {formatPrice({ price_cents: price, currency: p.currency })}
+                      </span>
+                    </span>
+                    <span className="rounded-full px-4 py-1.5 text-xs font-medium text-white" style={{ backgroundColor: accentColor }}>
+                      Ver curso
+                    </span>
+                  </div>
+                </div>
+              </Link>
+            );
+          }
+
           const badge =
             p.access_tier === "public" || p.access_tier === "registered"
               ? "Gratis"
@@ -78,6 +140,37 @@ export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { 
             </div>
           );
         })}
+        {upcoming.map((u) => (
+          <div key={u.title} className="rounded-xl border border-black/10 bg-white overflow-hidden flex flex-col">
+            <div className={`relative w-full aspect-[16/10] bg-gradient-to-br ${u.tone} flex flex-col justify-end p-4`}>
+              <span className="absolute right-3 top-3 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest text-[#5c1030]">
+                Próximamente
+              </span>
+              <p className={`text-[10px] uppercase tracking-[0.25em] ${u.tone.includes("#2b0f1d") ? "text-white/70" : "text-[#5c1030]/60"}`}>
+                {u.kicker}
+              </p>
+              <p className={`font-serif text-lg leading-snug ${u.tone.includes("#2b0f1d") ? "text-white" : "text-[#2b0f1d]"}`}>
+                {u.title}
+              </p>
+            </div>
+            <div className="flex flex-col gap-1.5 p-4 flex-1">
+              <h3 className="font-medium leading-snug line-clamp-2">
+                {u.kicker}: {u.title}
+              </h3>
+              {u.desc ? <p className="text-sm text-foreground/60">{u.desc}</p> : null}
+              <div className="flex items-center justify-between mt-auto pt-3">
+                <span className="text-xs font-medium text-foreground/45">En preparación</span>
+                <span
+                  className="rounded-full border px-4 py-1.5 text-xs font-medium opacity-60"
+                  style={{ borderColor: accentColor, color: accentColor }}
+                  aria-disabled="true"
+                >
+                  Próximo lanzamiento
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
     </section>
   );
