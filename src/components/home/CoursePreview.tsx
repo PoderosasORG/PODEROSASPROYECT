@@ -29,7 +29,7 @@ export function CoursePreview() {
             <p className="text-[9px] uppercase tracking-[0.2em] text-gold">Módulo 3 · ¿Cómo lo logro?</p>
             <p className="font-serif text-base sm:text-xl leading-tight text-[#2b0f1d]">Cómo empezar cuando no tienes ganas</p>
             <div className="relative aspect-video overflow-hidden rounded-xl bg-[#2b0f1d]">
-              <Image src="/images/creators/kat.jpg" alt="" fill sizes="320px" className="object-cover object-[50%_30%] opacity-90" />
+              <Image src="/images/creators/kat.webp" alt="Kat en una clase de la Metodología PODEROSAS" fill sizes="320px" className="object-cover object-[50%_30%] opacity-90" />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               <span className="absolute left-1/2 top-1/2 flex h-10 w-10 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white/90 shadow-lg">
                 <svg viewBox="0 0 24 24" className="ml-0.5 h-4 w-4 text-gold" fill="currentColor">

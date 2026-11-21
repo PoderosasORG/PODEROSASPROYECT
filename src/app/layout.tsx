@@ -22,10 +22,12 @@ const poppins = Poppins({
 
 // Tipografías extra para la personalización del panel de cada creadora
 // (pedido explícito: opciones más femeninas/soft/estéticas).
-const dancingScript = Dancing_Script({ variable: "--font-dancing-script", subsets: ["latin"] });
-const cormorant = Cormorant_Garamond({ variable: "--font-cormorant", subsets: ["latin"], weight: ["400", "600"] });
-const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "700"] });
-const italiana = Italiana({ variable: "--font-italiana", subsets: ["latin"], weight: "400" });
+// preload: false → no se descargan en cada página; solo cuando un perfil
+// realmente usa esa tipografía (ahorra peso en la home y el curso).
+const dancingScript = Dancing_Script({ variable: "--font-dancing-script", subsets: ["latin"], preload: false });
+const cormorant = Cormorant_Garamond({ variable: "--font-cormorant", subsets: ["latin"], weight: ["400", "600"], preload: false });
+const quicksand = Quicksand({ variable: "--font-quicksand", subsets: ["latin"], weight: ["400", "500", "700"], preload: false });
+const italiana = Italiana({ variable: "--font-italiana", subsets: ["latin"], weight: "400", preload: false });
 
 const SITE_DESCRIPTION =
   "PODEROSAS es una comunidad de mujeres que quieren crecer. Herramientas, cursos y acompañamiento para pasar de la confusión a la acción.";

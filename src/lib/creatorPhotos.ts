@@ -2,7 +2,7 @@
 // propias desde el panel. Si `avatar_url`/`cover_image_url` ya tienen
 // un valor real en la base de datos, esas mandan — esto nunca las pisa.
 export const CREATOR_FALLBACK_PHOTOS: Record<string, string> = {
-  kat: "/images/creators/kat.jpg",
+  kat: "/images/creators/kat.webp",
   shei: "/images/creators/shei.webp",
-  luz: "/images/creators/luz.png",
+  luz: "/images/creators/luz.webp",
 };
