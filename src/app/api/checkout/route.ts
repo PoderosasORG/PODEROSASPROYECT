@@ -5,6 +5,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { effectivePriceCents } from "@/lib/metodologiaPoderosasLanzamiento";
 import { originFromCookie } from "@/lib/origin";
+import { saveAnalyticsIds } from "@/lib/analytics/server";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -111,6 +112,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: orderError.message }, { status: 500 });
   }
 
+  // Identificadores anónimos de GA4/Meta (cookies), para enviar la compra
+  // desde el servidor sin datos personales. Nunca bloquea el checkout.
+  await saveAnalyticsIds(req, orderId);
+
   const reference = orderId;
   const signatureString = `${reference}${priceCents}${product.currency}${secretRow.wompi_integrity_secret}`;
   const signature = crypto.createHash("sha256").update(signatureString).digest("hex");
@@ -136,5 +141,9 @@ export async function POST(req: NextRequest) {
     params.set("redirect-url", `${origin}/pago/confirmacion?order=${orderId}`);
   }
 
-  return NextResponse.json({ checkoutUrl: `https://checkout.wompi.co/p/?${params.toString()}` });
+  return NextResponse.json({
+    checkoutUrl: `https://checkout.wompi.co/p/?${params.toString()}`,
+    amountCents: priceCents,
+    currency: product.currency,
+  });
 }

@@ -3,11 +3,11 @@ import Script from "next/script";
 import { Playfair_Display, Poppins, Dancing_Script, Cormorant_Garamond, Quicksand, Italiana } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { SiteFooter } from "@/components/SiteFooter";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics/config";
+import { ConsentBanner } from "@/components/tracking/ConsentBanner";
 import "./globals.css";
 
-// ID de medición de Google Analytics 4 de Poderosas (no es secreto — es
-// público por diseño, va embebido en el HTML de cualquier sitio que lo usa).
-const GA_MEASUREMENT_ID = "G-EN3BCEYTZE";
+
 
 const playfair = Playfair_Display({
   variable: "--font-playfair",
@@ -69,6 +69,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}
+            // Modo de consentimiento: la analítica básica funciona, la
+            // publicidad queda apagada hasta que la visitante acepte.
+            gtag('consent', 'default', { ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', analytics_storage: 'granted' });
+            try { if (localStorage.getItem('pod_consent') === 'all') gtag('consent', 'update', { ad_storage: 'granted', ad_user_data: 'granted', ad_personalization: 'granted' }); } catch (e) {}
             gtag('js', new Date());
             gtag('config', '${GA_MEASUREMENT_ID}');
           `}
@@ -76,6 +80,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <SiteHeader />
         {children}
         <SiteFooter />
+        <ConsentBanner />
       </body>
     </html>
   );

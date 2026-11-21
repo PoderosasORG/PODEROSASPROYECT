@@ -7,6 +7,7 @@ import { IntroVideoCard } from "@/components/IntroVideoCard";
 import { Countdown } from "@/components/home/Countdown";
 import { Gallery } from "@/components/home/Gallery";
 import { VisitBeacon } from "@/components/tracking/VisitBeacon";
+import { TrackedLink } from "@/components/tracking/TrackedLink";
 import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 import { CoursePreview } from "@/components/home/CoursePreview";
 import {
@@ -122,17 +123,22 @@ const INCLUYE = [
   "Experiencias y eventos",
 ];
 
-function Button({ href, children, variant = "dark" }: { href: string; children: React.ReactNode; variant?: "dark" | "light" | "outline" }) {
+function Button({ href, children, variant = "dark", location }: { href: string; children: React.ReactNode; variant?: "dark" | "light" | "outline"; location?: string }) {
   const styles = {
     dark: "bg-[#2b0f1d] text-white hover:bg-[#5c1030]",
     light: "bg-white text-[#5c1030] hover:bg-beige-light",
     outline: "border border-current hover:bg-white/10",
   }[variant];
+  const className = `inline-flex items-center justify-center rounded-full px-7 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] shadow-md transition-transform hover:-translate-y-0.5 ${styles}`;
+  if (href === CHECKOUT) {
+    return (
+      <TrackedLink href={href} location={location ?? "home"} className={className}>
+        {children}
+      </TrackedLink>
+    );
+  }
   return (
-    <Link
-      href={href}
-      className={`inline-flex items-center justify-center rounded-full px-7 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] shadow-md transition-transform hover:-translate-y-0.5 ${styles}`}
-    >
+    <Link href={href} className={className}>
       {children}
     </Link>
   );
@@ -186,7 +192,7 @@ export default function Home() {
         <Link href="#mentoras" className="hover:text-gold">Mentoras</Link>
         <Link href="/evento#entradas" className="hover:text-gold">Eventos presenciales</Link>
         <Link href="#contenido" className="hover:text-gold">Podcast</Link>
-        <Link href={CHECKOUT} className="text-gold hover:underline">Inscríbete</Link>
+        <TrackedLink href={CHECKOUT} location="home_menu" className="text-gold hover:underline">Inscríbete</TrackedLink>
       </nav>
 
       {/* 2. ACADEMIA — producto principal en bloque partido -------------- */}
@@ -223,7 +229,7 @@ export default function Home() {
               <span className="text-sm text-white/70">COP</span>
             </div>
           )}
-          <Button href={CHECKOUT} variant="light">
+          <Button href={CHECKOUT} location="home_1" variant="light">
             Quiero mi Metodología
           </Button>
         </div>
@@ -272,7 +278,7 @@ export default function Home() {
             {extensionMessage ? <p className="max-w-xl text-[#f7c9d8]">{extensionMessage}</p> : null}
             <p className="text-white/75">Compra antes del {deadlineLabel} (hora Colombia).</p>
             <Countdown deadlineIso={deadlineIso} tone="dark" />
-            <Button href={CHECKOUT} variant="light">
+            <Button href={CHECKOUT} location="home_2" variant="light">
               Quiero mi Metodología con los 3 bonos
             </Button>
           </div>
@@ -343,7 +349,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <Button href={CHECKOUT}>Quiero ser parte de PODEROSAS</Button>
+          <Button href={CHECKOUT} location="home_3">Quiero ser parte de PODEROSAS</Button>
         </div>
       </section>
 
@@ -424,7 +430,7 @@ export default function Home() {
           ) : (
             <p className="font-serif text-4xl">{cop(REGULAR_PRICE_CENTS)} COP</p>
           )}
-          <Button href={CHECKOUT} variant="light">
+          <Button href={CHECKOUT} location="home_4" variant="light">
             Quiero ser parte de PODEROSAS
           </Button>
         </div>
