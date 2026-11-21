@@ -16,5 +16,11 @@ export function translateAuthError(message: string): string {
   if (message.includes("Unable to validate email address")) {
     return "Ese correo no parece válido.";
   }
+  if (message.includes("Error sending recovery email") || message.includes("Error sending confirmation email")) {
+    return "No pudimos enviar el correo en este momento. Intenta de nuevo en unos minutos.";
+  }
+  if (message.includes("rate limit") || message.includes("Email rate limit exceeded")) {
+    return "Se enviaron demasiados correos seguidos. Espera unos minutos e intenta otra vez.";
+  }
   return message;
 }
