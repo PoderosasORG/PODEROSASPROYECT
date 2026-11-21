@@ -156,14 +156,14 @@ export default function Home() {
     <div className="flex flex-1 flex-col bg-white">
       {/* 1. HERO ---------------------------------------------------------- */}
       <section className="relative isolate w-full overflow-hidden bg-[#2b0f1d] sm:flex sm:aspect-[16/8] lg:aspect-[16/7] sm:items-end sm:justify-center">
-        <div className="relative aspect-[8/3] w-full sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto">
+        <div className="relative aspect-[2/1] w-full sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto">
           <Image
-            src="/images/creators/landing-hero.webp"
-            alt="Luz Amparo, Shei Rivera y Kat Rivera, mentoras de PODEROSAS"
+            src="/images/creators/portada-mentoras-rosa.jpg"
+            alt="Shei Rivera, Luz Amparo y Kat Rivera, mentoras de PODEROSAS"
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[50%_25%]"
+            className="object-cover object-[50%_30%]"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#2b0f1d] via-transparent to-transparent sm:from-[#2b0f1d]/90 sm:via-[#2b0f1d]/10 sm:via-40%" />
         </div>
