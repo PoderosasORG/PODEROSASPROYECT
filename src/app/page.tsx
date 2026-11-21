@@ -7,11 +7,14 @@ import { IntroVideoCard } from "@/components/IntroVideoCard";
 import { Countdown } from "@/components/home/Countdown";
 import { Gallery } from "@/components/home/Gallery";
 import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
+import { CoursePreview } from "@/components/home/CoursePreview";
 import {
-  LAUNCH_DEADLINE,
   LAUNCH_PRICE_CENTS,
   REGULAR_PRICE_CENTS,
   isLaunchPriceActive,
+  promoDeadline,
+  promoDeadlineLabel,
+  promoExtensionMessage,
 } from "@/lib/metodologiaPoderosasLanzamiento";
 
 // Home "Academia PODEROSAS" (Kat, 2026-11-20). Distribución visual
@@ -144,7 +147,9 @@ function SectionTitle({ children, light = false }: { children: React.ReactNode; 
 
 export default function Home() {
   const launch = isLaunchPriceActive();
-  const deadlineIso = LAUNCH_DEADLINE.toISOString();
+  const deadlineIso = promoDeadline().toISOString();
+  const deadlineLabel = promoDeadlineLabel();
+  const extensionMessage = promoExtensionMessage();
   const photos = masterclassPhotos();
 
   return (
@@ -184,14 +189,10 @@ export default function Home() {
 
       {/* 2. ACADEMIA — producto principal en bloque partido -------------- */}
       <section id="academia" className="scroll-mt-16 grid grid-cols-1 md:grid-cols-2">
-        <div className="relative min-h-[340px] md:min-h-[560px] bg-white">
-          <Image
-            src="/images/cartilla-metodologia/cartilla-portada.jpg"
-            alt="Cartilla de la Metodología PODEROSAS"
-            fill
-            sizes="(min-width: 768px) 50vw, 100vw"
-            className="object-contain p-6"
-          />
+        <div className="relative flex min-h-[340px] md:min-h-[560px] items-center justify-center overflow-hidden bg-gradient-to-br from-[#fdf2f6] via-[#f7e9f7] to-[#efe4fa] px-4 py-12">
+          <div className="absolute -left-20 -top-20 h-64 w-64 rounded-full bg-[#f2a0bf]/30 blur-3xl" aria-hidden />
+          <div className="absolute -bottom-20 -right-10 h-64 w-64 rounded-full bg-[#c9b3e6]/40 blur-3xl" aria-hidden />
+          <CoursePreview />
         </div>
         <div className="flex flex-col items-center justify-center gap-5 bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#2b0f1d] px-6 py-14 text-center text-white">
           <p className="text-[11px] uppercase tracking-[0.35em] text-gold-light">Academia PODEROSAS · Primera generación</p>
@@ -208,6 +209,10 @@ export default function Home() {
                 <span className="font-serif text-5xl">{cop(LAUNCH_PRICE_CENTS)}</span>
                 <span className="text-sm text-white/70">COP</span>
               </div>
+              {extensionMessage ? (
+                <p className="max-w-sm rounded-2xl bg-white/15 px-4 py-3 text-sm font-medium">{extensionMessage}</p>
+              ) : null}
+              <p className="text-[11px] uppercase tracking-[0.2em] text-white/70">Hasta el {deadlineLabel}</p>
               <Countdown deadlineIso={deadlineIso} tone="dark" />
             </>
           ) : (
@@ -262,7 +267,8 @@ export default function Home() {
                 </span>
               ))}
             </div>
-            <p className="text-white/75">Compra antes del 21 de noviembre, 11:59 p. m. (hora Colombia).</p>
+            {extensionMessage ? <p className="max-w-xl text-[#f7c9d8]">{extensionMessage}</p> : null}
+            <p className="text-white/75">Compra antes del {deadlineLabel} (hora Colombia).</p>
             <Countdown deadlineIso={deadlineIso} tone="dark" />
             <Button href={CHECKOUT} variant="light">
               Quiero mi Metodología con los 3 bonos

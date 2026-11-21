@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 function formatRemaining(ms: number) {
   if (ms <= 0) return null;
@@ -19,15 +20,24 @@ function formatRemaining(ms: number) {
  * el precio que corresponda según la hora real del servidor.
  */
 export function LaunchCountdown({ deadlineIso }: { deadlineIso: string }) {
+  const router = useRouter();
   const [remaining, setRemaining] = useState<string | null>(null);
 
   useEffect(() => {
     const deadline = new Date(deadlineIso).getTime();
-    const tick = () => setRemaining(formatRemaining(deadline - Date.now()));
-    tick();
+    const tick = () => {
+      const ms = deadline - Date.now();
+      setRemaining(formatRemaining(ms));
+      // Al llegar a cero, el servidor decide qué precio/oferta sigue.
+      if (ms <= 0) {
+        clearInterval(id);
+        router.refresh();
+      }
+    };
     const id = setInterval(tick, 1000);
+    tick();
     return () => clearInterval(id);
-  }, [deadlineIso]);
+  }, [deadlineIso, router]);
 
   if (remaining === null) return null;
 
