@@ -1,4 +1,6 @@
 import { requireAdmin } from "@/lib/admin/auth";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { addContact } from "./actions";
 import { loadApprovedOrders, type AdminOrder } from "@/lib/admin/orders";
 import { CrmTable, type Customer } from "./CrmTable";
 
@@ -50,30 +52,113 @@ function buildCustomers(orders: AdminOrder[]): Customer[] {
       products: [...new Set(list.map((o) => o.product_title))],
       accounts: [...new Set(list.map((o) => o.creator_name))],
       isTest: list.every((o) => o.isTest),
+      personType: "compradora",
+      subtype: "",
+      orderIds: list.map((o) => o.id),
+      contactId: null,
     };
   });
 }
 
+type Contact = {
+  id: string;
+  full_name: string;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  country: string | null;
+  contact_type: "invitada_especial" | "equipo";
+  subtype: string | null;
+  event_name: string | null;
+  created_at: string;
+};
+
+function contactToCustomer(c: Contact): Customer {
+  return {
+    key: `contact-${c.id}`,
+    name: c.full_name,
+    email: c.email ?? "",
+    phone: c.phone ?? "",
+    address: "",
+    city: c.city ?? "",
+    country: c.country ?? "",
+    origin: "",
+    payment: c.contact_type === "equipo" ? "Equipo (sin costo)" : "Invitada (sin costo)",
+    coupon: "",
+    firstDate: c.created_at,
+    lastDate: c.created_at,
+    count: 0,
+    total: 0,
+    products: c.event_name ? [c.event_name] : [],
+    accounts: [],
+    isTest: false,
+    personType: c.contact_type,
+    subtype: c.subtype ?? "",
+    orderIds: [],
+    contactId: c.id,
+  };
+}
+
+const input = "rounded-lg border border-gold-light/70 bg-white px-3 py-1.5 text-sm w-full";
+const label = "flex flex-col gap-1 text-xs text-foreground/60";
+
 export default async function AdminCrmPage() {
   await requireAdmin();
-  const customers = buildCustomers(await loadApprovedOrders());
-  const recurring = customers.filter((c) => c.count > 1 && !c.isTest).length;
+  const admin = createAdminClient();
+  const [orders, { data: contacts }, { data: events }] = await Promise.all([
+    loadApprovedOrders(),
+    admin.from("admin_contacts").select("*").order("created_at"),
+    admin.from("products").select("title").eq("type", "event").order("created_at", { ascending: false }),
+  ]);
+  const buyers = buildCustomers(orders);
+  const people = [...buyers, ...((contacts ?? []) as Contact[]).map(contactToCustomer)];
+  const realBuyers = buyers.filter((c) => !c.isTest);
+  const recurring = realBuyers.filter((c) => c.count > 1).length;
+  const guests = (contacts ?? []).filter((c) => c.contact_type === "invitada_especial").length;
+  const team = (contacts ?? []).filter((c) => c.contact_type === "equipo").length;
 
   return (
     <div className="flex flex-col gap-5">
       <div>
-        <h1 className="font-serif text-3xl">CRM de compradoras</h1>
+        <h1 className="font-serif text-3xl">CRM</h1>
         <p className="text-sm text-foreground/60">
-          {customers.filter((c) => !c.isTest).length} personas · {recurring} han comprado más de una vez · filtra cada
-          columna en la fila de búsqueda y haz clic en un título para ordenar
+          {realBuyers.length} compradoras ({recurring} han comprado más de una vez) · {guests} invitadas especiales · {team}{" "}
+          del equipo · filtra cada columna y haz clic en un título para ordenar
         </p>
       </div>
 
-      <CrmTable customers={customers} />
+      <CrmTable customers={people} />
+
+      <details className="rounded-2xl border border-gold-light/60 bg-white p-5">
+        <summary className="cursor-pointer font-medium">+ Agregar invitada especial o persona del equipo (sin costo)</summary>
+        <form action={addContact} className="mt-4 grid grid-cols-1 sm:grid-cols-4 gap-3">
+          <label className={`${label} sm:col-span-2`}>Nombre completo *<input name="full_name" required className={input} /></label>
+          <label className={label}>Tipo
+            <select name="contact_type" className={input} defaultValue="invitada_especial">
+              <option value="invitada_especial">Invitada especial</option>
+              <option value="equipo">Equipo PODEROSAS</option>
+            </select>
+          </label>
+          <label className={label}>Detalle<input name="subtype" className={input} placeholder="Influencer, fotógrafo…" /></label>
+          <label className={label}>Celular / WhatsApp<input name="phone" inputMode="tel" className={input} placeholder="3001234567" /></label>
+          <label className={label}>Correo<input name="email" type="email" className={input} /></label>
+          <label className={label}>Ciudad<input name="city" defaultValue="Bogotá" className={input} /></label>
+          <label className={label}>País<input name="country" defaultValue="Colombia" className={input} /></label>
+          <label className={`${label} sm:col-span-2`}>Evento
+            <select name="event_name" className={input} defaultValue={events?.[0]?.title ?? ""}>
+              <option value="">— Ninguno —</option>
+              {(events ?? []).map((e) => <option key={e.title} value={e.title}>{e.title}</option>)}
+            </select>
+          </label>
+          <label className={`${label} sm:col-span-2`}>Notas<input name="notes" className={input} /></label>
+          <p className="sm:col-span-4 text-[11px] text-foreground/45">El celular se guarda con +57 si escribes solo los 10 dígitos.</p>
+          <button className="sm:col-span-4 justify-self-start rounded-full bg-gold text-white px-5 py-2 text-sm">Agregar</button>
+        </form>
+      </details>
 
       <p className="text-xs text-foreground/50">
-        Teléfono, dirección, origen y método de pago se guardan solos en las compras nuevas (desde el 20 de nov. de
-        2026). Las compras anteriores muestran «—» en esos campos.
+        Teléfono, dirección, origen y método de pago se guardan solos en las compras nuevas (desde el 20 de nov. de 2026).
+        Para completar los datos de alguien, usa «Editar» en su fila.
       </p>
     </div>
   );

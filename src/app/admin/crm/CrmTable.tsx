@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { formatCop, formatDate } from "@/lib/admin/format";
+import { updatePerson } from "./actions";
 
 export type Customer = {
   key: string;
@@ -21,6 +22,21 @@ export type Customer = {
   products: string[];
   accounts: string[];
   isTest: boolean;
+  personType: "compradora" | "invitada_especial" | "equipo";
+  subtype: string;
+  orderIds: string[];
+  contactId: string | null;
+};
+
+const TYPE_LABELS: Record<Customer["personType"], string> = {
+  compradora: "Compradora",
+  invitada_especial: "Invitada especial",
+  equipo: "Equipo PODEROSAS",
+};
+const TYPE_STYLES: Record<Customer["personType"], string> = {
+  compradora: "bg-emerald-50 text-emerald-800",
+  invitada_especial: "bg-amber-100 text-amber-800",
+  equipo: "bg-sky-100 text-sky-800",
 };
 
 type TextKey = "name" | "email" | "phone" | "address" | "city" | "origin" | "products";
@@ -59,6 +75,7 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
   const [text, setText] = useState(EMPTY_TEXT);
   const [payment, setPayment] = useState("");
   const [country, setCountry] = useState("");
+  const [personType, setPersonType] = useState("");
   const [coupon, setCoupon] = useState("");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -81,6 +98,7 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
         if (q && !norm(textValue(c, k)).includes(q)) return false;
       }
       if (payment && c.payment !== payment) return false;
+      if (personType && c.personType !== personType) return false;
       if (country === "__none" && c.country) return false;
       if (country && country !== "__none" && c.country !== country) return false;
       if (coupon === "si" && !c.coupon) return false;
@@ -104,15 +122,16 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
       }
     };
     return [...filtered].sort((a, b) => (val(a) > val(b) ? sort.dir : val(a) < val(b) ? -sort.dir : 0));
-  }, [customers, text, payment, country, coupon, from, to, minCount, hideTests, sort]);
+  }, [customers, text, payment, country, personType, coupon, from, to, minCount, hideTests, sort]);
 
   const active =
-    Object.values(text).some(Boolean) || payment || country || coupon || from || to || minCount ? true : false;
+    Object.values(text).some(Boolean) || payment || country || personType || coupon || from || to || minCount ? true : false;
 
   function clearAll() {
     setText(EMPTY_TEXT);
     setPayment("");
     setCountry("");
+    setPersonType("");
     setCoupon("");
     setFrom("");
     setTo("");
@@ -147,9 +166,9 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
   }
 
   function downloadCsv() {
-    const head = ["Nombre", "Correo", "Teléfono", "Dirección", "Ciudad", "País", "Origen", "Método de pago", "Cupón", "Primera compra", "Última compra", "Compras", "Total COP", "Productos", "Cuenta receptora"];
+    const head = ["Nombre", "Tipo", "Correo", "Teléfono", "Dirección", "Ciudad", "País", "Origen", "Método de pago", "Cupón", "Primera compra", "Última compra", "Compras", "Total COP", "Productos", "Cuenta receptora"];
     const lines = rows.map((c) =>
-      [c.name, c.email, c.phone, c.address, c.city, c.country, c.origin, c.payment, c.coupon || "No", dayBogota(c.firstDate), dayBogota(c.lastDate), c.count, Math.round(c.total / 100), c.products.join(" | "), c.accounts.join(" | ")]
+      [c.name, TYPE_LABELS[c.personType] + (c.subtype ? ` (${c.subtype})` : ""), c.email, c.phone, c.address, c.city, c.country, c.origin, c.payment, c.coupon || "No", dayBogota(c.firstDate), dayBogota(c.lastDate), c.count, Math.round(c.total / 100), c.products.join(" | "), c.accounts.join(" | ")]
         .map((v) => `"${String(v).replace(/"/g, '""')}"`)
         .join(","),
     );
@@ -182,10 +201,11 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
       </div>
 
       <div className="rounded-2xl border border-gold-light/60 bg-white overflow-x-auto">
-        <table className="w-full text-sm min-w-[1350px]">
+        <table className="w-full text-sm min-w-[1450px]">
           <thead className="text-left text-xs text-foreground/50 align-top">
             <tr>
               <th className={`${cell} pl-4`}>{header("Nombre completo", "name")}</th>
+              <th className={cell}>{header("Tipo")}</th>
               <th className={cell}>{header("Correo", "email")}</th>
               <th className={cell}>{header("Teléfono")}</th>
               <th className={cell}>{header("Dirección")}</th>
@@ -201,6 +221,14 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
             </tr>
             <tr className="bg-beige-light/40">
               <th className={`${cell} pl-4`}>{textFilter("name", "Nombre o apellido")}</th>
+              <th className={cell}>
+                <select value={personType} onChange={(e) => setPersonType(e.target.value)} className={filterInput}>
+                  <option value="">Todos</option>
+                  <option value="compradora">Compradoras</option>
+                  <option value="invitada_especial">Invitadas especiales</option>
+                  <option value="equipo">Equipo</option>
+                </select>
+              </th>
               <th className={cell}>{textFilter("email", "Correo")}</th>
               <th className={cell}>{textFilter("phone", "Teléfono")}</th>
               <th className={cell}>{textFilter("address", "Dirección")}</th>
@@ -260,6 +288,26 @@ export function CrmTable({ customers }: { customers: Customer[] }) {
                 <td className={`${cell} pl-4 font-medium`}>
                   {c.name}
                   {c.isTest ? <span className="ml-1 text-[10px] text-foreground/50">(prueba)</span> : null}
+                  <details className="mt-1 font-normal">
+                    <summary className="cursor-pointer text-[11px] text-gold">Editar</summary>
+                    <form action={updatePerson} className="mt-2 flex w-60 flex-col gap-1.5">
+                      {c.contactId ? <input type="hidden" name="contact_id" value={c.contactId} /> : null}
+                      {c.orderIds.length ? <input type="hidden" name="order_ids" value={c.orderIds.join(",")} /> : null}
+                      {c.contactId ? <input name="full_name" defaultValue={c.name} placeholder="Nombre" className={filterInput} /> : null}
+                      {c.contactId ? <input name="email" defaultValue={c.email} placeholder="Correo" className={filterInput} /> : null}
+                      <input name="phone" defaultValue={c.phone} placeholder="Celular (10 dígitos o con +57)" className={filterInput} />
+                      <input name="address" defaultValue={c.address} placeholder="Dirección" className={filterInput} />
+                      <div className="flex gap-1.5">
+                        <input name="city" defaultValue={c.city} placeholder="Ciudad" className={filterInput} />
+                        <input name="country" defaultValue={c.country} placeholder="País" className={filterInput} />
+                      </div>
+                      <button className="self-start rounded-full bg-gold px-3 py-1 text-[11px] text-white">Guardar</button>
+                    </form>
+                  </details>
+                </td>
+                <td className={cell}>
+                  <span className={`whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] ${TYPE_STYLES[c.personType]}`}>{TYPE_LABELS[c.personType]}</span>
+                  {c.subtype ? <p className="mt-0.5 text-[11px] text-foreground/50">{c.subtype}</p> : null}
                 </td>
                 <td className={cell}>{c.email || "—"}</td>
                 <td className={`${cell} whitespace-nowrap`}>{c.phone || "—"}</td>
