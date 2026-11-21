@@ -11,6 +11,10 @@ import { WaitlistForm } from "@/components/WaitlistForm";
 import { LaunchCountdown } from "@/components/cursos/LaunchCountdown";
 import { OrientationForm } from "@/components/tracking/OrientationForm";
 import { VisitBeacon } from "@/components/tracking/VisitBeacon";
+import Link from "next/link";
+import { nextInstallment, openPlanFor } from "@/lib/installments/plans";
+import { formatCopCents, formatDateCo } from "@/lib/installments/schedule";
+import { installmentConfigFor } from "@/lib/installments/config";
 import { markStep } from "@/lib/welcome/journey";
 import { formatPlannedDate, formatSessionDate, loadCourseInfo } from "@/lib/welcome/courseInfo";
 import {
@@ -109,6 +113,33 @@ export default async function MetodologiaPoderosaPage() {
 
   const { data: hasAccess } = await supabase.rpc("has_access_to_product", { p_product_id: product.id });
 
+  // Pago en cuotas: si su acceso se pausó por una cuota sin pagar, se le
+  // muestra el aviso y el botón para pagarla (no la página de venta).
+  const openPlan = user ? await openPlanFor(product.id, user.id, user.email ?? null).catch(() => null) : null;
+  const pendingInstallment = openPlan ? nextInstallment(openPlan) : null;
+  if (user && !hasAccess && openPlan && pendingInstallment) {
+    return (
+      <div className="flex flex-1 flex-col items-center justify-center bg-beige-light px-4 py-20">
+        <div className="w-full max-w-lg flex flex-col items-center gap-5 rounded-3xl border border-gold-light/60 bg-white p-8 sm:p-10 text-center">
+          <p className="text-xs uppercase tracking-[0.25em] text-gold">Metodología PODEROSAS</p>
+          <h1 className="font-serif text-2xl sm:text-3xl">Recuerda pagar tu cuota para habilitar el siguiente nivel</h1>
+          <p className="text-sm text-foreground/70">
+            Tu acceso está en pausa porque la cuota {pendingInstallment.number} de {openPlan.installments_total} (
+            {formatCopCents(pendingInstallment.amountCents)} COP) aún no está paga. No pierdes nada: apenas la pagues, se
+            habilita de nuevo todo tu contenido.
+          </p>
+          <Link
+            href={`/cuotas/${openPlan.pay_token}`}
+            className="rounded-full bg-[#bd7d47] px-10 py-4 text-base font-medium text-white hover:opacity-90"
+          >
+            Pagar cuota {pendingInstallment.number}
+          </Link>
+          <p className="text-xs text-foreground/50">¿Dudas? Escríbenos por WhatsApp al +57 314 508 9821.</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!user || !hasAccess) {
     const { data: previewCategories } = await supabase
       .from("course_categories")
@@ -146,6 +177,25 @@ export default async function MetodologiaPoderosaPage() {
     const priceCents = effectivePriceCents(product.id, product.price_cents);
     const priceLabel = `$${Math.round(priceCents / 100).toLocaleString("es-CO")} COP`;
     const regularPriceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
+
+    // Pago en cuotas (calendario en src/lib/installments/config.ts).
+    const installmentConfig = installmentConfigFor(product.id);
+    const installmentOption = installmentConfig
+      ? {
+          cta: `o paga en ${installmentConfig.installments.length} cuotas de ${formatCopCents(installmentConfig.installments[0].amountCents)}`,
+          total: `${formatCopCents(installmentConfig.totalCents)} COP`,
+          graceDays: installmentConfig.graceDays,
+          lines: installmentConfig.installments.map((step, i) => {
+            const prev = i === 0 ? 0 : installmentConfig.installments[i - 1].unlocksThroughMonth;
+            const months =
+              step.unlocksThroughMonth - prev === 1
+                ? `el mes ${step.unlocksThroughMonth}`
+                : `los meses ${prev + 1} a ${step.unlocksThroughMonth}`;
+            const when = i === 0 ? "hoy, al inscribirte" : `al cumplir ${prev === 1 ? "1 mes" : `${prev} meses`}`;
+            return `Cuota ${i + 1}: ${formatCopCents(step.amountCents)} ${when}, habilita ${months}`;
+          }),
+        }
+      : undefined;
 
     const problemas = [
       "Sientes que necesitas un cambio, pero no logras identificar qué es lo que realmente quieres.",
@@ -293,6 +343,14 @@ export default async function MetodologiaPoderosaPage() {
             },
           ]
         : []),
+      ...(installmentConfig
+        ? [
+            {
+              q: "¿Puedo pagar en cuotas?",
+              a: `Sí. Puedes pagar ${formatCopCents(installmentConfig.totalCents)} en ${installmentConfig.installments.length} cuotas fijas de ${formatCopCents(installmentConfig.installments[0].amountCents)}. La primera te da acceso al mes 1, la segunda al mes 2 y la tercera a los meses 3 a 6. Te enviamos por correo la fecha de cada pago y un recordatorio antes. Si una cuota no se paga, el acceso se pausa ${installmentConfig.graceDays} días después de su fecha y vuelve apenas la pagues. Los 3 bonos llegan desde la primera cuota.`,
+            },
+          ]
+        : []),
       {
         q: "¿Qué materiales recibiré?",
         a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? ", y los 3 bonos de regalo si compras antes del cierre de la promoción" : ""}.`,
@@ -416,6 +474,8 @@ export default async function MetodologiaPoderosaPage() {
                   accentColor="#bd7d47"
                   size="large"
                   label="Compra ahora"
+                  installments={installmentOption}
+                  signedIn={!!user}
                 />
               )}
 
@@ -821,8 +881,8 @@ export default async function MetodologiaPoderosaPage() {
                     </>
                   ) : null}
                   <p className="text-sm text-foreground/60 mt-2">
-                    Acceso por 6 meses. Un solo pago — no es una suscripción que se cobre sola; al
-                    vencerse, te avisamos para renovar.
+                    Acceso por 6 meses. De contado o en 3 cuotas fijas que pagas tú: no es una
+                    suscripción que se cobre sola. Al vencerse, te avisamos para renovar.
                   </p>
                 </div>
 
@@ -833,6 +893,8 @@ export default async function MetodologiaPoderosaPage() {
                     accentColor="#bd7d47"
                     size="large"
                     label="Quiero comenzar mi proceso"
+                    installments={installmentOption}
+                    signedIn={!!user}
                   />
                   <p className="text-xs text-foreground/50 flex items-center gap-1">
                     🔒 Pago seguro a través de Wompi. Aceptamos tarjetas y PSE.
@@ -953,6 +1015,15 @@ export default async function MetodologiaPoderosaPage() {
 
   return (
     <>
+      {openPlan && pendingInstallment?.dueAt && (
+        <div className="bg-[#fbe4ec] px-4 py-3 text-center text-sm text-[#5c1030]">
+          Tu cuota {pendingInstallment.number} de {openPlan.installments_total} ({formatCopCents(pendingInstallment.amountCents)}) vence el{" "}
+          <strong>{formatDateCo(pendingInstallment.dueAt)}</strong>.{" "}
+          <Link href={`/cuotas/${openPlan.pay_token}`} className="font-semibold underline">
+            Pagar ahora
+          </Link>
+        </div>
+      )}
       <AccessOverview
         isLaunchBuyer={isLaunchBuyer}
         bonusFiles={(productFiles ?? []).map((f) => ({ id: f.id, name: f.display_name || f.file_name }))}

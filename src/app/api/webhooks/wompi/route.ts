@@ -10,6 +10,9 @@ import { claimEmail, ensurePreferences, finishEmail } from "@/lib/welcome/comms"
 import { loadCourseInfo } from "@/lib/welcome/courseInfo";
 import { sendWelcomeEmail } from "@/lib/welcome/welcomeEmail";
 import { trackDeclined, trackPurchase } from "@/lib/analytics/server";
+import { registerInstallmentPayment } from "@/lib/installments/plans";
+import { sendInstallmentEmail } from "@/lib/installments/emails";
+import { pauseDate } from "@/lib/installments/schedule";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -109,6 +112,32 @@ export async function POST(req: NextRequest) {
     accessExpiresAt = expiry.toISOString();
   }
 
+  // Pago en cuotas: consulta aparte y tolerante (si las columnas no
+  // existieran, el pago se aprueba igual como compra normal). Cada cuota
+  // habilita solo su tramo del acceso (ver src/lib/installments/config.ts).
+  let installment: { planId: string; number: number } | null = null;
+  try {
+    const { data: instRow } = await admin
+      .from("orders")
+      .select("installment_plan_id, installment_number")
+      .eq("id", order.id)
+      .maybeSingle();
+    if (instRow?.installment_plan_id && instRow.installment_number) {
+      installment = { planId: instRow.installment_plan_id, number: instRow.installment_number };
+    }
+  } catch {
+    installment = null;
+  }
+  let installmentResult: Awaited<ReturnType<typeof registerInstallmentPayment>> = null;
+  if (justApproved && installment) {
+    try {
+      installmentResult = await registerInstallmentPayment({ ...installment, buyerId: order.buyer_id ?? null });
+      if (installmentResult) accessExpiresAt = installmentResult.accessUntil.toISOString();
+    } catch (err) {
+      console.error("[cuotas] no se pudo registrar la cuota:", err);
+    }
+  }
+
   await admin
     .from("orders")
     .update({
@@ -171,7 +200,9 @@ export async function POST(req: NextRequest) {
   // Confirmación de compra de un curso con categorías (ej. Metodología
   // Poderosa) — distinto de los cursos "normales" (lecciones sueltas),
   // que hoy no mandan correo de confirmación.
-  if (justApproved && product?.type === "course" && order.buyer_email) {
+  // Cuotas 2 y 3: la alumna ya tiene cuenta y ya recibió la bienvenida.
+  const isLaterInstallment = !!installment && installment.number > 1;
+  if (justApproved && product?.type === "course" && order.buyer_email && !isLaterInstallment) {
     // Compra sin cuenta (el checkout ya no exige login antes de pagar):
     // la orden llega con buyer_id null. has_access_to_product exige
     // buyer_id = auth.uid(), así que sin esto el pago quedaría aprobado
@@ -291,6 +322,46 @@ export async function POST(req: NextRequest) {
       } catch (err) {
         console.error("No se pudo enviar el correo de confirmación del curso:", err);
       }
+    }
+  }
+
+  // Correo del plan de cuotas: qué cuota se pagó y la próxima fecha límite.
+  if (installmentResult && order.buyer_email) {
+    const plan = installmentResult.plan;
+    try {
+      // La cuenta pudo crearse arriba (compra sin sesión): se guarda en el plan.
+      if (!plan.buyer_id) {
+        const { data: linked } = await admin.from("orders").select("buyer_id").eq("id", order.id).maybeSingle();
+        if (linked?.buyer_id) await admin.from("installment_plans").update({ buyer_id: linked.buyer_id }).eq("id", plan.id);
+      }
+      const payUrl = `${req.nextUrl.origin}/cuotas/${plan.pay_token}`;
+      if (installmentResult.done) {
+        await sendInstallmentEmail({
+          to: order.buyer_email,
+          name: order.buyer_name,
+          payUrl,
+          email: { kind: "completada", total: plan.installments_total, accessUntil: installmentResult.accessUntil },
+        });
+      } else if (installmentResult.nextDue) {
+        const nextNumber = plan.installments_paid + 1;
+        await sendInstallmentEmail({
+          to: order.buyer_email,
+          name: order.buyer_name,
+          payUrl,
+          email: {
+            kind: "pagada",
+            paidNumber: installment!.number,
+            total: plan.installments_total,
+            nextNumber,
+            nextAmountCents: plan.schedule.installments[nextNumber - 1].amountCents,
+            nextDue: installmentResult.nextDue,
+            pauseOn: pauseDate(plan.schedule, new Date(plan.access_start!), nextNumber),
+            accessUntil: installmentResult.accessUntil,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("[cuotas] no se pudo enviar el correo de la cuota:", err);
     }
   }
 

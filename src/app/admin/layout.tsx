@@ -11,6 +11,7 @@ const SECTIONS = [
   { href: "/admin", label: "Finanzas" },
   { href: "/admin/crm", label: "CRM" },
   { href: "/admin/alumnas", label: "Alumnas" },
+  { href: "/admin/cuotas", label: "Cuotas" },
   { href: "/admin/lanzamiento", label: "Lanzamiento" },
   { href: "/admin/seguimiento", label: "Seguimiento" },
   { href: "/admin/gastos", label: "Gastos y suscripciones" },

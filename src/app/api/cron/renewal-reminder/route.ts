@@ -19,7 +19,7 @@ export async function GET(req: NextRequest) {
   const { data: orders } = await admin
     .from("orders")
     .select(
-      "id, buyer_name, buyer_email, access_expires_at, renewal_reminder_7d_sent_at, renewal_reminder_expiry_sent_at, products(title, type)",
+      "id, buyer_name, buyer_email, access_expires_at, renewal_reminder_7d_sent_at, renewal_reminder_expiry_sent_at, installment_number, installment_total, products(title, type)",
     )
     .eq("status", "approved")
     .not("access_expires_at", "is", null)
@@ -36,6 +36,9 @@ export async function GET(req: NextRequest) {
   for (const order of orders) {
     const product = Array.isArray(order.products) ? order.products[0] : order.products;
     if (!order.buyer_email || !order.access_expires_at || !product) continue;
+    // Cuotas intermedias: su vencimiento es el fin del tramo pagado, no del
+    // acceso. De eso se encargan los avisos de cuotas (installment-reminder).
+    if (order.installment_number && order.installment_total && order.installment_number < order.installment_total) continue;
 
     const expiresAt = new Date(order.access_expires_at);
     const renewUrl = `${req.nextUrl.origin}/cursos/metodologia-poderosa`;
