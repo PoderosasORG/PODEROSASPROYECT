@@ -23,14 +23,34 @@ function clean(value: string) {
   return value.replace(/[^\p{L}\p{N} ._\-/]/gu, "").trim().slice(0, 80);
 }
 
+/**
+ * Nombre del canal según las UTMs del lanzamiento (ver UTM_LINKS en
+ * src/lib/analytics/utm.ts). Lo que no coincida se guarda tal cual.
+ */
+function channelLabel(source: string, content: string | null, campaign: string | null) {
+  const s = source.toLowerCase();
+  const c = (content ?? "").toLowerCase();
+  if (s === "masterclass") return "QR masterclass";
+  if (s === "instagram" && c === "kat") return "Instagram Kat";
+  if (s === "instagram" && c === "shei") return "Instagram Shei";
+  if (s === "instagram" && c === "luz") return "Instagram Luz";
+  if (s === "whatsapp") return c ? `WhatsApp · ${content}` : "WhatsApp";
+  const extra = content || campaign;
+  return extra ? `${source} · ${extra}` : source;
+}
+
+/** ¿La URL trae una fuente explícita (utm_source o ?ref=)? */
+export function hasExplicitSource(request: NextRequest) {
+  return request.nextUrl.searchParams.has("utm_source") || request.nextUrl.searchParams.has("ref");
+}
+
 /** utm_source/ref de la URL, o el dominio externo que mandó la visita. */
 export function detectOrigin(request: NextRequest): string | null {
   const params = request.nextUrl.searchParams;
   const utm = params.get("utm_source");
   const ref = params.get("ref");
   if (utm) {
-    const campaign = params.get("utm_campaign");
-    return clean(campaign ? `${utm} / ${campaign}` : utm) || null;
+    return clean(channelLabel(utm, params.get("utm_content"), params.get("utm_campaign"))) || null;
   }
   if (ref) return clean(`ref: ${ref}`) || null;
 

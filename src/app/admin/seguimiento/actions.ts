@@ -6,6 +6,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { LEAD_STATUSES, normalizePhone, type LeadStatus } from "@/lib/sales/leads";
 import { WA_TEMPLATES, fillTemplate } from "@/lib/sales/templates";
+import { WHATSAPP_UTM_LINK } from "@/lib/analytics/utm";
 import { promoDeadlineLabel } from "@/lib/metodologiaPoderosasLanzamiento";
 
 function text(form: FormData, name: string) {
@@ -84,7 +85,7 @@ export async function openWhatsApp(form: FormData) {
 
   const message = fillTemplate(tpl!.text, {
     nombre: lead.full_name ?? text(form, "full_name"),
-    link: "https://poderosas.org/cursos/metodologia-poderosa",
+    link: WHATSAPP_UTM_LINK,
     fecha: promoDeadlineLabel(),
   });
   await admin.from("sales_contact_log").insert({

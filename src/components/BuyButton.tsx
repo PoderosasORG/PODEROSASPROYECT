@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { trackEvent, trackFunnel } from "@/lib/analytics/client";
 
 export function BuyButton({
   productId,
@@ -24,6 +25,11 @@ export function BuyButton({
   const [error, setError] = useState<string | null>(null);
 
   async function startCheckout(guest?: { buyerName: string; buyerEmail: string; marketingOptIn?: boolean }) {
+    // Clic en el botón de compra (solo el primer clic, no el del formulario).
+    if (!guest) {
+      trackEvent("cta_comprar", { location: label });
+      trackFunnel("cta_comprar", label);
+    }
     setLoading(true);
     setError(null);
     try {
@@ -44,6 +50,17 @@ export function BuyButton({
       if (!res.ok || !data.checkoutUrl) {
         setError(data.error ?? "No se pudo iniciar el pago, intenta de nuevo.");
         return;
+      }
+      // Checkout iniciado: sin datos personales, solo producto y valor.
+      // La compra NO se marca aquí: se envía desde el servidor cuando
+      // Wompi confirma el pago (webhook), una sola vez por pedido.
+      if (typeof data.amountCents === "number") {
+        const value = data.amountCents / 100;
+        trackEvent(
+          "begin_checkout",
+          { currency: data.currency ?? "COP", value, items: [{ item_id: productId, item_name: slug, price: value, quantity: 1 }] },
+          { event: "InitiateCheckout", params: { currency: data.currency ?? "COP", value } },
+        );
       }
       window.location.href = data.checkoutUrl;
     } catch {

@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { detectOrigin, ORIGIN_COOKIE, VISITOR_COOKIE } from "@/lib/origin";
+import { detectOrigin, hasExplicitSource, ORIGIN_COOKIE, VISITOR_COOKIE } from "@/lib/origin";
 
 export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
@@ -8,7 +8,9 @@ export async function middleware(request: NextRequest) {
   // Origen de la visita (para el CRM de /admin): se guarda la PRIMERA
   // fuente con la que llegó la persona (utm_source, ?ref= o el sitio
   // externo que la mandó) y se respeta por 30 días.
-  if (!request.cookies.get(ORIGIN_COOKIE)) {
+  // Una UTM explícita (link de campaña) siempre actualiza la fuente; sin
+  // UTM, se conserva la primera fuente con la que llegó.
+  if (!request.cookies.get(ORIGIN_COOKIE) || hasExplicitSource(request)) {
     const origin = detectOrigin(request);
     if (origin) {
       response.cookies.set(ORIGIN_COOKIE, origin, {

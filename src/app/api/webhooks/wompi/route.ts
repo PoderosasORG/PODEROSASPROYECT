@@ -9,6 +9,7 @@ import { registerStudent } from "@/lib/welcome/journey";
 import { claimEmail, ensurePreferences, finishEmail } from "@/lib/welcome/comms";
 import { loadCourseInfo } from "@/lib/welcome/courseInfo";
 import { sendWelcomeEmail } from "@/lib/welcome/welcomeEmail";
+import { trackDeclined, trackPurchase } from "@/lib/analytics/server";
 
 // Wompi llama esta URL directamente desde sus servidores (no desde
 // el navegador del comprador), así que es la fuente de verdad real
@@ -123,6 +124,23 @@ export async function POST(req: NextRequest) {
     const crm = wompiCrmFields(transaction, order.amount_cents);
     const { error: crmError } = await admin.from("orders").update(crm).eq("id", order.id);
     if (crmError) console.error("[webhook] no se guardaron los datos de CRM:", crmError.message);
+  }
+
+  // Medición del embudo (GA4 / Meta): la compra se envía solo aquí, con el
+  // pago confirmado por Wompi, y una sola vez por pedido (analytics_sent).
+  // Sin datos personales. Nunca afecta la aprobación del pago.
+  const conversion = {
+    orderId: order.id,
+    productId: order.product_id,
+    productTitle: product?.title ?? "",
+    amountCents: order.amount_cents,
+    currency: order.currency,
+    siteUrl: req.nextUrl.origin,
+  };
+  if (justApproved) {
+    await trackPurchase(conversion);
+  } else if (["declined", "voided", "error"].includes(newStatus) && !wasAlreadyApproved && transaction.id) {
+    await trackDeclined({ ...conversion, transactionId: String(transaction.id), status: newStatus });
   }
 
   // Solo generamos la boleta la primera vez que la orden queda aprobada
