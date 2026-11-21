@@ -3,6 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatCop, formatDate, resolvePeriod } from "@/lib/admin/format";
 import { LAUNCH_PRICE_CENTS, METODOLOGIA_PODEROSAS_PRODUCT_ID } from "@/lib/metodologiaPoderosasLanzamiento";
 import { UTM_LINKS } from "@/lib/analytics/utm";
+import { LAUNCH_FIRST_INSTALLMENT_CENTS } from "@/lib/installments/config";
 import { PeriodPicker } from "../PeriodPicker";
 import { AutoRefresh } from "./AutoRefresh";
 
@@ -14,7 +15,7 @@ const LAUNCH_START = "2026-11-01";
 const ABANDON_MS = 2 * 60 * 60 * 1000;
 const PAGE = 1000;
 
-type Order = { id: string; status: string; amount_cents: number; origin: string | null; created_at: string; wompi_transaction_id: string | null };
+type Order = { id: string; status: string; amount_cents: number; origin: string | null; created_at: string; wompi_transaction_id: string | null; installment_number: number | null };
 type Visit = { visitor_id: string; page: string; origin: string | null; visits: number };
 type Click = { event: string; location: string | null; origin: string | null; visitor_id: string | null };
 
@@ -59,7 +60,7 @@ export default async function LanzamientoPage({
     fetchAll<Order>((a, b) =>
       admin
         .from("orders")
-        .select("id, status, amount_cents, origin, created_at, wompi_transaction_id")
+        .select("id, status, amount_cents, origin, created_at, wompi_transaction_id, installment_number")
         .eq("product_id", METODOLOGIA_PODEROSAS_PRODUCT_ID)
         .gte("created_at", period.fromIso)
         .lt("created_at", period.toIsoExclusive)
@@ -87,7 +88,16 @@ export default async function LanzamientoPage({
   const abandoned = orders.filter((o) => o.status === "pending" && now - new Date(o.created_at).getTime() > ABANDON_MS);
   const pendingNow = orders.filter((o) => o.status === "pending" && !abandoned.includes(o));
   const gross = approved.reduce((s, o) => s + o.amount_cents, 0);
-  const promoSeats = approved.filter((o) => o.amount_cents === LAUNCH_PRICE_CENTS).length;
+  // Una venta = un pago de contado o la 1.ª cuota (las cuotas 2 y 3 son
+  // ingresos de una venta que ya se contó).
+  const sales = approved.filter((o) => !o.installment_number || o.installment_number === 1);
+  const laterInstallments = approved.length - sales.length;
+  const promoSeats = sales.filter(
+    (o) =>
+      (!o.installment_number && o.amount_cents === LAUNCH_PRICE_CENTS) ||
+      (o.installment_number === 1 && o.amount_cents === LAUNCH_FIRST_INSTALLMENT_CENTS),
+  ).length;
+  const promoInstallmentSeats = sales.filter((o) => o.installment_number === 1 && o.amount_cents === LAUNCH_FIRST_INSTALLMENT_CENTS).length;
   const uniqueVisitors = visits.length;
   const totalVisits = visits.reduce((s, v) => s + (v.visits ?? 1), 0);
   const buyClicks = clicks.filter((c) => c.event === "cta_comprar");
@@ -107,7 +117,7 @@ export default async function LanzamientoPage({
     const r = row(o.origin);
     r.checkouts++;
     if (o.status === "approved") {
-      r.sales++;
+      if (!o.installment_number || o.installment_number === 1) r.sales++;
       r.revenue += o.amount_cents;
     }
   });
@@ -125,12 +135,20 @@ export default async function LanzamientoPage({
     { label: "Visitas a la landing", value: totalVisits.toLocaleString("es-CO"), hint: `${uniqueVisitors.toLocaleString("es-CO")} personas distintas` },
     { label: "Clics en comprar", value: buyClicks.length.toLocaleString("es-CO"), hint: `${goClicks.length} clics hacia la metodología desde el inicio` },
     { label: "Checkouts iniciados", value: orders.length.toLocaleString("es-CO"), hint: `${pendingNow.length} en curso ahora` },
-    { label: "Pagos aprobados", value: approved.length.toLocaleString("es-CO"), hint: `${pct(approved.length, orders.length)} de los checkouts` },
+    {
+      label: "Pagos aprobados",
+      value: approved.length.toLocaleString("es-CO"),
+      hint: `${pct(approved.length, orders.length)} de los checkouts${laterInstallments ? ` · ${laterInstallments} son cuotas 2 o 3` : ""}`,
+    },
     { label: "Pagos rechazados", value: declined.length.toLocaleString("es-CO"), hint: `${pct(declined.length, orders.length)} de los checkouts` },
     { label: "Abandono de checkout", value: pct(abandoned.length, orders.length), hint: `${abandoned.length} sin pagar después de 2 h` },
-    { label: "Tasa de conversión", value: pct(approved.length, uniqueVisitors), hint: "compras ÷ personas que visitaron" },
-    { label: "Ingresos brutos", value: formatCop(gross), hint: `${approved.length} ventas · sin descontar comisiones` },
-    { label: "Cupos promocionales vendidos", value: promoSeats.toLocaleString("es-CO"), hint: `a ${formatCop(LAUNCH_PRICE_CENTS)}` },
+    { label: "Tasa de conversión", value: pct(sales.length, uniqueVisitors), hint: "ventas ÷ personas que visitaron" },
+    { label: "Ingresos brutos", value: formatCop(gross), hint: `${sales.length} ventas · cobrado hasta hoy, sin comisiones` },
+    {
+      label: "Cupos promocionales vendidos",
+      value: promoSeats.toLocaleString("es-CO"),
+      hint: `a ${formatCop(LAUNCH_PRICE_CENTS)} · ${promoInstallmentSeats} en cuotas`,
+    },
   ];
 
   return (

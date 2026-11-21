@@ -10,6 +10,7 @@ import { VisitBeacon } from "@/components/tracking/VisitBeacon";
 import { TrackedLink } from "@/components/tracking/TrackedLink";
 import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 import { CoursePreview } from "@/components/home/CoursePreview";
+import { firstInstallmentCents } from "@/lib/installments/config";
 import {
   LAUNCH_PRICE_CENTS,
   REGULAR_PRICE_CENTS,
@@ -157,6 +158,8 @@ export default function Home() {
   const deadlineIso = promoDeadline().toISOString();
   const deadlineLabel = promoDeadlineLabel();
   const extensionMessage = promoExtensionMessage();
+  const cuota = firstInstallmentCents();
+  const cuotasLabel = cuota ? `o 3 cuotas de ${cop(cuota)}` : "";
   const photos = masterclassPhotos();
 
   return (
@@ -220,7 +223,10 @@ export default function Home() {
               {extensionMessage ? (
                 <p className="max-w-sm rounded-2xl bg-white/15 px-4 py-3 text-sm font-medium">{extensionMessage}</p>
               ) : null}
-              <p className="text-[11px] uppercase tracking-[0.2em] text-white/70">Hasta el {deadlineLabel}</p>
+              {cuotasLabel ? <p className="-mt-3 text-sm text-white/80">{cuotasLabel}</p> : null}
+              <p className="text-[11px] uppercase tracking-[0.2em] text-white/70">
+                Precio especial + 3 bonos · hasta el {deadlineLabel}
+              </p>
               <Countdown deadlineIso={deadlineIso} tone="dark" />
             </>
           ) : (
@@ -276,7 +282,10 @@ export default function Home() {
               ))}
             </div>
             {extensionMessage ? <p className="max-w-xl text-[#f7c9d8]">{extensionMessage}</p> : null}
-            <p className="text-white/75">Compra antes del {deadlineLabel} (hora Colombia).</p>
+            <p className="max-w-xl text-white/75">
+              Inscríbete hasta el {deadlineLabel} (hora Colombia) con el precio especial de {cop(LAUNCH_PRICE_CENTS)}, de
+              contado o en 3 cuotas, y recibe los 3 bonos exclusivos.
+            </p>
             <Countdown deadlineIso={deadlineIso} tone="dark" />
             <Button href={CHECKOUT} location="home_2" variant="light">
               Quiero mi Metodología con los 3 bonos
@@ -426,6 +435,7 @@ export default function Home() {
             <p className="flex items-baseline gap-3">
               <span className="text-white/55 line-through">{cop(REGULAR_PRICE_CENTS)}</span>
               <span className="font-serif text-4xl">{cop(LAUNCH_PRICE_CENTS)} COP</span>
+              {cuotasLabel ? <span className="text-sm text-white/75">{cuotasLabel}</span> : null}
             </p>
           ) : (
             <p className="font-serif text-4xl">{cop(REGULAR_PRICE_CENTS)} COP</p>

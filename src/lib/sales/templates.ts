@@ -40,7 +40,7 @@ export const WA_TEMPLATES: WaTemplate[] = [
     key: "recordatorio_inscripcion",
     label: "Recordatorio de inscripción",
     text:
-      "Hola, {nombre} 🌸 Te escribimos solo para recordarte que el precio especial de la Metodología PODEROSAS está disponible hasta el {fecha} (hora Colombia). " +
+      "Hola, {nombre} 🌸 Te escribimos solo para recordarte que el precio especial de la Metodología PODEROSAS ($397.000, de contado o en 3 cuotas, con 3 bonos exclusivos) está disponible hasta el {fecha} (hora Colombia). " +
       "Si es para ti, aquí puedes inscribirte: {link}. Y si no es el momento, no pasa nada: igual nos alegra que hagas parte de la comunidad. 💗",
   },
   {

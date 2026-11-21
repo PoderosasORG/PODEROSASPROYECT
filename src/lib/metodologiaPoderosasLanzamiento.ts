@@ -1,13 +1,14 @@
 // Mecánica del lanzamiento de Metodología PODEROSAS 2026–2027: precio
-// especial hasta el sábado 21 de nov. 11:59 p.m. (hora Colombia, UTC-5),
-// luego vuelve al precio regular. La fecha vive aquí (no en la base de
-// datos) porque es un evento único de este lanzamiento — cuando pase,
-// este archivo deja de tener efecto y el precio regular (en la base de
-// datos) queda como el único precio.
+// especial de $397.000 (de contado o en 3 cuotas) con 3 bonos, hasta el
+// martes 1 de diciembre de 2026, 11:59 p.m. (hora Colombia, UTC-5). Luego
+// vuelve al precio regular de $497.000. Esta fecha es la ÚNICA fuente de
+// verdad: home, página del curso, checkout, cuotas, FAQ, contadores y
+// plantillas de WhatsApp la leen de aquí.
 //
-// Sábado 21 de nov. 2026, 23:59:59 hora Colombia (UTC-5) = domingo
-// 22 de nov. 2026, 04:59:59 UTC.
-export const LAUNCH_DEADLINE = new Date("2026-11-22T04:59:59Z");
+// Martes 1 de dic. 2026, 23:59:59 hora Colombia (UTC-5) = miércoles
+// 2 de dic. 2026, 04:59:59 UTC. (Antes: sábado 21 de nov.; se extendió
+// públicamente el 2026-11-21.)
+export const LAUNCH_DEADLINE = new Date("2026-12-02T04:59:59Z");
 
 export const LAUNCH_PRICE_CENTS = 39_700_000; // $397.000 COP
 export const REGULAR_PRICE_CENTS = 49_700_000; // $497.000 COP

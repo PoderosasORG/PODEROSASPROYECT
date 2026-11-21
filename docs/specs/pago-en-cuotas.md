@@ -1,12 +1,14 @@
 # Pago en cuotas · Metodología PODEROSAS
 
 ## Reglas
-- Total $497.000 en 3 cuotas fijas: $165.667 + $165.667 + $165.666.
+- Hasta el 1 de diciembre de 2026 (precio especial): $397.000 en 3 cuotas fijas de $132.334 + $132.333 + $132.333, con los 3 bonos.
+- Después (precio regular): $497.000 en 3 cuotas fijas de $165.667 + $165.667 + $165.666.
+- El plan toma el valor vigente el día de la primera cuota y lo conserva hasta el final.
 - Cuota 1 (al inscribirse) habilita el mes 1. Cuota 2 habilita el mes 2. Cuota 3 habilita los meses 3 a 6.
 - Las fechas se cuentan desde el día del primer pago. La cuota 2 vence al cumplir 1 mes y la 3 al cumplir 2 meses.
 - 3 días de gracia: si no paga, el acceso se pausa 3 días después de la fecha límite y vuelve apenas paga.
 - Los 3 bonos llegan con la primera cuota (igual que de contado).
-- El contado sigue en $397.000 mientras dure el precio especial.
+- El contado es $397.000 hasta el 1 de diciembre de 2026 y luego $497.000. La fecha vive en `src/lib/metodologiaPoderosasLanzamiento.ts`.
 
 ## Dónde se cambia
 `src/lib/installments/config.ts`: valor de cada cuota, hasta qué mes habilita y días de gracia. Solo afecta planes nuevos: cada plan guarda una copia de su calendario.
