@@ -1,505 +1,425 @@
 import fs from "node:fs";
 import path from "node:path";
+import Image from "next/image";
 import Link from "next/link";
-import { ProfileCard } from "@/components/ProfileCard";
+import type { Metadata } from "next";
 import { IntroVideoCard } from "@/components/IntroVideoCard";
-import { createClient } from "@/lib/supabase/server";
-import { stripHtml } from "@/lib/panel/sanitize";
+import { Countdown } from "@/components/home/Countdown";
+import { Gallery } from "@/components/home/Gallery";
 import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
+import {
+  LAUNCH_DEADLINE,
+  LAUNCH_PRICE_CENTS,
+  REGULAR_PRICE_CENTS,
+  isLaunchPriceActive,
+} from "@/lib/metodologiaPoderosasLanzamiento";
 
-// Video de presentación de las tres, pedido por la usuaria para que salga
-// debajo del menú de accesos rápidos — subido a Supabase Storage (bucket
-// "covers") porque pesa demasiado para ir en el repo. La miniatura es un
-// fotograma del cierre del propio video mientras la usuaria no suba una
-// foto de las tres para reemplazarla.
+// Home "Academia PODEROSAS" (Kat, 2026-11-20). Distribución visual
+// inspirada en sitios de mentoras: foto grande → programas en bloques
+// partidos (foto + color) → autoridad → mentoras → contenido. Poco texto,
+// botones claros. No se inventan cifras, testimonios ni imágenes.
+
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
+export const metadata: Metadata = {
+  title: "Academia PODEROSAS | Metodología PODEROSAS 2026–2027",
+  description:
+    "Mentoras de mujeres PODEROSAS: Luz Amparo, Shei Rivera y Kat Rivera. Metodología PODEROSAS 2026–2027, primera generación: convierte tus sueños en un plan y tu plan en acción.",
+  alternates: { canonical: "/" },
+};
+
+const CHECKOUT = "/cursos/metodologia-poderosa";
+
 const INTRO_VIDEO_URL =
   "https://asiftmeeaopqqtwgacee.supabase.co/storage/v1/object/public/covers/site/intro-video.mp4";
 const INTRO_VIDEO_POSTER =
   "https://asiftmeeaopqqtwgacee.supabase.co/storage/v1/object/public/covers/site/intro-video-poster.jpg";
 
-// Las 2 fotos del evento (grid de la masterclass) todavía no existen —
-// Shei las va a mandar sacadas de ChatGPT/Pinterest. Mientras no estén en
-// public/images/evento/, esas celdas quedan en un fondo neutro en vez de
-// mostrar una imagen rota.
-function hasEventPhoto(filename: string) {
-  return fs.existsSync(path.join(process.cwd(), "public", "images", "evento", filename));
+// Fotos REALES de la primera masterclass: se ponen en
+// public/images/masterclass-2026/ y aparecen solas en la galería.
+function masterclassPhotos() {
+  const dir = path.join(process.cwd(), "public", "images", "masterclass-2026");
+  try {
+    return fs
+      .readdirSync(dir)
+      .filter((f) => /\.(jpe?g|png|webp)$/i.test(f))
+      .sort()
+      .map((f) => `/images/masterclass-2026/${f}`);
+  } catch {
+    return [];
+  }
 }
 
-const CREATOR_ORDER = ["luz", "kat", "shei"];
+function cop(cents: number) {
+  return `$${Math.round(cents / 100).toLocaleString("es-CO")}`;
+}
 
-const CREATOR_DEFAULTS: Record<string, { name: string; role: string; bio: string }> = {
-  kat: {
-    name: "Kat",
-    role: "PODEROSAS",
-    bio: "Creadora de la metodología PODEROSAS: claridad, decisión y acción para mujeres que quieren cambiar de vida.",
+// Productos independientes del ecosistema. Aún no tienen página de venta
+// propia: cuando la tengan, se pone el enlace en `href`.
+const PRODUCTS = [
+  {
+    kicker: "Ebook",
+    title: "50 Acuerdos de Pareja",
+    line: "Para construir relaciones sanas.",
+    photo: "/images/creators/shei.webp",
+    photoPos: "object-top",
+    panel: "bg-[#f7c9d8] text-[#5c1030]",
+    href: null as string | null,
   },
-  shei: {
-    name: "Shei",
-    role: "PODEROSAS",
-    bio: "Contenido y productos digitales enfocados en crecimiento personal y bienestar.",
+  {
+    kicker: "Masterclass",
+    title: "Marca Personal y Monetización",
+    line: "Construye comunidad en redes sociales.",
+    photo: "/images/creators/kat-cover.jpg",
+    photoPos: "object-[50%_30%]",
+    panel: "bg-[#e7dcf5] text-[#3d2463]",
+    href: null as string | null,
   },
-  luz: {
-    name: "Luz",
-    role: "PODEROSAS",
-    bio: "Experiencia y sabiduría al servicio de la comunidad, con herramientas propias.",
+  {
+    kicker: "Reto de 7 días",
+    title: "Enfócate en Ti",
+    line: "Fortalece tu amor propio.",
+    photo: "/images/creators/luz-cover.webp",
+    photoPos: "object-top",
+    panel: "bg-[#f3e4cf] text-[#6b4423]",
+    href: null as string | null,
   },
-};
+];
 
-export const dynamic = "force-dynamic";
-export const revalidate = 0;
+const MENTORAS = [
+  { slug: "luz", name: "Luz Amparo", photo: "/images/creators/luz.png", pos: "object-top", focus: "Energía humana, magnetismo, lectura del rostro y de las manos" },
+  { slug: "shei", name: "Shei Rivera", photo: "/images/creators/shei.webp", pos: "object-top", focus: "Psicología y bienestar emocional" },
+  { slug: "kat", name: "Kat Rivera", photo: "/images/creators/kat.jpg", pos: "object-[50%_35%]", focus: "Comunicación, PNL y productividad" },
+];
 
-export default async function Home() {
-  const supabase = await createClient();
-  const { data: creators } = await supabase
-    .from("creators")
-    .select("slug, display_name, bio, short_bio, avatar_url")
-    .eq("is_active", true)
-    .in("slug", CREATOR_ORDER);
+const TEMAS = [
+  "Autoestima y amor propio",
+  "Energía y magnetismo",
+  "Liderazgo y seguridad",
+  "Hábitos positivos",
+  "Productividad y tiempo",
+  "Relaciones de pareja",
+  "Comunicación sana",
+  "Meditaciones guiadas",
+  "Manifiesto y mantras",
+  "Autoconocimiento",
+  "Plan de acción de 30 días",
+];
 
-  const profiles = CREATOR_ORDER.map((slug) => {
-    const defaults = CREATOR_DEFAULTS[slug];
-    const creator = creators?.find((c) => c.slug === slug);
-    return {
-      slug,
-      name: creator?.display_name || defaults.name,
-      role: defaults.role,
-      // short_bio es para esta tarjeta específicamente (texto corto a propósito);
-      // bio es el "Acerca de mí" largo del perfil público (/slug) — no deben
-      // mezclarse, o la tarjeta se desborda con el texto largo (pasó con Shei).
-      bio:
-        (creator?.short_bio ? stripHtml(creator.short_bio) : "") ||
-        (creator?.bio ? stripHtml(creator.bio) : "") ||
-        defaults.bio,
-      initials: (creator?.display_name || defaults.name).charAt(0).toUpperCase(),
-      avatarUrl: creator?.avatar_url ?? null,
-    };
-  });
+const INCLUYE = [
+  "6 meses de acceso",
+  "6 clases en vivo + grabaciones",
+  "Cartilla descargable",
+  "Ejercicios prácticos",
+  "Comunidad privada de WhatsApp",
+  "Meditaciones guiadas",
+  "Manifiesto y mantras",
+  "Experiencias y eventos",
+];
+
+function Button({ href, children, variant = "dark" }: { href: string; children: React.ReactNode; variant?: "dark" | "light" | "outline" }) {
+  const styles = {
+    dark: "bg-[#2b0f1d] text-white hover:bg-[#5c1030]",
+    light: "bg-white text-[#5c1030] hover:bg-beige-light",
+    outline: "border border-current hover:bg-white/10",
+  }[variant];
+  return (
+    <Link
+      href={href}
+      className={`inline-flex items-center justify-center rounded-full px-7 py-3.5 text-xs sm:text-sm font-semibold uppercase tracking-[0.15em] shadow-md transition-transform hover:-translate-y-0.5 ${styles}`}
+    >
+      {children}
+    </Link>
+  );
+}
+
+function SectionTitle({ children, light = false }: { children: React.ReactNode; light?: boolean }) {
+  return (
+    <h2 className={`text-center text-xl sm:text-3xl font-semibold uppercase tracking-[0.12em] ${light ? "text-white" : "text-[#2b0f1d]"}`}>
+      {children}
+    </h2>
+  );
+}
+
+export default function Home() {
+  const launch = isLaunchPriceActive();
+  const deadlineIso = LAUNCH_DEADLINE.toISOString();
+  const photos = masterclassPhotos();
 
   return (
-    <div className="flex flex-col flex-1 bg-beige-light">
-      {/* Hero — foto a ancho completo con el título encrustado encima (en
-          una sola línea), sin el badge/párrafo/CTA que antes iban debajo:
-          eso se movió a una sección propia después del grid de la
-          masterclass, para que el grid sea lo primero que se vea completo. */}
-      <section className="relative w-full aspect-[8/3] overflow-hidden flex items-end justify-center pb-4 sm:pb-8">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/images/creators/landing-hero.webp"
-          alt="Luz, Shei y Kat, las PODEROSAS"
-          className="absolute inset-0 h-full w-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/5 to-transparent" />
-        <h1 className="relative font-serif text-white text-base sm:text-4xl lg:text-5xl leading-tight text-center whitespace-nowrap px-4 drop-shadow-[0_2px_10px_rgba(0,0,0,0.6)]">
-          Mentoras de mujeres PODEROSAS
-        </h1>
+    <div className="flex flex-1 flex-col bg-white">
+      {/* 1. HERO ---------------------------------------------------------- */}
+      <section className="relative isolate w-full overflow-hidden bg-[#2b0f1d] sm:flex sm:aspect-[16/8] lg:aspect-[16/7] sm:items-end sm:justify-center">
+        <div className="relative aspect-[8/3] w-full sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto">
+          <Image
+            src="/images/creators/landing-hero.webp"
+            alt="Luz Amparo, Shei Rivera y Kat Rivera, mentoras de PODEROSAS"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[50%_25%]"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#2b0f1d] via-transparent to-transparent sm:from-[#2b0f1d]/90 sm:via-[#2b0f1d]/10 sm:via-40%" />
+        </div>
+        <div className="relative flex flex-col items-center gap-3 px-6 pb-10 pt-2 sm:pt-0 text-center">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl leading-[1.05] text-white drop-shadow-[0_2px_14px_rgba(0,0,0,0.5)]">
+            Mentoras de mujeres <br className="sm:hidden" />
+            PODEROSAS
+          </h1>
+          <p className="max-w-2xl font-serif text-lg sm:text-xl italic text-white/90">
+            Si lo puedes imaginar, lo puedes lograr. Con coherencia y acción.
+          </p>
+        </div>
       </section>
 
-      {/* Menú de accesos rápidos — el foco del sitio es vender la
-          Metodología PODEROSAS (es lo que queda después del evento, no la
-          masterclass puntual), así que ese es el segundo link, apuntando
-          directo al curso; el evento presencial queda como tercer link. */}
-      <nav className="flex items-center justify-center gap-6 sm:gap-10 px-6 py-5 bg-white border-b border-gold-light/30 text-sm sm:text-base">
-        <Link href="/" className="text-foreground/70 hover:text-gold transition-colors">
-          Home
-        </Link>
-        <Link
-          href="/cursos/metodologia-poderosa"
-          className="text-foreground/70 hover:text-gold transition-colors"
-        >
-          Quiero ser parte de PODEROSAS
-        </Link>
-        <Link
-          href="/evento#entradas"
-          className="text-foreground/70 hover:text-gold transition-colors"
-        >
-          Eventos presenciales
-        </Link>
+      {/* Franja de navegación (como las categorías bajo el hero) */}
+      <nav className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 border-b border-[#2b0f1d]/10 bg-white px-6 py-4 text-[11px] sm:text-xs font-semibold uppercase tracking-[0.2em] text-[#2b0f1d]">
+        <Link href="#academia" className="hover:text-gold">Academia</Link>
+        <Link href="#mentoras" className="hover:text-gold">Mentoras</Link>
+        <Link href="/evento#entradas" className="hover:text-gold">Eventos presenciales</Link>
+        <Link href="#contenido" className="hover:text-gold">Podcast</Link>
+        <Link href={CHECKOUT} className="text-gold hover:underline">Inscríbete</Link>
       </nav>
 
-      <IntroVideoCard videoUrl={INTRO_VIDEO_URL} posterUrl={INTRO_VIDEO_POSTER} />
-
-      {/* Curso virtual — ya a la venta. Copy final entregado por el
-          usuario, montado tal cual. Movido justo debajo del video de las
-          tres (pedido explícito de Shei: la metodología debe verse antes
-          que el grid de la masterclass presencial). */}
-      <section id="programas" className="px-6 py-24 bg-beige-light scroll-mt-10">
-        <div className="max-w-3xl mx-auto flex flex-col items-center text-center gap-6 px-6">
-          <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-            Metodología PODEROSAS 2026–2027
-          </span>
-          <h2 className="font-serif text-4xl sm:text-5xl leading-tight">
-            Deja de dar vueltas. Empieza a construir una vida que se sienta tuya.
-          </h2>
-          <p className="text-foreground/70 max-w-xl font-medium">
-            Un método práctico para entender lo que sientes, descubrir lo que
-            realmente quieres y empezar a convertirlo en realidad.
-          </p>
-          <p className="text-foreground/70 max-w-xl">
-            A veces sabes que quieres algo diferente, pero no sabes por dónde
-            empezar. O tienes tantas ideas, dudas y expectativas encima que
-            terminas dejando para después lo que de verdad importa.
-          </p>
-          <p className="text-foreground/70 max-w-xl">
-            Metodología Poderosa te ayuda a poner en orden tus pensamientos,
-            reconectar contigo y transformar tus deseos en pasos concretos
-            que puedas llevar a tu vida real.
-          </p>
-          <p className="text-foreground/70 max-w-xl font-medium">
-            No se trata de convertirte en otra persona. Se trata de aprender
-            a elegir tu propio camino.
-          </p>
-          <Link
-            href="/cursos/metodologia-poderosa"
-            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
-          >
-            Quiero ser parte de PODEROSAS
-          </Link>
-        </div>
-
-        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6">
-          <h3 className="font-serif text-2xl text-center mb-2">
-            ¿Sientes que quieres cambiar algo, pero no sabes cómo empezar?
-          </h3>
-          {[
-            "Tienes ganas de hacer algo diferente, pero no consigues identificar qué es lo que realmente quieres.",
-            "Empiezas proyectos, haces planes y te llenas de motivación, pero te cuesta mantener el rumbo.",
-            "Te descubres tomando decisiones pensando en lo que esperan los demás, en lugar de preguntarte qué quieres tú.",
-            "Consumes consejos, guardas publicaciones y buscas respuestas, pero sigues sintiendo que necesitas ordenar tus ideas.",
-            "Sabes que tienes cosas por hacer y sueños por cumplir, pero te cuesta convertirlos en acciones concretas.",
-          ].map((pain) => (
-            <p key={pain} className="flex gap-3 text-foreground/80">
-              <span className="text-gold">✦</span>
-              {pain}
-            </p>
-          ))}
-          <p className="text-center text-foreground/70 mt-4">
-            No necesitas tener toda tu vida resuelta para empezar. Necesitas
-            un punto de partida y herramientas para avanzar.
-          </p>
-          <p className="text-center font-medium">
-            No tienes que resolverlo todo de una vez. Empieza por ti.
-          </p>
-        </div>
-
-        <div className="max-w-4xl mx-auto mt-20 px-6">
-          <p className="text-center text-foreground/70 max-w-2xl mx-auto mb-10">
-            Metodología Poderosa es un curso virtual que te acompaña a
-            recorrer tres pasos fundamentales para construir una vida más
-            alineada con quien eres y con lo que quieres.
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
-              <span className="font-serif text-3xl text-gold-light">01</span>
-              <p className="font-serif text-lg">Reconoce quién eres</p>
-              <p className="text-sm text-foreground/60">
-                Comprende mejor lo que sientes, identifica tus necesidades y
-                reconoce aquello que influye en tus decisiones.
-              </p>
-              <p className="text-sm text-foreground/60">
-                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
-                herramientas de autoconocimiento para entenderte mejor y
-                empezar a escucharte con más intención.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
-              <span className="font-serif text-3xl text-gold-light">02</span>
-              <p className="font-serif text-lg">Descubre qué quieres</p>
-              <p className="text-sm text-foreground/60">
-                Distingue tus deseos de las expectativas externas, explora
-                tus posibilidades y define qué es importante para ti en esta
-                etapa de tu vida.
-              </p>
-              <p className="text-sm text-foreground/60">
-                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
-                mayor claridad sobre tus prioridades, tus valores y la
-                dirección que quieres tomar.
-              </p>
-            </div>
-            <div className="rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col gap-2">
-              <span className="font-serif text-3xl text-gold-light">03</span>
-              <p className="font-serif text-lg">Convierte tus deseos en acciones</p>
-              <p className="text-sm text-foreground/60">
-                Pasa de las ideas a los pasos concretos. Aprende a organizar
-                tus objetivos, tomar decisiones y construir una forma de
-                avanzar que puedas sostener en tu día a día.
-              </p>
-              <p className="text-sm text-foreground/60">
-                <span className="font-medium text-foreground/80">Te llevas:</span>{" "}
-                ejercicios y herramientas prácticas para empezar a
-                materializar lo que quieres.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6">
-          <h3 className="font-serif text-2xl text-center mb-2">
-            ¿Qué vas a conseguir con Metodología Poderosa?
-          </h3>
-          <p className="text-center text-foreground/70">
-            Al finalizar el recorrido, habrás trabajado para:
-          </p>
-          {[
-            "Entenderte mejor: reconocer qué sientes, qué necesitas y qué quieres cambiar.",
-            "Tomar decisiones con más claridad: identificar tus prioridades y evaluar qué tiene sentido para ti.",
-            "Dejar de acumular ideas sin rumbo: convertir tus deseos en objetivos y próximos pasos.",
-            "Reconocer lo que te frena: explorar patrones y expectativas que pueden estar dificultando tu avance.",
-            "Construir un plan propio: definir acciones realistas que puedas empezar a aplicar en tu vida cotidiana.",
-          ].map((item) => (
-            <p key={item} className="flex gap-3 text-foreground/80">
-              <span className="text-gold">✦</span>
-              {item}
-            </p>
-          ))}
-          <p className="text-center text-foreground/70 mt-4">
-            No necesitas tener todas las respuestas antes de empezar. El
-            proceso está diseñado para ayudarte a encontrarlas y trabajar
-            con ellas paso a paso.
-          </p>
-        </div>
-
-        <div className="max-w-xl mx-auto mt-20 flex flex-col gap-4 px-6 py-8 text-center rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm">
-          <p className="font-serif text-2xl">
-            No es solo información. Es un proceso para llevar a tu vida.
-          </p>
-          <p className="text-foreground/70">
-            El curso incluye una cartilla descargable y ejercicios prácticos
-            para acompañar cada módulo.
-          </p>
-          <p className="text-foreground/70">
-            Porque leer una idea inspiradora puede hacerte reflexionar
-            durante unos minutos. Trabajarla, escribir tus respuestas y
-            llevarla a tu realidad te permite convertir esa reflexión en
-            algo útil para ti.
-          </p>
-          <p className="text-foreground/70">
-            Tendrás herramientas para explorar lo que sientes, aclarar lo
-            que quieres y definir cómo empezar a actuar.
-          </p>
-          <p className="text-foreground/70 mt-4">
-            Tu próximo capítulo no tiene que empezar cuando tengas todo
-            resuelto.
-          </p>
-          <p className="text-foreground/70">
-            Puede empezar cuando decidas dedicarte un espacio para
-            escucharte, reconocer lo que necesitas y dar un primer paso.
-          </p>
-          <p className="font-medium">
-            Metodología Poderosa es una invitación a dejar de vivir en
-            automático y empezar a construir, con intención, una vida más
-            tuya.
-          </p>
-        </div>
-
-        <div className="max-w-xl mx-auto mt-20 flex flex-col items-center gap-3 px-6 text-center">
-          {/* El curso ya está a la venta real — precio de lanzamiento
-              $397.000 hasta el sábado 21 de nov. 11:59 p.m., igual que en
-              /cursos/metodologia-poderosa (ahí vive el precio/contador
-              reales; aquí solo se anuncia y se enlaza). */}
-          <div className="w-full max-w-sm rounded-2xl bg-white/80 border border-gold-light/60 shadow-sm p-6 flex flex-col items-center gap-1">
-            <p className="text-xs uppercase tracking-wide text-gold font-medium">
-              Metodología PODEROSAS 2026–2027
-            </p>
-            <p className="text-sm text-foreground/40 line-through">$497.000 COP</p>
-            <p className="font-serif text-3xl text-foreground">$397.000 COP</p>
-            <p className="text-xs text-gold font-medium">
-              Precio de lanzamiento — hasta el sábado 21 de nov., 11:59 p.m.
-            </p>
-          </div>
-          <Link
-            href="/cursos/metodologia-poderosa"
-            className="mt-2 rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors"
-          >
-            Compra ahora
-          </Link>
-        </div>
-      </section>
-
-      {/* Masterclass presencial — grid de 4 cuadros (2 de texto, 2 de foto),
-          pedido por la usuaria a partir de una referencia visual. La
-          segunda fila va con flex (no grid) porque Safari/iOS no estira de
-          forma confiable un hijo con aspect-square dentro de un grid para
-          igualar la altura de su hermano con contenido más alto (el cuadro
-          de beneficios) — con flex sí se estira bien en todos los navegadores. */}
-      <section>
-        <div className="grid grid-cols-2">
-          <div className="aspect-square bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#8a1f4f] flex flex-col items-center justify-center text-center gap-4 p-5 sm:p-10">
-            <div>
-              <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xs text-gold-light font-medium">
-                Evento presencial
-              </p>
-              <p className="font-serif text-2xl sm:text-6xl lg:text-7xl leading-[1.05] text-white mt-1">
-                Masterclass
-                <br />
-                PODEROSAS
-              </p>
-              <p className="text-xs sm:text-lg text-white/80 mt-2">2026-2027 · primera generación</p>
-              <p className="text-xs sm:text-lg text-white/70 mt-1">21 de noviembre · Bogotá</p>
-              <p className="font-serif text-xl sm:text-3xl text-gold-light tracking-wide mt-3">
-                SOLD OUT
-              </p>
-              <p className="text-[11px] sm:text-sm text-white/70 mt-2 max-w-[220px] sm:max-w-xs mx-auto">
-                Nuestra primera edición tiene sus cupos agotados. ¡Pero esto apenas comienza!
-                Sé de las primeras en enterarte de la próxima.
-              </p>
-            </div>
-            <Link
-              href="/evento#entradas"
-              className="rounded-full bg-gold px-4 py-2 sm:px-7 sm:py-3 text-white text-xs sm:text-base font-medium hover:bg-gold-light hover:text-foreground transition-colors whitespace-nowrap"
-            >
-              Quiero ser de las primeras
-            </Link>
-          </div>
-
-          <div className="aspect-square relative overflow-hidden bg-beige-light">
-            {hasEventPhoto("foto-1.jpg") && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src="/images/evento/foto-1.jpg"
-                alt={EVENTO_PRESENCIAL_NOMBRE}
-                className="block w-full h-full object-cover"
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="flex items-stretch -mt-px relative">
-          <div className="w-1/2 flex flex-col">
-            <div className="flex-1 relative overflow-hidden bg-beige-light">
-              {hasEventPhoto("foto-2.jpg") && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src="/images/evento/foto-2.jpg"
-                  alt={EVENTO_PRESENCIAL_NOMBRE}
-                  className="block w-full h-full object-cover"
-                />
-              )}
-            </div>
-            <div className="flex-1 relative overflow-hidden bg-beige-light">
-              {hasEventPhoto("foto-3.jpg") && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src="/images/evento/foto-3.jpg"
-                  alt={EVENTO_PRESENCIAL_NOMBRE}
-                  className="block w-full h-full object-cover"
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="w-1/2 bg-[#211912] flex flex-col items-center justify-center text-center gap-2 sm:gap-6 p-6 sm:p-10 py-10 sm:py-16">
-            <p className="uppercase tracking-[0.25em] text-[10px] sm:text-xl text-gold font-medium">
-              Tu entrada incluye
-            </p>
-            <ul className="flex flex-col gap-1.5 sm:gap-4 text-white/80 text-[11px] leading-snug sm:text-2xl lg:text-3xl">
-              <li>Acceso presencial al {EVENTO_PRESENCIAL_NOMBRE}</li>
-              <li>Soda italiana de bienvenida</li>
-              <li>Coffee break y snacks</li>
-              <li>Materiales de trabajo para realizar ejercicios</li>
-              <li>Actividades guiadas</li>
-              <li>Networking con todas las asistentes</li>
-              <li>Sorpresas y regalos especiales</li>
-              <li>Acceso a la comunidad de Telegram</li>
-              <li>Descuento en el lanzamiento del Curso PODEROSAS</li>
-            </ul>
-          </div>
-        </div>
-      </section>
-
-      {/* Lo que antes iba debajo del título del hero (badge + párrafo +
-          CTA a conocer a las creadoras) — movido aquí para que el grid de
-          la masterclass sea lo primero que se vea completo. */}
-      <section className="flex flex-col items-center text-center gap-6 px-6 pt-14 pb-20 sm:pb-28 max-w-2xl mx-auto">
-        <span className="uppercase tracking-[0.3em] text-xs text-gold font-medium">
-          Comunidad · Metodología · Transformación
-        </span>
-        <p className="max-w-xl text-foreground/70 text-lg">
-          PODEROSAS es una comunidad de mujeres que quieren crecer, pero muchas
-          veces saben que necesitan cambiar algo y no saben por dónde empezar.
-          Creamos un método práctico para ordenar lo que sienten, definir lo
-          que quieren y convertirlo en pasos concretos.
-        </p>
-        <Link
-          href="/evento#entradas"
-          className="rounded-full bg-gold px-8 py-3 text-white font-medium hover:bg-gold-light hover:text-foreground transition-colors text-center"
-        >
-          Quiero ser de las primeras en la próxima edición
-        </Link>
-      </section>
-
-
-      {/* Creadoras */}
-      <section id="creadoras" className="px-6 py-24 bg-white/40">
-        <div className="max-w-5xl mx-auto flex flex-col gap-10">
-          <div className="text-center flex flex-col gap-3">
-            <h2 className="font-serif text-4xl">Nuestras PODEROSAS</h2>
-            <p className="text-foreground/70 max-w-xl mx-auto">
-              Tres mujeres, tres caminos, un mismo propósito: acompañarte con
-              estructura, herramientas y comunidad. Cada una tiene su propio
-              espacio con sus productos, cursos y experiencias.
-            </p>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-            {profiles.map((profile) => (
-              <ProfileCard key={profile.slug} {...profile} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pitch final */}
-      <section className="px-6 py-24 max-w-3xl mx-auto text-center flex flex-col gap-4">
-        <h2 className="font-serif text-4xl">Lo que realmente ofrecemos</h2>
-        <p className="text-foreground/70">
-          No prometemos una vida perfecta ni cambios mágicos: entregamos
-          estructura, conocimiento, herramientas y un impulso para empezar. A
-          través de contenido, experiencias, cursos y comunidad, te
-          acompañamos a identificar, comprender y aplicar.
-        </p>
-      </section>
-
-      {/* Podcast — la foto (Kat y Shei, Shei señalando hacia arriba)
-          va justo debajo de este texto, así el gesto apunta hacia él. */}
-      <section className="px-6 py-24 bg-[#5c1030] text-center flex flex-col items-center gap-5">
-        <span className="uppercase tracking-[0.3em] text-xs text-gold-light font-medium">
-          Nuestro podcast
-        </span>
-        <h2 className="font-serif text-4xl text-white">Deje la Pendejada</h2>
-        <p className="max-w-md text-white/70">
-          Kat y Shei, hermanas, hablando sin filtro de lo que de verdad
-          importa. Escúchalo en YouTube o Spotify.
-        </p>
-        <div className="flex gap-3">
-          <a
-            href="https://www.youtube.com/@katyshei/podcasts"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full border border-white/30 px-6 py-2.5 text-sm text-white hover:bg-white/10 transition-colors"
-          >
-            Ver en YouTube
-          </a>
-          <a
-            href="https://open.spotify.com/show/4VyjQArqu6NvuF5LOB6R2V"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="rounded-full border border-white/30 px-6 py-2.5 text-sm text-white hover:bg-white/10 transition-colors"
-          >
-            Ver en Spotify
-          </a>
-        </div>
-        <a
-          href="https://www.youtube.com/@katyshei/podcasts"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-4 block w-full max-w-xs overflow-hidden rounded-2xl"
-        >
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/images/creators/podcast-deje-la-pendejada.jpg"
-            alt="Kat y Shei, Deje la Pendejada — ver podcast"
-            className="w-full h-auto hover:scale-[1.02] transition-transform"
+      {/* 2. ACADEMIA — producto principal en bloque partido -------------- */}
+      <section id="academia" className="scroll-mt-16 grid grid-cols-1 md:grid-cols-2">
+        <div className="relative min-h-[340px] md:min-h-[560px] bg-white">
+          <Image
+            src="/images/cartilla-metodologia/cartilla-portada.jpg"
+            alt="Cartilla de la Metodología PODEROSAS"
+            fill
+            sizes="(min-width: 768px) 50vw, 100vw"
+            className="object-contain p-6"
           />
-        </a>
+        </div>
+        <div className="flex flex-col items-center justify-center gap-5 bg-gradient-to-br from-[#5c1030] via-[#74173f] to-[#2b0f1d] px-6 py-14 text-center text-white">
+          <p className="text-[11px] uppercase tracking-[0.35em] text-gold-light">Academia PODEROSAS · Primera generación</p>
+          <h2 className="font-serif text-4xl sm:text-5xl leading-tight">
+            Metodología
+            <br />
+            PODEROSAS <span className="text-gold-light">2026–2027</span>
+          </h2>
+          <p className="max-w-sm text-white/85">Convierte tus sueños en un plan y tu plan en acción.</p>
+          {launch ? (
+            <>
+              <div className="flex items-baseline gap-3">
+                <span className="text-white/55 line-through">{cop(REGULAR_PRICE_CENTS)}</span>
+                <span className="font-serif text-5xl">{cop(LAUNCH_PRICE_CENTS)}</span>
+                <span className="text-sm text-white/70">COP</span>
+              </div>
+              <Countdown deadlineIso={deadlineIso} tone="dark" />
+            </>
+          ) : (
+            <div className="flex items-baseline gap-2">
+              <span className="font-serif text-5xl">{cop(REGULAR_PRICE_CENTS)}</span>
+              <span className="text-sm text-white/70">COP</span>
+            </div>
+          )}
+          <Button href={CHECKOUT} variant="light">
+            Quiero mi Metodología
+          </Button>
+        </div>
+      </section>
+
+      {/* 3. ECOSISTEMA — productos independientes, bloques alternados ---- */}
+      <section aria-label="Nuestros productos">
+        {PRODUCTS.map((p, i) => (
+          <div key={p.title} className="grid grid-cols-1 md:grid-cols-2">
+            <div className={`relative min-h-[280px] md:min-h-[420px] ${i % 2 === 0 ? "md:order-2" : ""}`}>
+              <Image src={p.photo} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className={`object-cover ${p.photoPos}`} />
+            </div>
+            <div className={`flex flex-col items-center justify-center gap-4 px-6 py-14 text-center ${p.panel}`}>
+              <p className="text-[11px] uppercase tracking-[0.35em] opacity-70">{p.kicker}</p>
+              <h3 className="font-serif text-4xl sm:text-5xl italic leading-tight">{p.title}</h3>
+              <p className="opacity-80">{p.line}</p>
+              {p.href ? (
+                <Button href={p.href}>Conoce más</Button>
+              ) : launch ? (
+                <Button href="#bonos">Hoy gratis con la Metodología</Button>
+              ) : (
+                <span className="text-xs font-semibold uppercase tracking-[0.2em] opacity-60">Próximamente</span>
+              )}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* 4. BONOS (solo hasta el cierre del lanzamiento) ----------------- */}
+      {launch ? (
+        <section id="bonos" className="scroll-mt-16 relative overflow-hidden bg-[#2b0f1d] px-6 py-16 text-center text-white">
+          <div className="absolute -left-24 top-0 h-72 w-72 rounded-full bg-[#e2457a]/25 blur-3xl" aria-hidden />
+          <div className="absolute -right-24 bottom-0 h-72 w-72 rounded-full bg-[#8e6bbf]/25 blur-3xl" aria-hidden />
+          <div className="relative mx-auto flex max-w-3xl flex-col items-center gap-6">
+            <span className="rounded-full border-2 border-dashed border-gold-light px-4 py-1.5 text-[11px] font-bold uppercase tracking-[0.3em] text-gold-light">
+              ★ Bonos exclusivos de lanzamiento ★
+            </span>
+            <SectionTitle light>¡Tu inscripción viene con 3 regalos!</SectionTitle>
+            <div className="flex flex-wrap justify-center gap-2">
+              {PRODUCTS.map((p) => (
+                <span key={p.title} className="rounded-full bg-white/10 px-4 py-2 text-sm">
+                  🎁 {p.kicker}: {p.title}
+                </span>
+              ))}
+            </div>
+            <p className="text-white/75">Compra antes del 21 de noviembre, 11:59 p. m. (hora Colombia).</p>
+            <Countdown deadlineIso={deadlineIso} tone="dark" />
+            <Button href={CHECKOUT} variant="light">
+              Quiero mi Metodología con los 3 bonos
+            </Button>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 5. AUTORIDAD (franja corta) ------------------------------------ */}
+      <section className="border-y border-[#2b0f1d]/10 bg-white px-6 py-10">
+        <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-3 gap-6 text-center">
+          {[
+            { big: "+3 millones", small: "de personas en nuestra comunidad" },
+            { big: "7 años", small: "creando contenido" },
+            { big: "Hispanoamérica", small: "comunidad en países de habla hispana" },
+          ].map((s) => (
+            <div key={s.big}>
+              <p className="font-serif text-3xl sm:text-4xl text-[#5c1030]">{s.big}</p>
+              <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-foreground/55">{s.small}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* 6. MENTORAS — tarjetas verticales con foto -------------------- */}
+      <section id="mentoras" className="scroll-mt-16 bg-[#fbe4ec] px-4 sm:px-6 py-16">
+        <SectionTitle>Conoce a tus mentoras</SectionTitle>
+        <div className="mx-auto mt-10 grid max-w-5xl grid-cols-1 sm:grid-cols-3 gap-5">
+          {MENTORAS.map((m) => (
+            <Link key={m.slug} href={`/${m.slug}`} className="group relative block aspect-[3/4] overflow-hidden rounded-3xl shadow-lg">
+              <Image
+                src={m.photo}
+                alt={`${m.name}, mentora de PODEROSAS`}
+                fill
+                sizes="(min-width: 640px) 33vw, 100vw"
+                className={`object-cover ${m.pos} transition-transform duration-700 group-hover:scale-105`}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/10 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-5 text-white">
+                <p className="font-serif text-3xl">{m.name}</p>
+                <p className="mt-1 text-sm text-white/85">{m.focus}</p>
+                <p className="mt-2 text-[11px] font-semibold uppercase tracking-[0.2em] text-gold-light">Ver perfil →</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 7 + 8. QUÉ APRENDES / QUÉ INCLUYE — en chips, sin párrafos ----- */}
+      <section className="bg-white px-6 py-16">
+        <div className="mx-auto flex max-w-4xl flex-col items-center gap-10">
+          <div className="flex flex-col items-center gap-5">
+            <SectionTitle>¿Qué vas a aprender?</SectionTitle>
+            <div className="flex flex-wrap justify-center gap-2">
+              {TEMAS.map((t) => (
+                <span key={t} className="rounded-full bg-[#f3ecfa] px-4 py-2 text-sm text-[#3d2463]">
+                  {t}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col items-center gap-5">
+            <SectionTitle>¿Qué incluye?</SectionTitle>
+            <div className="grid w-full grid-cols-2 sm:grid-cols-4 gap-3">
+              {INCLUYE.map((t) => (
+                <div key={t} className="rounded-2xl border border-[#2b0f1d]/10 bg-[#fdf6f9] px-4 py-4 text-center text-sm font-medium">
+                  <span className="mb-1 block text-gold">✓</span>
+                  {t}
+                </div>
+              ))}
+            </div>
+          </div>
+          <Button href={CHECKOUT}>Quiero ser parte de PODEROSAS</Button>
+        </div>
+      </section>
+
+      {/* 9. MASTERCLASS PRESENCIAL --------------------------------------- */}
+      <section className="bg-[#fbe4ec] px-4 sm:px-6 py-16">
+        <SectionTitle>Así vivimos nuestra primera Masterclass</SectionTitle>
+        <p className="mt-2 text-center text-sm text-foreground/60">{EVENTO_PRESENCIAL_NOMBRE} · Bogotá</p>
+        <div className="mx-auto mt-8 max-w-5xl">
+          {photos.length > 0 ? (
+            <Gallery photos={photos} alt={EVENTO_PRESENCIAL_NOMBRE} />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 overflow-hidden rounded-3xl shadow-lg">
+              <div className="flex flex-col items-center justify-center gap-4 bg-[#2b0f1d] px-6 py-12 text-center text-white">
+                <p className="font-serif text-4xl tracking-wide">SOLD OUT</p>
+                <p className="text-white/75">Primera generación agotada. Muy pronto, las fotos.</p>
+                <Button href="/evento#entradas" variant="light">
+                  Quiero ir a la próxima
+                </Button>
+              </div>
+              <div className="relative min-h-[260px]">
+                <Image src="/images/creators/landing-hero.webp" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 10. VIDEO + PODCAST -------------------------------------------- */}
+      <section id="contenido" className="scroll-mt-16 bg-beige-light px-4 sm:px-6 pt-16 pb-16">
+        <SectionTitle>Conócenos en acción</SectionTitle>
+        <IntroVideoCard videoUrl={INTRO_VIDEO_URL} posterUrl={INTRO_VIDEO_POSTER} />
+        <div className="mx-auto mt-4 max-w-5xl">
+          <p className="mb-4 text-center text-lg sm:text-xl font-semibold uppercase tracking-[0.12em] text-[#2b0f1d]">
+            Escucha nuestro podcast
+          </p>
+          <div className="flex flex-col sm:flex-row items-center gap-6 rounded-3xl bg-[#5c1030] p-5 sm:p-6 text-white">
+            <div className="relative h-40 w-40 shrink-0 overflow-hidden rounded-2xl shadow-lg">
+              <Image src="/images/creators/podcast-deje-la-pendejada.jpg" alt="Podcast Deje la Pendejada" fill sizes="160px" className="object-cover" />
+            </div>
+            <div className="flex flex-1 flex-col items-center sm:items-start gap-3 text-center sm:text-left">
+              <p className="font-serif text-4xl uppercase leading-none">Deje la Pendejada</p>
+              <p className="text-[11px] uppercase tracking-[0.25em] text-white/60">Con Kat y Shei</p>
+              <div className="flex flex-wrap justify-center gap-3">
+                <a
+                  href="https://www.youtube.com/@katyshei/podcasts"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-[#5c1030]"
+                >
+                  ▶ YouTube
+                </a>
+                <a
+                  href="https://open.spotify.com/show/4VyjQArqu6NvuF5LOB6R2V"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-white/60 px-5 py-2.5 text-sm font-semibold"
+                >
+                  Spotify
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 11. CIERRE ------------------------------------------------------ */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#2b0f1d] via-[#5c1030] to-[#8a1f4f] px-6 py-20 text-center text-white">
+        <div className="relative mx-auto flex max-w-2xl flex-col items-center gap-5">
+          <p className="font-serif text-3xl sm:text-5xl leading-tight">
+            Tu historia no cambia cuando lo deseas. Cambia cuando decides actuar.
+          </p>
+          <p className="text-[11px] uppercase tracking-[0.35em] text-gold-light">PODEROSAS 2026–2027 · Primera generación</p>
+          {launch ? (
+            <p className="flex items-baseline gap-3">
+              <span className="text-white/55 line-through">{cop(REGULAR_PRICE_CENTS)}</span>
+              <span className="font-serif text-4xl">{cop(LAUNCH_PRICE_CENTS)} COP</span>
+            </p>
+          ) : (
+            <p className="font-serif text-4xl">{cop(REGULAR_PRICE_CENTS)} COP</p>
+          )}
+          <Button href={CHECKOUT} variant="light">
+            Quiero ser parte de PODEROSAS
+          </Button>
+        </div>
       </section>
     </div>
   );
