@@ -46,6 +46,8 @@ export async function CreatorCoursesSection({ creatorId, slug, accentColor }: { 
       .maybeSingle();
     if (metodologia) list.unshift(metodologia);
   }
+  // La Metodología siempre va primero en los tres perfiles.
+  list.sort((a, b) => Number(b.id === METODOLOGIA_PODEROSAS_PRODUCT_ID) - Number(a.id === METODOLOGIA_PODEROSAS_PRODUCT_ID));
   const upcoming = UPCOMING_BY_CREATOR[slug] ?? [];
 
   if (list.length === 0 && upcoming.length === 0) return null;
