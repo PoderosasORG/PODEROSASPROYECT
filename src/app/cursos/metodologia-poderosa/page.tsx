@@ -339,7 +339,7 @@ export default async function MetodologiaPoderosaPage() {
         ? [
             {
               q: "¿Hasta cuándo es el precio especial?",
-              a: `$397.000 es el precio especial, válido hasta el ${deadlineLabel} (hora Colombia). Después, el precio regular es de $497.000.`,
+              a: `El precio especial de $397.000, de contado o en 3 cuotas, con los 3 bonos exclusivos, es válido hasta el ${deadlineLabel} (hora Colombia). Después, el precio regular es de $497.000.`,
             },
           ]
         : []),
@@ -353,7 +353,7 @@ export default async function MetodologiaPoderosaPage() {
         : []),
       {
         q: "¿Qué materiales recibiré?",
-        a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? ", y los 3 bonos de regalo si compras antes del cierre de la promoción" : ""}.`,
+        a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? `, y los 3 bonos exclusivos si te inscribes hasta el ${deadlineLabel}, de contado o en cuotas` : ""}.`,
       },
       {
         q: "¿Puedo realizar las actividades desde mi celular o computador?",
@@ -450,7 +450,7 @@ export default async function MetodologiaPoderosaPage() {
                   {launchActive ? (
                     <>
                       <p className="text-xs text-gold font-medium">
-                        Precio especial — válido hasta el {deadlineLabel}
+                        Precio especial de contado o en 3 cuotas, con 3 bonos · hasta el {deadlineLabel}
                       </p>
                       {extensionMessage ? (
                         <p className="mt-1 rounded-xl bg-gold/10 px-3 py-2 text-xs font-medium text-foreground">
@@ -831,7 +831,8 @@ export default async function MetodologiaPoderosaPage() {
             </ul>
 
             {/* Los regalos solo se prometen hasta el cierre del lanzamiento
-                (21 nov, 11:59 p. m. hora Colombia); después desaparecen solos. */}
+                (1 dic. 2026, 11:59 p. m. hora Colombia, de contado o en
+                cuotas); después desaparecen solos. */}
             {launchActive && (
             <div className="bg-beige-light/70 rounded-2xl p-5 mb-8">
               <p className="text-xs uppercase tracking-wide text-gold font-medium mb-2.5">
@@ -945,7 +946,7 @@ export default async function MetodologiaPoderosaPage() {
               <div>
                 <p className="font-serif text-lg text-foreground leading-none">{priceLabel}</p>
                 <p className="text-[11px] text-foreground/50">
-                  {launchActive ? `Precio especial · hasta el ${deadlineLabel}` : "Acceso por 6 meses"}
+                  {launchActive ? `Contado o 3 cuotas · hasta el ${deadlineLabel}` : "Acceso por 6 meses"}
                 </p>
               </div>
               <BuyButton
