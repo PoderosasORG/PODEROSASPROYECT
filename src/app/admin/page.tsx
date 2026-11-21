@@ -80,11 +80,24 @@ export default async function AdminFinanzasPage({
   const testCount = allInPeriod.length - orders.length;
 
   const admin = createAdminClient();
-  const { data: expenses } = await admin
-    .from("admin_expenses")
-    .select("category, amount_cop_cents")
-    .gte("expense_date", period.from)
-    .lte("expense_date", period.to);
+  const [{ data: expenseRows }, { data: inventory }] = await Promise.all([
+    admin
+      .from("admin_expenses")
+      .select("category, amount_cop_cents")
+      .gte("expense_date", period.from)
+      .lte("expense_date", period.to),
+    // Inventario de eventos marcado como comprado: también es costo.
+    admin
+      .from("admin_inventory_items")
+      .select("total_cents")
+      .eq("status", "comprado")
+      .gte("purchase_date", period.from)
+      .lte("purchase_date", period.to),
+  ]);
+  const expenses = [
+    ...(expenseRows ?? []),
+    ...(inventory ?? []).map((i) => ({ category: "inventario de eventos", amount_cop_cents: i.total_cents })),
+  ];
 
   const bruto = orders.reduce((s, o) => s + o.amount_cents, 0);
   const brutoWompi = orders.filter((o) => !o.isDirect).reduce((s, o) => s + o.amount_cents, 0);
@@ -118,7 +131,7 @@ export default async function AdminFinanzasPage({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Stat label="Ingresos brutos" value={formatCop(bruto)} hint={`${orders.length} ventas · Wompi ${formatCop(brutoWompi)} · Nequi directo ${formatCop(brutoDirecto)}`} />
         <Stat label="Comisiones Wompi" value={`−${formatCop(comisiones)}`} hint={feeIsEstimated ? "Estimada con la tarifa publicada (ver nota)" : "Con IVA"} tone="red" />
-        <Stat label="Costos y gastos" value={`−${formatCop(costos)}`} hint={`${expenses?.length ?? 0} gastos registrados en el periodo`} tone="red" />
+        <Stat label="Costos y gastos" value={`−${formatCop(costos)}`} hint={`${expenseRows?.length ?? 0} gastos + ${inventory?.length ?? 0} compras de inventario`} tone="red" />
         <Stat label="Utilidad neta" value={formatCop(utilidad)} hint="Ingresos − comisiones − costos" tone={utilidad >= 0 ? "green" : "red"} />
       </div>
 
