@@ -263,13 +263,18 @@ export default async function MetodologiaPoderosaPage() {
         q: "¿Cuánto tiempo tengo acceso al contenido?",
         a: "Tu acceso dura 6 meses desde el día en que se aprueba tu pago. Cuando esté por vencerse, te avisamos para que renueves y sigas teniendo acceso a la metodología, los encuentros y la comunidad.",
       },
-      {
-        q: "¿Por qué el precio cambia después del sábado?",
-        a: "$397.000 es el precio especial de lanzamiento, válido solo hasta el sábado 21 de noviembre a las 11:59 p.m. Después de esa fecha, el precio regular es de $497.000.",
-      },
+      // Solo mientras dura el lanzamiento: después ya no aplica.
+      ...(launchActive
+        ? [
+            {
+              q: "¿Por qué el precio cambia después del sábado?",
+              a: "$397.000 es el precio especial de lanzamiento, válido solo hasta el sábado 21 de noviembre a las 11:59 p.m. Después de esa fecha, el precio regular es de $497.000.",
+            },
+          ]
+        : []),
       {
         q: "¿Qué materiales recibiré?",
-        a: "Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada, y los 5 bonos de regalo si compras antes del cierre de la promoción.",
+        a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? ", y los 5 bonos de regalo si compras antes del cierre de la promoción" : ""}.`,
       },
       {
         q: "¿Puedo realizar las actividades desde mi celular o computador?",
@@ -699,6 +704,9 @@ export default async function MetodologiaPoderosaPage() {
               ))}
             </ul>
 
+            {/* Los regalos solo se prometen hasta el cierre del lanzamiento
+                (21 nov, 11:59 p. m. hora Colombia); después desaparecen solos. */}
+            {launchActive && (
             <div className="bg-beige-light/70 rounded-2xl p-5 mb-8">
               <p className="text-xs uppercase tracking-wide text-gold font-medium mb-2.5">
                 Además, recibes estos regalos
@@ -715,6 +723,7 @@ export default async function MetodologiaPoderosaPage() {
                 ))}
               </ul>
             </div>
+            )}
 
             {COURSE_COMING_SOON ? (
               <div className="text-center border-t border-gold-light/30 pt-8 flex flex-col items-center gap-4">
