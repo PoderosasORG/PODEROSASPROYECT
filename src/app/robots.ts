@@ -18,6 +18,7 @@ export default function robots(): MetadataRoute.Robots {
         "/login",
         "/registro",
         "/escaner",
+        "/cuotas",
       ],
     },
     sitemap: "https://poderosas.org/sitemap.xml",

@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/server";
-import { createAdminClient } from "@/lib/supabase/admin";
 
 export const dynamic = "force-dynamic";
 
@@ -82,12 +81,11 @@ export default async function ConfirmacionPage({
       const json = await res.json();
       const wompiStatus = json?.data?.status?.toLowerCase();
       if (wompiStatus) {
+        // Solo se MUESTRA el estado. No se escribe en la base: si esta
+        // página marcara "approved" antes que el webhook, el webhook vería
+        // la orden ya aprobada y se saltaría la cuenta, la bienvenida, la
+        // fecha de vencimiento y el registro de cuotas.
         status = wompiStatus;
-        const admin = createAdminClient();
-        await admin
-          .from("orders")
-          .update({ status: wompiStatus, wompi_transaction_id: wompiTransactionId })
-          .eq("id", order.id);
       }
     } catch {
       // Si Wompi no responde a tiempo, dejamos el estado como estaba;

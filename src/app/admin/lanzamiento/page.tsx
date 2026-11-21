@@ -116,7 +116,8 @@ export default async function LanzamientoPage({
   // Botones con más clics.
   const byButton = new Map<string, number>();
   clicks.forEach((c) => {
-    const k = `${c.event === "cta_comprar" ? "Comprar" : "Ir a la metodología"} · ${c.location ?? "—"}`;
+    const name = c.event === "cta_comprar" ? "Comprar" : c.event === "cta_cuotas" ? "Ver cuotas" : "Ir a la metodología";
+    const k = `${name} · ${c.location ?? "—"}`;
     byButton.set(k, (byButton.get(k) ?? 0) + 1);
   });
 

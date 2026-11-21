@@ -6,6 +6,9 @@ import { checkRateLimit, rateLimitResponse } from "@/lib/rateLimit";
 import { effectivePriceCents } from "@/lib/metodologiaPoderosasLanzamiento";
 import { originFromCookie } from "@/lib/origin";
 import { saveAnalyticsIds } from "@/lib/analytics/server";
+import { installmentConfigFor } from "@/lib/installments/config";
+import { createPlan } from "@/lib/installments/plans";
+import { buildWompiCheckoutUrl } from "@/lib/wompi/checkoutUrl";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -68,17 +71,16 @@ export async function POST(req: NextRequest) {
   }
 
   const admin = createAdminClient();
-  const { data: secretRow } = await admin
-    .from("creator_payment_secrets")
-    .select("wompi_integrity_secret")
-    .eq("creator_id", creator.id)
-    .maybeSingle();
 
-  if (!secretRow) {
-    return NextResponse.json(
-      { error: "Falta configurar la llave de integridad de Wompi para esta creadora." },
-      { status: 400 },
-    );
+  // Pago en cuotas: solo productos con plan configurado y con las
+  // condiciones aceptadas (cada cuota habilita un tramo del acceso).
+  const wantsInstallments = body?.plan === "cuotas";
+  const installmentConfig = wantsInstallments ? installmentConfigFor(product.id) : null;
+  if (wantsInstallments && !installmentConfig) {
+    return NextResponse.json({ error: "Este producto no tiene pago en cuotas." }, { status: 400 });
+  }
+  if (installmentConfig && body?.acceptInstallmentTerms !== true) {
+    return NextResponse.json({ error: "Debes aceptar las condiciones del pago en cuotas." }, { status: 400 });
   }
 
   // Metodología PODEROSAS tiene precio de lanzamiento por tiempo limitado
@@ -86,7 +88,30 @@ export async function POST(req: NextRequest) {
   // esto devuelve product.price_cents sin cambios. Se calcula en el
   // servidor, con la hora del servidor: el contador que ve la compradora
   // es solo visual, nunca la fuente de verdad del precio.
-  const priceCents = effectivePriceCents(product.id, product.price_cents);
+  const priceCents = installmentConfig
+    ? installmentConfig.installments[0].amountCents
+    : effectivePriceCents(product.id, product.price_cents);
+
+  let installmentFields = {};
+  if (installmentConfig) {
+    try {
+      const plan = await createPlan({
+        productId: product.id,
+        email: user ? (user.email ?? "") : buyerEmail,
+        name: user ? ((user.user_metadata?.full_name as string | undefined) ?? null) : buyerName,
+        buyerId: user?.id ?? null,
+        config: installmentConfig,
+      });
+      installmentFields = {
+        installment_plan_id: plan.id,
+        installment_number: 1,
+        installment_total: installmentConfig.installments.length,
+      };
+    } catch (err) {
+      console.error("[cuotas] no se pudo crear el plan:", err);
+      return NextResponse.json({ error: "No se pudo iniciar el pago en cuotas, intenta de nuevo." }, { status: 500 });
+    }
+  }
 
   const orderId = crypto.randomUUID();
   // Logueado: inserta con el cliente del usuario (RLS exige
@@ -106,6 +131,7 @@ export async function POST(req: NextRequest) {
     origin: originFromCookie(req),
     // Solo se escribe si lo marcó (consentimiento explícito, nunca por defecto).
     ...(body?.marketingOptIn === true ? { marketing_opt_in: true } : {}),
+    ...installmentFields,
   });
 
   if (orderError) {
@@ -116,33 +142,20 @@ export async function POST(req: NextRequest) {
   // desde el servidor sin datos personales. Nunca bloquea el checkout.
   await saveAnalyticsIds(req, orderId);
 
-  const reference = orderId;
-  const signatureString = `${reference}${priceCents}${product.currency}${secretRow.wompi_integrity_secret}`;
-  const signature = crypto.createHash("sha256").update(signatureString).digest("hex");
-
-  const params = new URLSearchParams({
-    "public-key": creator.wompi_public_key,
+  const checkout = await buildWompiCheckoutUrl({
+    creatorId: creator.id,
+    publicKey: creator.wompi_public_key,
+    reference: orderId,
+    amountCents: priceCents,
     currency: product.currency,
-    "amount-in-cents": String(priceCents),
-    reference,
-    "signature:integrity": signature,
-    // Wompi pide dirección, ciudad y teléfono (para el CRM de /admin);
-    // llegan en transaction.shipping_address al webhook.
-    "collect-shipping": "true",
+    siteOrigin: req.nextUrl.origin,
   });
-
-  // El CDN de Wompi rechaza (403) checkouts cuyo redirect-url apunta a
-  // localhost. En desarrollo local lo omitimos: Wompi mostrará su propia
-  // pantalla de resultado y el webhook (una vez el sitio esté en un
-  // dominio real) seguirá siendo la fuente de verdad del estado.
-  const origin = req.nextUrl.origin;
-  const isLocal = origin.includes("localhost") || origin.includes("127.0.0.1");
-  if (!isLocal) {
-    params.set("redirect-url", `${origin}/pago/confirmacion?order=${orderId}`);
+  if ("error" in checkout) {
+    return NextResponse.json({ error: checkout.error }, { status: 400 });
   }
 
   return NextResponse.json({
-    checkoutUrl: `https://checkout.wompi.co/p/?${params.toString()}`,
+    checkoutUrl: checkout.url,
     amountCents: priceCents,
     currency: product.currency,
   });
