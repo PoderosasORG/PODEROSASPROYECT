@@ -6,6 +6,7 @@ import type { Metadata } from "next";
 import { IntroVideoCard } from "@/components/IntroVideoCard";
 import { Countdown } from "@/components/home/Countdown";
 import { Gallery } from "@/components/home/Gallery";
+import { VisitBeacon } from "@/components/tracking/VisitBeacon";
 import { EVENTO_PRESENCIAL_NOMBRE } from "@/lib/eventoPresencial";
 import { CoursePreview } from "@/components/home/CoursePreview";
 import {
@@ -154,6 +155,7 @@ export default function Home() {
 
   return (
     <div className="flex flex-1 flex-col bg-white">
+      <VisitBeacon page="home" />
       {/* 1. HERO ---------------------------------------------------------- */}
       <section className="relative isolate w-full overflow-hidden bg-[#2b0f1d] sm:flex sm:aspect-[16/8] lg:aspect-[16/7] sm:items-end sm:justify-center">
         <div className="relative aspect-[2/1] w-full sm:absolute sm:inset-0 sm:-z-10 sm:aspect-auto">

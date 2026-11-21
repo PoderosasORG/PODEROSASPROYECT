@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 
 export const ORIGIN_COOKIE = "pod_origin";
+export const VISITOR_COOKIE = "pod_vid";
 
 const KNOWN: Record<string, string> = {
   "instagram.com": "Instagram",
