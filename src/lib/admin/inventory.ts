@@ -3,6 +3,8 @@ export type InventoryItem = {
   category: string;
   event_name: string;
   event_product_id: string | null;
+  /** producto = artículo físico; servicio = servicio contratado. */
+  kind: "producto" | "servicio";
   item_category: string | null;
   item: string;
   quantity: number | null;
@@ -26,20 +28,22 @@ export const EVENT_CATEGORY_LABELS: Record<string, string> = {
   otro: "Otros",
 };
 
+// Categorías acordadas con Kat el 2026-11-20.
 export const DEFAULT_ITEM_CATEGORIES = [
   "Papelería y materiales",
-  "Coffee break y actividades",
-  "Decoración",
-  "Regalos y kits",
-  "Logística y transporte",
+  "Decoración y regalos",
+  "Insumos para actividades",
+  "Alimentos y bebidas",
+  "Servicios contratados",
   "Telefonía y soporte",
-  "Otro",
 ];
 
 /** Qué datos le faltan a una compra (para marcarla como incompleta). */
 export function missingFields(i: InventoryItem): string[] {
   const missing: string[] = [];
-  if (i.quantity == null) missing.push("cantidad");
+  // Un servicio contratado no tiene cantidad de unidades.
+  if (i.quantity == null && i.kind !== "servicio") missing.push("cantidad");
+  if (i.status === "comprado" && !i.bought_by) missing.push("responsable");
   if (i.total_cents == null) missing.push("precio");
   if (!i.store) missing.push("tienda");
   if (i.status === "comprado" && !i.purchase_date) missing.push("fecha");
@@ -83,6 +87,7 @@ export type InventoryChange = {
 
 export const FIELD_LABELS: Record<string, string> = {
   item: "Producto",
+  kind: "Tipo",
   item_category: "Categoría",
   quantity: "Cantidad",
   quantity_used: "Utilizadas",
