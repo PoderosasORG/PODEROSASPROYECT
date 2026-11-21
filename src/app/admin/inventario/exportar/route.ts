@@ -13,6 +13,7 @@ export async function GET(req: Request) {
 
   const rows = ((data ?? []) as InventoryItem[]).map((i) => [
     i.event_name,
+    i.kind === "servicio" ? "Servicio" : "Producto",
     i.item_category,
     i.item,
     i.quantity,
@@ -32,7 +33,7 @@ export async function GET(req: Request) {
 
   return csvResponse(
     `inventario-poderosas-${new Date().toISOString().slice(0, 10)}.csv`,
-    ["Evento", "Categoría", "Producto", "Cantidad comprada", "Utilizadas", "Sobrantes", "Valor unitario COP", "Valor total COP", "Estimado", "Tienda", "Estado", "Pago", "Fecha de compra", "Quién lo compró", "Falta", "Notas"],
+    ["Evento", "Tipo", "Categoría", "Producto", "Cantidad comprada", "Utilizadas", "Sobrantes", "Valor unitario COP", "Valor total COP", "Estimado", "Tienda", "Estado", "Pago", "Fecha de compra", "Quién lo compró", "Falta", "Notas"],
     rows,
   );
 }

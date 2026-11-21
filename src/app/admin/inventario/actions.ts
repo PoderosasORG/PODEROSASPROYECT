@@ -58,6 +58,7 @@ function itemFields(form: FormData) {
   const { unit, total } = resolvePrices(quantity, cents(text(form, "unit_cost")), cents(text(form, "total")));
   const usedRaw = toNumber(text(form, "quantity_used"));
   return {
+    kind: text(form, "kind") === "servicio" ? "servicio" : "producto",
     quantity_used: usedRaw,
     item: text(form, "item"),
     item_category: text(form, "item_category"),
@@ -203,4 +204,16 @@ export async function copyList(form: FormData) {
     })),
   );
   back(to);
+}
+
+/** Asistentes de referencia del evento (para el costo por asistente). */
+export async function setAttendees(form: FormData) {
+  await requireAdmin();
+  const eventName = text(form, "event_name");
+  const n = Math.round(toNumber(text(form, "attendees")) ?? 0);
+  if (!eventName || n <= 0) return;
+  await createAdminClient()
+    .from("admin_event_settings")
+    .upsert({ event_name: eventName, attendees: n, updated_at: new Date().toISOString() });
+  back(eventName);
 }

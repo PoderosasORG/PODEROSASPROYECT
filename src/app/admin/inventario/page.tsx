@@ -13,7 +13,7 @@ import {
   type InventoryChange,
   type InventoryItem,
 } from "@/lib/admin/inventory";
-import { addItem, copyList, deleteItem, toggleItem, updateItem } from "./actions";
+import { addItem, copyList, deleteItem, setAttendees, toggleItem, updateItem } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -53,7 +53,13 @@ function sumBy(items: InventoryItem[], key: (i: InventoryItem) => string) {
 function ItemFields({ i, buyers }: { i?: Partial<InventoryItem>; buyers: string[] }) {
   return (
     <>
-      <label className={`${label} sm:col-span-2`}>Producto *<input name="item" required defaultValue={i?.item ?? ""} list="inv-products" className={input} placeholder="Libretas para asistentes" /></label>
+      <label className={label}>Tipo
+        <select name="kind" defaultValue={i?.kind ?? "producto"} className={input}>
+          <option value="producto">Producto físico</option>
+          <option value="servicio">Servicio contratado</option>
+        </select>
+      </label>
+      <label className={label}>Producto o servicio *<input name="item" required defaultValue={i?.item ?? ""} list="inv-products" className={input} placeholder="Libretas para asistentes" /></label>
       <label className={label}>Categoría
         <input name="item_category" defaultValue={i?.item_category ?? ""} list="inv-categories" className={input} placeholder="Papelería y materiales" />
       </label>
@@ -138,7 +144,12 @@ export default async function AdminInventarioPage({
   const historyByItem = new Map<string, InventoryChange[]>();
   for (const h of history) historyByItem.set(h.item_id, [...(historyByItem.get(h.item_id) ?? []), h]);
   const deleted = history.filter((h) => h.action === "eliminado");
-  const usageMissing = rows.filter((i) => i.status === "comprado" && i.quantity_used == null).length;
+  const usageMissing = rows.filter((i) => i.status === "comprado" && i.quantity_used == null && i.kind !== "servicio").length;
+
+  const { data: settings } = current
+    ? await admin.from("admin_event_settings").select("attendees").eq("event_name", current.name).maybeSingle()
+    : { data: null };
+  const attendees = (settings?.attendees as number | null) ?? null;
   const bought = rows.filter((i) => i.status === "comprado");
   const pendingPurchase = rows.filter((i) => i.status === "pendiente");
   const confirmed = bought.filter((i) => !i.is_estimated && i.total_cents != null).reduce((s, i) => s + Number(i.total_cents), 0);
@@ -149,6 +160,12 @@ export default async function AdminInventarioPage({
   const noPrice = rows.filter((i) => i.total_cents == null);
   const noQty = rows.filter((i) => i.quantity == null);
   const incomplete = rows.filter((i) => missingFields(i).length > 0);
+  const total = (list: InventoryItem[]) => list.reduce((s, i) => s + Number(i.total_cents ?? 0), 0);
+  const physical = bought.filter((i) => i.kind !== "servicio");
+  const services = bought.filter((i) => i.kind === "servicio");
+  const grandTotal = total(bought);
+  const paidTotal = total(bought.filter((i) => i.paid === true));
+  const unpaid = bought.filter((i) => i.paid !== true);
 
   const itemCategories = [...new Set([...DEFAULT_ITEM_CATEGORIES, ...all.map((i) => i.item_category).filter((x): x is string => !!x)])];
   const stores = [...new Set(all.map((i) => i.store).filter((x): x is string => !!x))].sort();
@@ -222,22 +239,49 @@ export default async function AdminInventarioPage({
           {/* ---------- Resumen ---------- */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             <div className="rounded-2xl border border-gold-light/60 bg-white p-4">
-              <p className="text-xs uppercase tracking-wide text-foreground/50">Productos</p>
-              <p className="font-serif text-2xl mt-1">{products}</p>
-              <p className="text-[11px] text-foreground/45">{rows.length} compras registradas · {qty(units)} unidades compradas · {usageMissing} sin uso registrado</p>
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Inversión total del evento</p>
+              <p className="font-serif text-2xl mt-1">{formatCop(grandTotal)}</p>
+              <p className="text-[11px] text-foreground/45">
+                Confirmado {formatCop(confirmed)}
+                {estimated ? ` · ≈ ${formatCop(estimated)} estimado` : ""}
+              </p>
+            </div>
+            <div className="rounded-2xl border border-gold-light/60 bg-white p-4">
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Productos físicos</p>
+              <p className="font-serif text-2xl mt-1">{formatCop(total(physical))}</p>
+              <p className="text-[11px] text-foreground/45">{products - new Set(services.map((i) => i.item.toLowerCase())).size} productos · {qty(units)} unidades · {usageMissing} sin uso registrado</p>
+            </div>
+            <div className="rounded-2xl border border-violet-200 bg-violet-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Servicios contratados</p>
+              <p className="font-serif text-2xl mt-1">{formatCop(total(services))}</p>
+              <p className="text-[11px] text-foreground/45">{services.length} servicios</p>
             </div>
             <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-foreground/50">Invertido confirmado</p>
-              <p className="font-serif text-2xl mt-1">{formatCop(confirmed)}</p>
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Costo por asistente</p>
+              <p className="font-serif text-2xl mt-1">{attendees ? formatCop(grandTotal / attendees) : "—"}</p>
+              <form action={setAttendees} className="mt-1 flex items-center gap-1 text-[11px] text-foreground/60">
+                <input type="hidden" name="event_name" value={current.name} />
+                <span>con</span>
+                <input name="attendees" defaultValue={attendees ?? ""} inputMode="numeric" className="w-12 rounded border border-gold-light/70 bg-white px-1 py-0.5" />
+                <span>asistentes</span>
+                <button className="text-gold hover:underline">cambiar</button>
+              </form>
             </div>
-            <div className="rounded-2xl border border-sky-200 bg-sky-50 p-4">
-              <p className="text-xs uppercase tracking-wide text-foreground/50">Estimado (aprox.)</p>
-              <p className="font-serif text-2xl mt-1">≈ {formatCop(estimated)}</p>
-              <p className="text-[11px] text-foreground/45">No incluido en lo confirmado</p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="rounded-2xl border border-gold-light/60 bg-white p-4">
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Pagado</p>
+              <p className="font-serif text-xl mt-1">{formatCop(paidTotal)}</p>
+            </div>
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
+              <p className="text-xs uppercase tracking-wide text-foreground/50">Pago pendiente o por confirmar</p>
+              <p className="font-serif text-xl mt-1">{formatCop(total(unpaid))}</p>
+              <p className="text-[11px] text-foreground/45">{unpaid.map((i) => i.item).join(" · ") || "Nada pendiente"}</p>
             </div>
             <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4">
               <p className="text-xs uppercase tracking-wide text-foreground/50">Por completar</p>
-              <p className="font-serif text-2xl mt-1">{incomplete.length}</p>
+              <p className="font-serif text-xl mt-1">{incomplete.length}</p>
               <p className="text-[11px] text-foreground/45">
                 {noPrice.length} sin precio · {noQty.length} sin cantidad · {pendingPurchase.length} por comprar
                 {plannedCost ? ` (${formatCop(plannedCost)})` : ""}
@@ -247,8 +291,10 @@ export default async function AdminInventarioPage({
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             {[
-              { title: "Invertido por categoría", data: sumBy(bought, (i) => i.item_category || "Sin categoría") },
-              { title: "Compras por tienda", data: sumBy(bought, (i) => i.store || "Tienda por confirmar") },
+              { title: "Por categoría", data: sumBy(bought, (i) => i.item_category || "Sin categoría") },
+              { title: "Por tienda o proveedor", data: sumBy(bought, (i) => i.store || "Tienda por confirmar") },
+              { title: "Productos físicos vs. servicios", data: sumBy(bought, (i) => (i.kind === "servicio" ? "Servicios contratados" : "Productos físicos")) },
+              { title: "Por responsable", data: sumBy(bought, (i) => i.bought_by || "Responsable por confirmar") },
             ].map((b) => (
               <div key={b.title} className="rounded-2xl border border-gold-light/60 bg-white p-4">
                 <p className="font-serif text-lg mb-2">{b.title}</p>
@@ -335,7 +381,8 @@ export default async function AdminInventarioPage({
                           <td className="px-3 py-2">
                             <span className="font-medium">{i.item}</span>
                             <div className="flex flex-wrap gap-1 mt-0.5">
-                              {i.status === "pendiente" ? <span className="rounded-full bg-amber-100 px-2 text-[10px] text-amber-800">Por comprar</span> : null}
+                              {i.kind === "servicio" ? <span className="rounded-full bg-violet-100 px-2 text-[10px] text-violet-800">Servicio contratado</span> : null}
+                              {i.status === "pendiente" ? <span className="rounded-full bg-amber-100 px-2 text-[10px] text-amber-800">{i.kind === "servicio" ? "Por contratar" : "Por comprar"}</span> : null}
                               {i.is_estimated ? <span className="rounded-full bg-sky-100 px-2 text-[10px] text-sky-800">Estimado</span> : null}
                               {missing.length ? <span className="rounded-full bg-orange-100 px-2 text-[10px] text-orange-800">Falta {missing.join(", ")}</span> : null}
                             </div>
@@ -343,7 +390,9 @@ export default async function AdminInventarioPage({
                           </td>
                           <td className="px-3 py-2 text-right">{qty(i.quantity) ?? <span className="text-amber-700 text-xs font-medium">Pendiente</span>}</td>
                           <td className="px-3 py-2 text-right text-xs whitespace-nowrap">
-                            {i.quantity_used == null ? (
+                            {i.kind === "servicio" ? (
+                              <span className="text-foreground/40">—</span>
+                            ) : i.quantity_used == null ? (
                               <span className="text-foreground/40">Por registrar</span>
                             ) : (
                               <>
