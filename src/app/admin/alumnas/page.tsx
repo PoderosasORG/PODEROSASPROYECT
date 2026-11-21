@@ -3,7 +3,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { formatDate } from "@/lib/admin/format";
 import { METODOLOGIA_PODEROSAS_PRODUCT_ID } from "@/lib/metodologiaPoderosasLanzamiento";
 import { formatSessionDate } from "@/lib/welcome/courseInfo";
-import { addSession, deleteSession, saveAttendance, setModuleDate } from "./actions";
+import { addSession, deleteSession, saveAttendance, sendTestWelcome, setModuleDate } from "./actions";
 
 export const dynamic = "force-dynamic";
 
@@ -17,8 +17,9 @@ const STEPS = [
 
 const input = "rounded-lg border border-gold-light/70 bg-white px-3 py-1.5 text-sm";
 
-export default async function AdminAlumnasPage() {
+export default async function AdminAlumnasPage({ searchParams }: { searchParams: Promise<{ prueba?: string }> }) {
   await requireAdmin();
+  const { prueba } = await searchParams;
   const admin = createAdminClient();
   const pid = METODOLOGIA_PODEROSAS_PRODUCT_ID;
 
@@ -56,6 +57,16 @@ export default async function AdminAlumnasPage() {
         <h1 className="font-serif text-3xl">Alumnas de la Metodología</h1>
         <p className="text-sm text-foreground/60">Estados del flujo de bienvenida, encuentros grupales y calendario de módulos.</p>
       </div>
+
+      {/* Correo de prueba */}
+      <form action={sendTestWelcome} className="flex flex-wrap items-end gap-3 rounded-2xl border border-gold-light/60 bg-white p-4">
+        <label className="flex flex-col gap-1 text-xs text-foreground/60">Enviar correo de bienvenida de prueba a
+          <input name="email" type="email" required defaultValue="latiendadekat@gmail.com" className={`${input} w-72`} />
+        </label>
+        <button className="rounded-full bg-gold px-5 py-2 text-sm text-white">Enviar prueba</button>
+        {prueba === "ok" ? <span className="text-sm text-emerald-700">¡Enviado! Revisa la bandeja de entrada.</span> : null}
+        {prueba === "error" ? <span className="text-sm text-rose-700">No se pudo enviar. Revisa el correo e intenta de nuevo.</span> : null}
+      </form>
 
       {/* Embudo */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">

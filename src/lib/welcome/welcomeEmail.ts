@@ -139,14 +139,57 @@ export function buildWelcomeEmailHtml(params: {
 </body></html>`;
 }
 
-export async function sendWelcomeEmail(params: Parameters<typeof buildWelcomeEmailHtml>[0] & { to: string }) {
+/** Versión en texto plano: los filtros de spam desconfían de correos solo-HTML. */
+export function buildWelcomeEmailText(params: Parameters<typeof buildWelcomeEmailHtml>[0]) {
+  const first = params.buyerName.trim().split(/\s+/)[0] ?? "";
+  const until = params.accessUntil
+    ? new Date(params.accessUntil).toLocaleDateString("es-CO", { day: "numeric", month: "long", year: "numeric", timeZone: "America/Bogota" })
+    : null;
+  const { info } = params;
+  const lines = [
+    `${first ? `Hola, ${first}` : "Hola"}:`,
+    "",
+    "Tu pago quedó confirmado y ya eres parte de la primera generación de la Metodología PODEROSAS 2026–2027.",
+    "",
+    "PASO 1 · Entra a tu cuenta",
+    params.setPasswordUrl ? `Crea tu contraseña aquí: ${params.setPasswordUrl}` : `Inicia sesión aquí: ${params.loginUrl}`,
+    "",
+    "PASO 2 · Tu acceso",
+    `Tienes 6 meses de acceso${until ? `, hasta el ${until}` : ""}. Hoy hay ${info.publishedModules} módulos disponibles.`,
+    `Entra a tu curso: ${params.courseUrl}`,
+    "",
+    "PASO 3 · Comunidad privada de WhatsApp",
+    params.whatsappUrl ? params.whatsappUrl : "Te enviaremos el enlace en los próximos días.",
+    "",
+    "PASO 4 · Encuentros grupales",
+    ...(info.sessions.length
+      ? info.sessions.map((s) => `- ${s.title}: ${formatSessionDate(s.startsAt)} (hora Colombia)`)
+      : ["Las fechas te llegarán por la comunidad y estarán en tu panel del curso."]),
+    "",
+    "TUS REGALOS · 3 bonos por tu compra",
+    "Los anunciaremos y entregaremos en vivo por la comunidad privada.",
+    ...(info.hasEbook ? ["El ebook «50 acuerdos de pareja» ya está disponible en tu panel del curso."] : []),
+    "",
+    `¿Dudas? Escríbenos a ${SUPPORT_EMAIL}.`,
+    "",
+    "Con cariño,",
+    "Luz Amparo, Shei y Kat",
+    "",
+    "Este es un mensaje operativo sobre tu compra y tu acceso.",
+    ...(params.preferencesUrl ? [`Tus preferencias de comunicación: ${params.preferencesUrl}`] : []),
+  ];
+  return lines.join("\n");
+}
+
+export async function sendWelcomeEmail(params: Parameters<typeof buildWelcomeEmailHtml>[0] & { to: string; subjectPrefix?: string }) {
   const resend = new Resend(process.env.RESEND_API_KEY);
   const { error } = await resend.emails.send({
     from: FROM_ADDRESS,
     to: params.to,
     replyTo: SUPPORT_EMAIL,
-    subject: "💗 Bienvenida a la Metodología PODEROSAS — tus primeros pasos",
+    subject: `${params.subjectPrefix ?? ""}Bienvenida a la Metodología PODEROSAS: tus primeros pasos 💗`,
     html: buildWelcomeEmailHtml(params),
+    text: buildWelcomeEmailText(params),
   });
   if (error) throw new Error(error.message);
 }
