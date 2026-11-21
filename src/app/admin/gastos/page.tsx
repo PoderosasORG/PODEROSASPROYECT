@@ -133,7 +133,14 @@ export default async function AdminGastosPage({
       {/* ---------- GASTOS ---------- */}
       <section className="flex flex-col gap-4">
         <div className="flex flex-col gap-3">
-          <h2 className="font-serif text-3xl">Gastos y facturas</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-serif text-3xl">Gastos y facturas</h2>
+            {/* Descarga de archivo (ruta GET), no navegación: va con <a>, no con <Link>. */}
+            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
+            <a href="/admin/gastos/exportar" className="rounded-full border border-gold-light/70 bg-white px-4 py-1.5 text-sm hover:border-gold">
+              Descargar Excel (CSV)
+            </a>
+          </div>
           <PeriodPicker basePath="/admin/gastos" from={period.from} to={period.to} />
           <p className="text-sm text-foreground/60">
             {expenses?.length ?? 0} gastos en el periodo · total {formatCop(expenseTotal)}
