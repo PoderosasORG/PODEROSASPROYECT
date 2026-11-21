@@ -13,7 +13,7 @@ const SECTIONS = [
   { href: "/admin/gastos", label: "Gastos y suscripciones" },
   { href: "/admin/referidos", label: "Referidos", soon: true },
   { href: "/admin/codigos", label: "Códigos de regalo", soon: true },
-  { href: "/admin/inventario", label: "Inventario", soon: true },
+  { href: "/admin/inventario", label: "Inventario" },
   { href: "/admin/pqr", label: "PQR", soon: true },
 ];
 
