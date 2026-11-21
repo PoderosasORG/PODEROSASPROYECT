@@ -22,10 +22,18 @@ export function AccessOverview({
   isLaunchBuyer,
   bonusFiles,
   whatsappInviteUrl,
+  sessions = [],
+  upcomingModules = [],
+  publishedCount,
 }: {
   isLaunchBuyer: boolean;
   bonusFiles: FileItem[];
   whatsappInviteUrl?: string | null;
+  /** Encuentros grupales programados (fecha ya formateada). */
+  sessions?: { title: string; when: string }[];
+  /** Módulos todavía no publicados, con su fecha planeada si la hay. */
+  upcomingModules?: { title: string; category: string; when: string | null }[];
+  publishedCount?: number;
 }) {
   const findFile = (match?: string) =>
     match ? bonusFiles.find((f) => f.name.toLowerCase().includes(match.toLowerCase())) : undefined;
@@ -48,9 +56,18 @@ export function AccessOverview({
             esas 6 todavía no está definida — pendiente de Shei). */}
         <div>
           <p className="text-xs uppercase tracking-wide text-gold font-medium mb-3">
-            {isLaunchBuyer ? "Tus 8 clases en vivo" : "Tus 6 clases en vivo"}
+            {sessions.length ? "Calendario de encuentros grupales" : isLaunchBuyer ? "Tus 8 clases en vivo" : "Tus 6 clases en vivo"}
           </p>
-          {isLaunchBuyer ? (
+          {sessions.length ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+              {sessions.map((s) => (
+                <div key={s.title + s.when} className="rounded-xl border border-gold-light/50 bg-beige-light/50 p-3 flex flex-col gap-1">
+                  <span className="text-sm font-medium text-foreground">{s.title}</span>
+                  <span className="text-[12px] text-foreground/60 capitalize">{s.when}</span>
+                </div>
+              ))}
+            </div>
+          ) : isLaunchBuyer ? (
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {LAUNCH_TOPICS.map((topic, i) => (
                 <div
@@ -75,7 +92,10 @@ export function AccessOverview({
         {/* Bonos de lanzamiento */}
         <div>
           <p className="text-xs uppercase tracking-wide text-gold font-medium mb-3">
-            Tus 3 bonos de lanzamiento
+            Tus 3 bonos de regalo
+          </p>
+          <p className="text-xs text-foreground/55 -mt-1 mb-3">
+            Los anunciaremos y entregaremos en vivo por la comunidad privada de WhatsApp. El ebook ya lo puedes descargar.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {BONUSES.map((bonus, i) => {
@@ -104,6 +124,33 @@ export function AccessOverview({
             })}
           </div>
         </div>
+
+        {/* Contenido disponible y próximos módulos */}
+        {publishedCount != null || upcomingModules.length ? (
+          <div>
+            <p className="text-xs uppercase tracking-wide text-gold font-medium mb-3">Tu contenido</p>
+            {publishedCount != null ? (
+              <p className="text-sm text-foreground/70 mb-3">
+                Hoy tienes <strong>{publishedCount} módulos disponibles</strong> más abajo, con su material descargable.
+              </p>
+            ) : null}
+            {upcomingModules.length ? (
+              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {upcomingModules.map((m) => (
+                  <li key={m.category + m.title} className="flex items-center justify-between gap-3 rounded-xl border border-gold-light/40 px-3 py-2 text-sm">
+                    <span>
+                      {m.title}
+                      {m.category ? <span className="block text-[11px] text-foreground/45">{m.category}</span> : null}
+                    </span>
+                    <span className="shrink-0 rounded-full bg-beige-light px-2.5 py-1 text-[11px] text-foreground/60">
+                      {m.when ?? "Próximamente"}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+          </div>
+        ) : null}
 
         {/* Comunidad de WhatsApp */}
         <div className="rounded-xl border border-gold-light/50 bg-beige-light/50 p-4 flex flex-col gap-2">

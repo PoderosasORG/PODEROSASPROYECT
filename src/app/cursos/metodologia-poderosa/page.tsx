@@ -8,6 +8,8 @@ import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LaunchCountdown } from "@/components/cursos/LaunchCountdown";
+import { markStep } from "@/lib/welcome/journey";
+import { formatPlannedDate, formatSessionDate, loadCourseInfo } from "@/lib/welcome/courseInfo";
 import {
   METODOLOGIA_PODEROSAS_PRODUCT_ID,
   effectivePriceCents,
@@ -23,11 +25,10 @@ import {
 // compra. Cuando el curso esté listo, cambiar a false para activar la venta.
 const COURSE_COMING_SOON = false;
 
-// Link de invitación a la comunidad de WhatsApp "Amigas PODEROSAS" — Shei
-// no es administradora del grupo, así que todavía no lo tiene. En cuanto
-// lo consiga, se pega aquí (ej: "https://chat.whatsapp.com/XXXXXXXX") y
-// el botón de unirse aparece solo, sin tocar nada más.
-const WHATSAPP_COMMUNITY_URL: string | null = null;
+// Link de invitación a la comunidad privada de WhatsApp. Vive en la
+// variable de entorno WHATSAPP_COMMUNITY_URL (Vercel), NO en el código:
+// el repositorio es público y cualquiera podría entrar al grupo.
+const WHATSAPP_COMMUNITY_URL: string | null = process.env.WHATSAPP_COMMUNITY_URL || null;
 
 // Mismo patrón que src/app/page.tsx (home) para las 3 creadoras — se
 // duplica aquí porque esta página necesita las mismas tarjetas, con sus
@@ -877,12 +878,27 @@ export default async function MetodologiaPoderosaPage() {
     .select("id, file_name, display_name")
     .eq("product_id", product.id);
 
+  // Flujo de bienvenida: si es compradora, marca su primer ingreso (y que
+  // su cuenta está activa). Solo cuenta la primera vez.
+  if (order && user) {
+    await markStep("first_login_at", { productId: product.id, userId: user.id, email: user.email });
+    await markStep("account_activated_at", { productId: product.id, userId: user.id, email: user.email });
+  }
+  const courseInfo = await loadCourseInfo(product.id).catch(() => null);
+
   return (
     <>
       <AccessOverview
         isLaunchBuyer={isLaunchBuyer}
         bonusFiles={(productFiles ?? []).map((f) => ({ id: f.id, name: f.display_name || f.file_name }))}
         whatsappInviteUrl={WHATSAPP_COMMUNITY_URL}
+        sessions={(courseInfo?.sessions ?? []).map((s) => ({ title: s.title, when: `${formatSessionDate(s.startsAt)} (hora Colombia)` }))}
+        upcomingModules={(courseInfo?.upcomingModules ?? []).map((m) => ({
+          title: m.title,
+          category: m.category,
+          when: m.plannedDate ? formatPlannedDate(m.plannedDate) : null,
+        }))}
+        publishedCount={courseInfo?.publishedModules}
       />
       <CourseViewer
         categories={categories}

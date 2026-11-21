@@ -10,6 +10,7 @@ export const metadata: Metadata = {
 const SECTIONS = [
   { href: "/admin", label: "Finanzas" },
   { href: "/admin/crm", label: "CRM" },
+  { href: "/admin/alumnas", label: "Alumnas" },
   { href: "/admin/gastos", label: "Gastos y suscripciones" },
   { href: "/admin/referidos", label: "Referidos", soon: true },
   { href: "/admin/codigos", label: "Códigos de regalo", soon: true },
