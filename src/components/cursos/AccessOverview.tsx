@@ -12,11 +12,10 @@ const LAUNCH_TOPICS = [
 ];
 
 const BONUSES: { title: string; fileMatch?: string }[] = [
-  { title: "Masterclass: crea tu marca personal y construye una comunidad PODEROSA" },
-  { title: "Masterclass: siete fuentes de ingresos para monetizar en redes sociales" },
-  { title: "Ebook: 50 acuerdos de pareja para tener una relación sana y duradera", fileMatch: "50 acuerdos" },
-  { title: "Reto de 7 días para enfocarte en ti y fortalecer tu amor propio" },
-  { title: "Masterclass: cómo atraer a tu pareja ideal y construir la relación de tus sueños" },
+  // 3 bonos (acordado con Kat el 2026-11-20).
+  { title: "Masterclass: Marca Personal, Monetización y Comunidad en Redes Sociales" },
+  { title: "Ebook: 50 Acuerdos de Pareja para Construir Relaciones Sanas", fileMatch: "50 acuerdos" },
+  { title: "Reto de 7 Días para Enfocarte en Ti y Fortalecer tu Amor Propio" },
 ];
 
 export function AccessOverview({
@@ -76,7 +75,7 @@ export function AccessOverview({
         {/* Bonos de lanzamiento */}
         <div>
           <p className="text-xs uppercase tracking-wide text-gold font-medium mb-3">
-            Tus 5 bonos de lanzamiento
+            Tus 3 bonos de lanzamiento
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {BONUSES.map((bonus, i) => {

@@ -9,10 +9,13 @@ import { stripHtml } from "@/lib/panel/sanitize";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LaunchCountdown } from "@/components/cursos/LaunchCountdown";
 import {
-  LAUNCH_DEADLINE,
   METODOLOGIA_PODEROSAS_PRODUCT_ID,
   effectivePriceCents,
   isLaunchPriceActive,
+  promoDeadline,
+  promoDeadlineLabel,
+  promoExtensionMessage,
+  promoFinalDeadline,
 } from "@/lib/metodologiaPoderosasLanzamiento";
 
 // Lanzamiento próximo: el curso aún no está a la venta. En true, la página
@@ -115,6 +118,9 @@ export default async function MetodologiaPoderosaPage() {
 
     const isMetodologiaPoderosas = product.id === METODOLOGIA_PODEROSAS_PRODUCT_ID;
     const launchActive = isMetodologiaPoderosas && isLaunchPriceActive();
+    const deadlineIso = promoDeadline().toISOString();
+    const deadlineLabel = promoDeadlineLabel();
+    const extensionMessage = isMetodologiaPoderosas ? promoExtensionMessage() : "";
     const priceCents = effectivePriceCents(product.id, product.price_cents);
     const priceLabel = `$${Math.round(priceCents / 100).toLocaleString("es-CO")} COP`;
     const regularPriceLabel = `$${Math.round(product.price_cents / 100).toLocaleString("es-CO")} COP`;
@@ -223,26 +229,19 @@ export default async function MetodologiaPoderosaPage() {
       },
     ];
 
+    // 3 bonos de regalo (acordado con Kat el 2026-11-20).
     const bonusItems = [
       {
-        title: "BONO 1 · Masterclass: crea tu marca personal y construye una comunidad PODEROSA",
+        title: "BONO 1 · Masterclass: Marca Personal, Monetización y Comunidad en Redes Sociales",
         desc: "Aprende a construir tu marca personal, comunicar lo que te hace diferente y desarrollar una comunidad alrededor de tu propuesta de valor.",
       },
       {
-        title: "BONO 2 · Siete fuentes de ingresos para monetizar en redes sociales",
-        desc: "Conoce distintas alternativas de monetización y maneras de convertir una comunidad en oportunidades comerciales.",
-      },
-      {
-        title: "BONO 3 · Ebook: 50 acuerdos de pareja para tener una relación sana y duradera",
+        title: "BONO 2 · Ebook: 50 Acuerdos de Pareja para Construir Relaciones Sanas",
         desc: "Un recurso práctico para reflexionar sobre acuerdos, comunicación, respeto y construcción de relaciones saludables.",
       },
       {
-        title: "BONO 4 · Reto de 7 días para enfocarte en ti y fortalecer tu amor propio",
+        title: "BONO 3 · Reto de 7 Días para Enfocarte en Ti y Fortalecer tu Amor Propio",
         desc: "Una experiencia de 7 días con actividades para dedicarte tiempo, reconectar contigo misma y fortalecer tu autoestima.",
-      },
-      {
-        title: "BONO 5 · Masterclass: cómo atraer a tu pareja ideal y construir la relación de tus sueños",
-        desc: "Reconoce tus estándares, fortalece tu autoestima y desarrolla herramientas para crear vínculos conscientes y saludables.",
       },
     ];
 
@@ -267,14 +266,14 @@ export default async function MetodologiaPoderosaPage() {
       ...(launchActive
         ? [
             {
-              q: "¿Por qué el precio cambia después del sábado?",
-              a: "$397.000 es el precio especial de lanzamiento, válido solo hasta el sábado 21 de noviembre a las 11:59 p.m. Después de esa fecha, el precio regular es de $497.000.",
+              q: "¿Hasta cuándo es el precio especial?",
+              a: `$397.000 es el precio especial, válido hasta el ${deadlineLabel} (hora Colombia). Después, el precio regular es de $497.000.`,
             },
           ]
         : []),
       {
         q: "¿Qué materiales recibiré?",
-        a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? ", y los 5 bonos de regalo si compras antes del cierre de la promoción" : ""}.`,
+        a: `Los módulos en video, cartillas descargables, acceso a las 6 clases en vivo (y sus grabaciones), la comunidad de WhatsApp, tu certificado al completar el curso, la meditación guiada${launchActive ? ", y los 3 bonos de regalo si compras antes del cierre de la promoción" : ""}.`,
       },
       {
         q: "¿Puedo realizar las actividades desde mi celular o computador?",
@@ -331,9 +330,14 @@ export default async function MetodologiaPoderosaPage() {
                   {launchActive ? (
                     <>
                       <p className="text-xs text-gold font-medium">
-                        Precio de lanzamiento — válido hasta el sábado 21 de nov., 11:59 p.m.
+                        Precio especial — válido hasta el {deadlineLabel}
                       </p>
-                      <LaunchCountdown deadlineIso={LAUNCH_DEADLINE.toISOString()} />
+                      {extensionMessage ? (
+                        <p className="mt-1 rounded-xl bg-gold/10 px-3 py-2 text-xs font-medium text-foreground">
+                          {extensionMessage}
+                        </p>
+                      ) : null}
+                      <LaunchCountdown deadlineIso={deadlineIso} />
                     </>
                   ) : isMetodologiaPoderosas ? (
                     <p className="text-xs text-foreground/50">Precio regular</p>
@@ -747,10 +751,10 @@ export default async function MetodologiaPoderosaPage() {
                   {launchActive ? (
                     <>
                       <p className="text-sm text-gold font-medium mt-2">
-                        Precio válido hasta el sábado 21 de nov., 11:59 p.m.
+                        Precio válido hasta el {deadlineLabel}
                       </p>
                       <div className="mt-1">
-                        <LaunchCountdown deadlineIso={LAUNCH_DEADLINE.toISOString()} />
+                        <LaunchCountdown deadlineIso={deadlineIso} />
                       </div>
                     </>
                   ) : null}
@@ -813,7 +817,7 @@ export default async function MetodologiaPoderosaPage() {
               <div>
                 <p className="font-serif text-lg text-foreground leading-none">{priceLabel}</p>
                 <p className="text-[11px] text-foreground/50">
-                  {launchActive ? "Precio de lanzamiento · hasta el sábado 11:59 p.m." : "Acceso por 6 meses"}
+                  {launchActive ? `Precio especial · hasta el ${deadlineLabel}` : "Acceso por 6 meses"}
                 </p>
               </div>
               <BuyButton
@@ -866,7 +870,7 @@ export default async function MetodologiaPoderosaPage() {
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
-  const isLaunchBuyer = order ? new Date(order.created_at) < LAUNCH_DEADLINE : false;
+  const isLaunchBuyer = order ? new Date(order.created_at) < promoFinalDeadline() : false;
 
   const { data: productFiles } = await supabase
     .from("product_files")

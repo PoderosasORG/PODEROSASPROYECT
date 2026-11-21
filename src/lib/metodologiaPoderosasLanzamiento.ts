@@ -18,8 +18,50 @@ export const REGULAR_PRICE_CENTS = 49_700_000; // $497.000 COP
 // course_categories y no por título.
 export const METODOLOGIA_PODEROSAS_PRODUCT_ID = "20a9f3e0-78f5-4708-b476-1033510a5649";
 
+// Extensión opcional de la promoción. Se configura SOLO en las variables
+// de entorno del servidor (Vercel), no en el código, porque el repositorio
+// es público:
+//   PROMO_EXTENSION_UNTIL   = fecha ISO en que termina la extensión
+//   PROMO_EXTENSION_MESSAGE = anuncio que se muestra mientras dura
+// Mientras la fecha original no haya pasado, la extensión no se nota.
+function extensionUntil(): Date | null {
+  const raw = process.env.PROMO_EXTENSION_UNTIL;
+  if (!raw) return null;
+  const d = new Date(raw);
+  return Number.isNaN(d.getTime()) || d.getTime() <= LAUNCH_DEADLINE.getTime() ? null : d;
+}
+
+/** Fecha en que termina la promoción vigente (original o extendida). */
+export function promoDeadline(now: Date = new Date()): Date {
+  const ext = extensionUntil();
+  return ext && now.getTime() >= LAUNCH_DEADLINE.getTime() ? ext : LAUNCH_DEADLINE;
+}
+
+/** Último momento en que una compra cuenta como "de lanzamiento". */
+export function promoFinalDeadline(): Date {
+  return extensionUntil() ?? LAUNCH_DEADLINE;
+}
+
 export function isLaunchPriceActive(now: Date = new Date()): boolean {
-  return now.getTime() < LAUNCH_DEADLINE.getTime();
+  return now.getTime() < promoDeadline(now).getTime();
+}
+
+/** true solo durante la extensión (después de la fecha original). */
+export function isPromoExtended(now: Date = new Date()): boolean {
+  return isLaunchPriceActive(now) && now.getTime() >= LAUNCH_DEADLINE.getTime();
+}
+
+/** Anuncio de la extensión (vacío si no hay o si no está vigente). */
+export function promoExtensionMessage(now: Date = new Date()): string {
+  return isPromoExtended(now) ? (process.env.PROMO_EXTENSION_MESSAGE ?? "").trim() : "";
+}
+
+/** "sábado 21 de nov., 11:59 p. m." en hora de Colombia. */
+export function promoDeadlineLabel(now: Date = new Date()): string {
+  const d = promoDeadline(now);
+  const day = d.toLocaleDateString("es-CO", { weekday: "long", day: "numeric", month: "short", timeZone: "America/Bogota" });
+  const time = d.toLocaleTimeString("es-CO", { hour: "numeric", minute: "2-digit", timeZone: "America/Bogota" });
+  return `${day.replace(",", "")}, ${time}`;
 }
 
 /**
