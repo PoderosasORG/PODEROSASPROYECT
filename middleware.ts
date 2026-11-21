@@ -1,6 +1,6 @@
 import { type NextRequest } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
-import { detectOrigin, ORIGIN_COOKIE } from "@/lib/origin";
+import { detectOrigin, ORIGIN_COOKIE, VISITOR_COOKIE } from "@/lib/origin";
 
 export async function middleware(request: NextRequest) {
   const response = await updateSession(request);
@@ -19,6 +19,18 @@ export async function middleware(request: NextRequest) {
         path: "/",
       });
     }
+  }
+
+  // Marca anónima del navegador (sin datos personales) para contar
+  // visitantes únicos de la landing en el seguimiento comercial.
+  if (!request.cookies.get(VISITOR_COOKIE)) {
+    response.cookies.set(VISITOR_COOKIE, crypto.randomUUID(), {
+      maxAge: 60 * 60 * 24 * 180,
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/",
+    });
   }
 
   return response;

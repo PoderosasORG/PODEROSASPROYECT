@@ -8,6 +8,8 @@ import { FaqAccordion } from "@/components/cursos/FaqAccordion";
 import { stripHtml } from "@/lib/panel/sanitize";
 import { WaitlistForm } from "@/components/WaitlistForm";
 import { LaunchCountdown } from "@/components/cursos/LaunchCountdown";
+import { OrientationForm } from "@/components/tracking/OrientationForm";
+import { VisitBeacon } from "@/components/tracking/VisitBeacon";
 import { markStep } from "@/lib/welcome/journey";
 import { formatPlannedDate, formatSessionDate, loadCourseInfo } from "@/lib/welcome/courseInfo";
 import {
@@ -288,6 +290,7 @@ export default async function MetodologiaPoderosaPage() {
 
     return (
       <div className="flex flex-1 flex-col bg-beige-light pb-24">
+        <VisitBeacon page="metodologia" />
         {/* 1. Encabezado principal — layout tipo ficha de producto (imagen +
             título/precio/CTA a la derecha), como pidió la usuaria a partir
             de una referencia. El resto de la narrativa de venta sigue
@@ -793,6 +796,10 @@ export default async function MetodologiaPoderosaPage() {
             </p>
             <FaqAccordion items={faqs} />
           </div>
+        </section>
+
+        <section className="px-6 pb-16">
+          <OrientationForm />
         </section>
 
         {/* Barra fija al hacer scroll: compra si ya está a la venta, o
