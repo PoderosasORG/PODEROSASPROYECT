@@ -24,6 +24,8 @@ export function ProfileCard({ slug, name, role, bio, avatarUrl }: ProfileCardPro
           <img
             src={photo}
             alt={name}
+            loading="lazy"
+            decoding="async"
             className="h-full w-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
           />
         ) : null}

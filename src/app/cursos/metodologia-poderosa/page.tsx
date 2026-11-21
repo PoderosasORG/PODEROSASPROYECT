@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { BuyButton } from "@/components/BuyButton";
@@ -21,6 +22,24 @@ import {
   promoExtensionMessage,
   promoFinalDeadline,
 } from "@/lib/metodologiaPoderosasLanzamiento";
+
+const COURSE_DESCRIPTION =
+  "Metodología PODEROSAS 2026–2027: 6 meses de acompañamiento con Luz, Shei y Kat. Módulos en video, cartillas, 6 clases en vivo y comunidad privada para reconocer quién eres, descubrir qué quieres y convertirlo en acción.";
+
+// Título y descripción propios (antes heredaba los genéricos del sitio):
+// es lo que se ve en Google y al compartir el link por WhatsApp.
+export const metadata: Metadata = {
+  title: "Metodología PODEROSAS 2026–2027 | Curso de 6 meses con Luz, Shei y Kat",
+  description: COURSE_DESCRIPTION,
+  alternates: { canonical: "/cursos/metodologia-poderosa" },
+  openGraph: {
+    title: "Metodología PODEROSAS 2026–2027",
+    description: COURSE_DESCRIPTION,
+    url: "/cursos/metodologia-poderosa",
+    images: [{ url: "/images/creators/landing-hero.webp" }],
+    type: "website",
+  },
+};
 
 // Lanzamiento próximo: el curso aún no está a la venta. En true, la página
 // muestra el contenido y la lista de espera, pero oculta precio y botón de
@@ -291,6 +310,45 @@ export default async function MetodologiaPoderosaPage() {
     return (
       <div className="flex flex-1 flex-col bg-beige-light pb-24">
         <VisitBeacon page="metodologia" />
+        {/* Datos estructurados para Google: el curso, su precio y las preguntas frecuentes. */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify([
+              {
+                "@context": "https://schema.org",
+                "@type": "Course",
+                name: "Metodología PODEROSAS 2026–2027",
+                description: COURSE_DESCRIPTION,
+                inLanguage: "es",
+                url: "https://poderosas.org/cursos/metodologia-poderosa",
+                provider: { "@type": "Organization", name: "PODEROSAS", sameAs: "https://poderosas.org" },
+                offers: {
+                  "@type": "Offer",
+                  category: "Paid",
+                  price: Math.round(priceCents / 100),
+                  priceCurrency: "COP",
+                  availability: "https://schema.org/InStock",
+                  url: "https://poderosas.org/cursos/metodologia-poderosa",
+                },
+                hasCourseInstance: {
+                  "@type": "CourseInstance",
+                  courseMode: "online",
+                  courseWorkload: "P6M",
+                },
+              },
+              {
+                "@context": "https://schema.org",
+                "@type": "FAQPage",
+                mainEntity: faqs.map((f) => ({
+                  "@type": "Question",
+                  name: f.q,
+                  acceptedAnswer: { "@type": "Answer", text: f.a },
+                })),
+              },
+            ]).replace(/</g, "\\u003c"),
+          }}
+        />
         {/* 1. Encabezado principal — layout tipo ficha de producto (imagen +
             título/precio/CTA a la derecha), como pidió la usuaria a partir
             de una referencia. El resto de la narrativa de venta sigue

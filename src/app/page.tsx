@@ -93,9 +93,9 @@ const PRODUCTS = [
 ];
 
 const MENTORAS = [
-  { slug: "luz", name: "Luz Amparo", photo: "/images/creators/luz.png", pos: "object-top", focus: "Energía humana, magnetismo, lectura del rostro y de las manos" },
+  { slug: "luz", name: "Luz Amparo", photo: "/images/creators/luz.webp", pos: "object-top", focus: "Energía humana, magnetismo, lectura del rostro y de las manos" },
   { slug: "shei", name: "Shei Rivera", photo: "/images/creators/shei.webp", pos: "object-top", focus: "Psicología y bienestar emocional" },
-  { slug: "kat", name: "Kat Rivera", photo: "/images/creators/kat.jpg", pos: "object-[50%_35%]", focus: "Comunicación, PNL y productividad" },
+  { slug: "kat", name: "Kat Rivera", photo: "/images/creators/kat.webp", pos: "object-[50%_35%]", focus: "Comunicación, PNL y productividad" },
 ];
 
 const TEMAS = [
@@ -240,7 +240,7 @@ export default function Home() {
         {PRODUCTS.map((p, i) => (
           <div key={p.title} className="grid grid-cols-1 md:grid-cols-2">
             <div className={`relative min-h-[280px] md:min-h-[420px] ${i % 2 === 0 ? "md:order-2" : ""}`}>
-              <Image src={p.photo} alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className={`object-cover ${p.photoPos}`} />
+              <Image src={p.photo} alt={p.title} fill sizes="(min-width: 768px) 50vw, 100vw" className={`object-cover ${p.photoPos}`} />
             </div>
             <div className={`flex flex-col items-center justify-center gap-4 px-6 py-14 text-center ${p.panel}`}>
               <p className="text-[11px] uppercase tracking-[0.35em] opacity-70">{p.kicker}</p>
@@ -370,7 +370,7 @@ export default function Home() {
                 </Button>
               </div>
               <div className="relative min-h-[260px]">
-                <Image src="/images/creators/landing-hero.webp" alt="" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+                <Image src="/images/creators/landing-hero.webp" alt="Luz, Shei y Kat, mentoras de PODEROSAS" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
               </div>
             </div>
           )}
